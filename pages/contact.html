@@ -18,8 +18,6 @@
   <link rel="stylesheet" href="../css/style.css">
   <script src="../js/theme.js"></script>
 
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     .form-group {
@@ -60,11 +58,27 @@
     }
 
     @keyframes field-shake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-4px); }
-      40% { transform: translateX(4px); }
-      60% { transform: translateX(-3px); }
-      80% { transform: translateX(3px); }
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-4px);
+      }
+
+      40% {
+        transform: translateX(4px);
+      }
+
+      60% {
+        transform: translateX(-3px);
+      }
+
+      80% {
+        transform: translateX(3px);
+      }
     }
 
     .form-group.has-error .ctrl-input,
@@ -191,7 +205,7 @@
       </header>
 
       <div class="glass glass--static input-panel animate-in">
-        <form id="contact-form" novalidate>
+        <form id="contact-form" name="contact" method="POST" data-netlify="true" data-netlify-honeypot="_honey" novalidate>
           <!-- Honeypot: bots fill this, humans don't -->
           <input type="text" name="_honey" style="display:none;" tabindex="-1" autocomplete="off">
 
@@ -271,14 +285,6 @@
 
   <script>
     (function () {
-      // ─── REPLACE THESE THREE VALUES AFTER EMAILJS SETUP ───────────────────────
-      var EMAILJS_PUBLIC_KEY = '-tKXNB0POD9IB5kWP';
-      var EMAILJS_SERVICE_ID = 'service_0tbn8jn';
-      var EMAILJS_TEMPLATE_ID = 'template_0svzctj';
-      // ──────────────────────────────────────────────────────────────────────────
-
-      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-
       var form = document.getElementById('contact-form');
       var btn = document.getElementById('btn-submit');
       var errMsg = document.getElementById('form-error');
@@ -292,7 +298,6 @@
         if (!group) return;
         if (show) {
           group.classList.add('has-error');
-          // Re-trigger shake animation
           var input = group.querySelector('.ctrl-input, .ctrl-select');
           if (input) { input.style.animation = 'none'; input.offsetHeight; input.style.animation = ''; }
         } else {
@@ -300,50 +305,51 @@
         }
       }
 
-      // Clear error on input
       ['name', 'email', 'message'].forEach(function (id) {
         var el = document.getElementById(id);
-        if (el) {
-          el.addEventListener('input', function () { setFieldError('fg-' + id, false); });
-        }
+        if (el) el.addEventListener('input', function () { setFieldError('fg-' + id, false); });
       });
 
-      // ─── Submit handler ──────────────────────────────────────────────────────
+      // ─── Netlify Forms submit ──────────────────────────────────────────────
       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Honeypot check — bots fill the hidden field
+        // Honeypot check
         if (form.elements['_honey'].value) return;
 
-        // Validate fields
-        var nameVal = form.elements['name'].value.trim();
-        var emailVal = form.elements['email'].value.trim();
+        // Validate
+        var nameVal    = form.elements['name'].value.trim();
+        var emailVal   = form.elements['email'].value.trim();
         var messageVal = form.elements['message'].value.trim();
         var valid = true;
 
-        if (!nameVal) { setFieldError('fg-name', true); valid = false; }
-        else { setFieldError('fg-name', false); }
-
-        if (!emailVal || !emailRegex.test(emailVal)) { setFieldError('fg-email', true); valid = false; }
-        else { setFieldError('fg-email', false); }
-
-        if (!messageVal) { setFieldError('fg-message', true); valid = false; }
-        else { setFieldError('fg-message', false); }
-
+        if (!nameVal)                              { setFieldError('fg-name',    true);  valid = false; } else { setFieldError('fg-name',    false); }
+        if (!emailVal || !emailRegex.test(emailVal)) { setFieldError('fg-email',   true);  valid = false; } else { setFieldError('fg-email',   false); }
+        if (!messageVal)                           { setFieldError('fg-message', true);  valid = false; } else { setFieldError('fg-message', false); }
         if (!valid) return;
 
         btn.disabled = true;
         btn.textContent = 'Sending…';
         errMsg.style.display = 'none';
 
-        emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, form)
-          .then(function () {
-            form.style.display = 'none';
-            success.style.display = 'block';
+        // Encode and POST to Netlify Forms
+        fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(new FormData(form)).toString()
+        })
+          .then(function (res) {
+            if (res.ok) {
+              form.style.display = 'none';
+              success.style.display = 'block';
+            } else {
+              throw new Error(res.status);
+            }
           })
           .catch(function () {
             btn.disabled = false;
             btn.textContent = 'Send Message';
+            errMsg.innerHTML = 'Something went wrong. Email us at <a href="mailto:primeartifact.contact@gmail.com">primeartifact.contact@gmail.com</a>';
             errMsg.style.display = 'block';
           });
       });

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Encoder & Decoder Online — Free Tool | PrimeArtifact</title>
+  <meta name="description"
+    content="Encode or decode URLs and query strings instantly. Supports percent-encoding, component encoding, and full URL encoding. Free, no login, works in your browser.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script> <!-- Draggable/3D Hover script -->
+  <style>
+    /* Absolute background for scrollable pages */
+    body {
+      position: relative;
+    }
+  </style>
+
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.netlify.app/tools/converters/url-encoder.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.netlify.app/tools/converters/url-encoder.html">
+  <meta property="og:title" content="URL Encoder & Decoder Online — Free Tool | PrimeArtifact">
+  <meta property="og:description"
+    content="Encode or decode URLs and query strings instantly. Supports percent-encoding, component encoding, and full URL encoding. Free, no login, works in your browser.">
+  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="URL Encoder & Decoder Online — Free Tool | PrimeArtifact">
+  <meta name="twitter:description"
+    content="Encode or decode URLs and query strings instantly. Supports percent-encoding, component encoding, and full URL encoding. Free, no login, works in your browser.">
+  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="alternate icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png.svg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "URL Encoder / Decoder",
+  "url": "https://primeartifact.netlify.app/tools/converters/url-encoder.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Encode or decode URLs for safe use in web addresses. Supports percent-encoding."
+}
+  </script>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+
+<body>
+
+  <!-- Encoder Lens Background Canvas -->
+  <canvas id="bg-canvas"
+    style="position: absolute; top: 0; left: 0; width: 100vw; height: 100%; z-index: -1; pointer-events: none;"></canvas>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container" style="max-width:800px;">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">›</span>
+          <a href="#">Converters</a><span class="page-header__breadcrumb-sep">›</span>
+          <span>URL Encoder</span>
+        </div>
+        <h1 class="page-header__title">URL Encoder / Decoder</h1>
+        <p class="page-header__subtitle">Encode or decode text for safe use in URLs.</p>
+      </header>
+
+      <div class="glass glass--static input-panel animate-in">
+        <div class="input-panel__header"><span class="input-panel__title">Input</span></div>
+        <textarea class="textarea" id="input" placeholder="Enter text or URL to encode/decode…" rows="4"></textarea>
+
+        <div style="margin:var(--space-md) 0;display:flex;gap:var(--space-sm);flex-wrap:wrap;">
+          <button class="btn btn--accent" id="btn-encode">Encode →</button>
+          <button class="btn btn--accent" id="btn-decode">← Decode</button>
+          <button class="btn" id="btn-encode-comp">Encode Component</button>
+          <button class="btn" id="btn-decode-comp">Decode Component</button>
+          <button class="btn" id="btn-swap">⇅ Swap</button>
+        </div>
+
+        <div
+          style="font-size:0.8rem;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:var(--space-sm);">
+          Output</div>
+        <textarea class="textarea" id="output" placeholder="Result will appear here…" rows="4" readonly
+          style="background:var(--accent-soft);"></textarea>
+
+        <div style="margin-top:var(--space-md);display:flex;gap:var(--space-sm);">
+          <button class="btn" id="btn-copy">⧉ Copy</button>
+          <button class="btn" id="btn-clear">✕ Clear</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer glass glass--static"
+    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
+    <div class="container">
+      <p>© 2026 <a href="../../index.html">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.
+      </p>
+    </div>
+  </footer>
+
+  <!-- URL Encoder Logic -->
+  <script>
+    (function () {
+      var inp = document.getElementById('input');
+      var out = document.getElementById('output');
+
+      // Programs modifying .value destroy the browser's undo stack. This preserves it.
+      function updateWithUndo(el, text) {
+        el.focus();
+        el.select();
+        if (text === '') {
+          document.execCommand('delete');
+        } else {
+          if (!document.execCommand('insertText', false, text)) { el.value = text; }
+        }
+      }
+
+      function checkEmpty() { if (!inp.value.trim()) { paToast('Please enter some text to process.', { icon: '🔗' }); return true; } return false; }
+
+      document.getElementById('btn-encode').addEventListener('click', function () { if (checkEmpty()) return; try { out.value = encodeURI(inp.value); } catch (e) { out.value = 'Error: ' + e.message; } });
+      document.getElementById('btn-decode').addEventListener('click', function () { if (checkEmpty()) return; try { out.value = decodeURI(inp.value); } catch (e) { out.value = 'Error: ' + e.message; } });
+      document.getElementById('btn-encode-comp').addEventListener('click', function () { if (checkEmpty()) return; try { out.value = encodeURIComponent(inp.value); } catch (e) { out.value = 'Error: ' + e.message; } });
+      document.getElementById('btn-decode-comp').addEventListener('click', function () { if (checkEmpty()) return; try { out.value = decodeURIComponent(inp.value); } catch (e) { out.value = 'Error: ' + e.message; } });
+
+      document.getElementById('btn-swap').addEventListener('click', function () {
+        var currentOut = out.value;
+        updateWithUndo(inp, currentOut);
+        out.value = '';
+      });
+
+      document.getElementById('btn-copy').addEventListener('click', function () {
+        if (out.value) {
+          navigator.clipboard.writeText(out.value);
+          this.textContent = '✓ Copied';
+          var b = this;
+          setTimeout(function () { b.textContent = '⧉ Copy'; }, 1500);
+        }
+      });
+
+      document.getElementById('btn-clear').addEventListener('click', function () {
+        updateWithUndo(inp, '');
+        out.value = '';
+      });
+    })();
+  </script>
+
+  <!-- Interactive Encoder Lens Background Logic -->
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let fragments = [];
+    let mouseX = -1000, mouseY = -1000;
+
+    // Pairs of Plain Text <-> URL Encoded Text
+    const dataStrings = [
+      { p: "https://primeartifact.com", e: "https%3A%2F%2Fprimeartifact.com" },
+      { p: "?search=hello world", e: "%3Fsearch%3Dhello%20world" },
+      { p: "&user=admin&id=123", e: "%26user%3Dadmin%26id%3D123" },
+      { p: "path/to/my folder", e: "path%2Fto%2Fmy%20folder" },
+      { p: "category=tools&sort=desc", e: "category%3Dtools%26sort%3Ddesc" },
+      { p: "login.php?redirect=true", e: "login.php%3Fredirect%3Dtrue" },
+      { p: "#section-header", e: "%23section-header" }
+    ];
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.pageX;
+      mouseY = e.pageY;
+    });
+
+    function initCanvas() {
+      canvas.width = document.body.scrollWidth;
+      canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
+
+      fragments = [];
+      const density = window.innerWidth < 768 ? 15 : 30; // Amount of strings
+
+      for (let i = 0; i < density; i++) {
+        fragments.push(new URLFragment());
+      }
+    }
+
+    class URLFragment {
+      constructor() {
+        this.reset(true);
+      }
+
+      reset(randomX = false) {
+        const data = dataStrings[Math.floor(Math.random() * dataStrings.length)];
+        this.plain = data.p;
+        this.encoded = data.e;
+
+        this.y = Math.random() * canvas.height;
+        this.x = randomX ? Math.random() * canvas.width : -300;
+
+        // Horizontal floating speed
+        this.speed = Math.random() * 0.5 + 0.2;
+        this.fontSize = Math.random() * 6 + 12; // 12px to 18px
+      }
+
+      update() {
+        this.x += this.speed;
+
+        // Reset if it floats completely off screen
+        if (this.x > canvas.width + 100) {
+          this.reset(false);
+        }
+      }
+
+      draw() {
+        // Calculate center of the text string approximately
+        let textWidth = ctx.measureText(this.plain).width;
+        let centerX = this.x + (textWidth / 2);
+
+        let dx = mouseX - centerX;
+        let dy = mouseY - this.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Interaction radius (The "Encoder Lens")
+        let isHovered = dist < 150;
+
+        let themeColor = getComputedStyle(document.body).getPropertyValue('--text-tertiary').trim() || '#8b909e';
+        let accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#4a6fa5';
+
+        if (isHovered) {
+          // Inside the lens: Text ENCODES, magnifies slightly, and glows
+          ctx.font = `bold ${this.fontSize + 2}px monospace`;
+          ctx.fillStyle = accentColor;
+
+          // Intensity based on how close to center of mouse
+          let intensity = (150 - dist) / 150;
+          ctx.globalAlpha = 0.1 + (intensity * 0.4);
+
+          // The glitch effect: randomly swap between encoded and plain if near the edge, solid encoded in center
+          let displayText = (Math.random() > intensity) ? this.plain : this.encoded;
+          ctx.fillText(displayText, this.x, this.y);
+
+        } else {
+          // Normal state: Faint, decoded plain text
+          ctx.font = `${this.fontSize}px monospace`;
+          ctx.fillStyle = themeColor;
+          ctx.globalAlpha = 0.05;
+          ctx.fillText(this.plain, this.x, this.y);
+        }
+      }
+    }
+
+    window.addEventListener('resize', initCanvas);
+    const resizeObserver = new ResizeObserver(() => {
+      canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
+    });
+    resizeObserver.observe(document.body);
+
+    initCanvas();
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      fragments.forEach(f => {
+        f.update();
+        f.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+
+</html>

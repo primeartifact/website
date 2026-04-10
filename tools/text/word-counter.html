@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Word Counter & Character Counter Online — PrimeArtifact</title>
+  <meta name="description"
+    content="Count words, characters, sentences, paragraphs, and reading time instantly. Unicode-safe, works offline. Free, no login, no ads.">
+  <meta name="keywords"
+    content="word counter, character counter, letter counter, sentence counter, online text analysis">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script>
+  <style>
+    /* 1. Safe Sticky Footer (Fixes the zoom void without breaking layout) */
+    body {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    main.page {
+      flex: 1;
+      /* Pushes the footer down naturally */
+    }
+
+    /* 2. Layering: 3D in back, UI in front */
+    .page,
+    .footer {
+      position: relative;
+      z-index: 10;
+    }
+
+    #bg-container {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      /* Sits right behind the glass UI */
+      pointer-events: none;
+      overflow: hidden;
+      perspective: 1200px;
+      perspective-origin: 50% 80%;
+      transform-style: preserve-3d;
+    }
+
+
+    /* 3. Card Elements */
+    .letter-card {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .letter-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--text-tertiary);
+      background: var(--glass-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .letter-face--back {
+      transform: rotateY(180deg);
+    }
+
+    .static-card .letter-face {
+      opacity: 0.8;
+    }
+
+    /* 4. Stage */
+    .pyramid-stage {
+      height: 250px;
+      margin-top: var(--space-xl);
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .static-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--divider);
+    }
+  </style>
+
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.netlify.app/tools/text/word-counter.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.netlify.app/tools/text/word-counter.html">
+  <meta property="og:title" content="Free Word Counter & Character Counter Online — PrimeArtifact">
+  <meta property="og:description"
+    content="Count words, characters, sentences, paragraphs, and reading time instantly. Unicode-safe, works offline. Free, no login, no ads.">
+  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free Word Counter & Character Counter Online — PrimeArtifact">
+  <meta name="twitter:description"
+    content="Count words, characters, sentences, paragraphs, and reading time instantly. Unicode-safe, works offline. Free, no login, no ads.">
+  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="alternate icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png.svg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Word & Character Counter",
+  "url": "https://primeartifact.netlify.app/tools/text/word-counter.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Count words, characters, sentences and get reading time estimates. Free, private, works offline."
+}
+  </script>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+
+<body>
+
+  <!-- The 3D Engine Container -->
+  <div id="bg-container"></div>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../index.html">Home</a>
+          <span class="page-header__breadcrumb-sep">›</span>
+          <a href="#">Text Tools</a>
+          <span class="page-header__breadcrumb-sep">›</span>
+          <span>Word Counter</span>
+        </div>
+        <h1 class="page-header__title">Word & Character Counter</h1>
+        <p class="page-header__subtitle">Analyze your text with precision. Calculate manually to prevent lag on massive
+          documents.</p>
+      </header>
+
+      <div class="stats-grid animate-in">
+        <div class="glass stat-card">
+          <div class="stat-card__value" id="stat-words">0</div>
+          <div class="stat-card__label">Words</div>
+        </div>
+        <div class="glass stat-card">
+          <div class="stat-card__value" id="stat-characters">0</div>
+          <div class="stat-card__label">Characters</div>
+        </div>
+        <div class="glass stat-card">
+          <div class="stat-card__value" id="stat-sentences">0</div>
+          <div class="stat-card__label">Sentences</div>
+        </div>
+        <div class="glass stat-card">
+          <div class="stat-card__value" id="stat-paragraphs">0</div>
+          <div class="stat-card__label">Paragraphs</div>
+        </div>
+      </div>
+
+      <div class="glass glass--static input-panel animate-in">
+        <div class="static-header">
+          <span class="input-panel__title">Your Text</span>
+          <div class="input-panel__actions">
+            <button class="btn btn--small" id="btn-paste">⎘ Paste</button>
+            <button class="btn btn--small" id="btn-copy">⧉ Copy</button>
+            <button class="btn btn--small" id="btn-clear">✕ Clear</button>
+          </div>
+        </div>
+        <textarea class="textarea" id="text-input" placeholder="Start typing or paste your text here…" autofocus
+          spellcheck="false"></textarea>
+
+        <div style="margin-top: var(--space-md); text-align: right;">
+          <button class="btn btn--accent" id="btn-calculate" style="padding: 10px 24px; font-size: 0.9rem;">⟳ Calculate
+            Stats</button>
+        </div>
+      </div>
+
+      <div class="glass glass--static details-panel animate-in">
+        <div class="details-panel__title">Detailed Breakdown</div>
+        <div class="details-grid">
+          <div class="detail-row"><span class="detail-row__label">Characters (no spaces)</span><span
+              class="detail-row__value" id="detail-chars-no-space">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Letters</span><span class="detail-row__value"
+              id="detail-letters">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Numbers</span><span class="detail-row__value"
+              id="detail-numbers">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Special Characters</span><span
+              class="detail-row__value" id="detail-special">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Spaces</span><span class="detail-row__value"
+              id="detail-spaces">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Lines</span><span class="detail-row__value"
+              id="detail-lines">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Avg. Word Length</span><span class="detail-row__value"
+              id="detail-avg-word">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Longest Word</span><span class="detail-row__value"
+              id="detail-longest-word">—</span></div>
+        </div>
+      </div>
+
+      <div class="pyramid-stage">
+        <!-- ↓ The Ruins ↓ -->
+      </div>
+    </div>
+  </main>
+
+  <footer id="main-footer" class="footer glass glass--static"
+    style="border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
+    <div class="container">
+      <p>© 2026 <a href="../../index.html">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.
+      </p>
+    </div>
+  </footer>
+
+  <!-- 3D Card Engine Script -->
+  <script>
+    const container = document.getElementById('bg-container');
+    const footerEl = document.getElementById('main-footer');
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const cardSize = 30;
+    let cols; let pilePxHeights = []; let fallingLeaves = []; let staticCardsData = []; let floorY = 0;
+
+    function createCardElement(char, isStatic = false) {
+      const card = document.createElement('div'); card.className = `letter-card ${isStatic ? 'static-card' : ''}`;
+      const front = document.createElement('div'); front.className = 'letter-face'; front.textContent = char;
+      const back = document.createElement('div'); back.className = 'letter-face letter-face--back'; back.textContent = char;
+      card.appendChild(front); card.appendChild(back); return card;
+    }
+
+    function init3DEngine() {
+      container.innerHTML = ''; staticCardsData = [];
+      const width = document.documentElement.clientWidth;
+      // width/height handled by CSS position absolute with top:0, bottom:0, left:0, right:0
+
+      cols = Math.floor(width / cardSize);
+      floorY = footerEl.offsetTop - 10;
+
+      let centerCol = Math.floor(cols / 2); let maxPilePx = 150; pilePxHeights = new Array(cols).fill(0);
+
+      for (let c = 0; c < cols; c++) {
+        let dist = Math.abs(c - centerCol); let heightForCol = maxPilePx - (dist * 12);
+        if (heightForCol < 20 && Math.random() > 0.4) heightForCol = 0;
+        if (heightForCol < 0) heightForCol = 0;
+        pilePxHeights[c] = heightForCol;
+        let numCardsInPile = Math.floor(heightForCol / 5);
+
+        for (let i = 0; i < numCardsInPile; i++) {
+          let char = letters[Math.floor(Math.random() * letters.length)];
+          let card = createCardElement(char, true);
+          let x = (c * cardSize) + (Math.random() - 0.5) * 40; let yOffset = (i * 5) - (Math.random() - 0.5) * 10; let z = (Math.random() - 0.5) * 80;
+          let rx = (60 + Math.random() * 25) * (Math.random() > 0.5 ? 1 : -1); let ry = Math.random() * 360; let rz = Math.random() * 360;
+          staticCardsData.push({ el: card, x, yOffset, z, rx, ry, rz });
+          card.style.transform = `translate3d(${x}px, ${floorY - yOffset}px, ${z}px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+          container.appendChild(card);
+        }
+      }
+      fallingLeaves = []; for (let i = 0; i < 15; i++) fallingLeaves.push(new FallingCard(true));
+    }
+
+    class FallingCard {
+      constructor(initialLoad = false) { this.el = createCardElement('A', false); container.appendChild(this.el); this.reset(initialLoad); }
+      reset(initialLoad = false) {
+        this.baseX = Math.random() * document.documentElement.clientWidth;
+        let spawnY = window.scrollY - 100;
+        this.y = initialLoad ? window.scrollY + (Math.random() * window.innerHeight) : spawnY;
+        this.x = this.baseX;
+        let newChar = letters[Math.floor(Math.random() * letters.length)];
+        this.el.children[0].textContent = newChar; this.el.children[1].textContent = newChar;
+        this.speedY = Math.random() * 0.8 + 0.4;
+        this.swingAngle = Math.random() * Math.PI * 2; this.swingSpeed = Math.random() * 0.02 + 0.01; this.swingRadius = Math.random() * 40 + 20;
+        this.rotX = Math.random() * 360; this.rotY = Math.random() * 360; this.rotZ = Math.random() * 360;
+        this.spinX = (Math.random() - 0.5) * 3; this.spinY = (Math.random() - 0.5) * 3; this.spinZ = (Math.random() - 0.5) * 1;
+      }
+      update() {
+        this.y += this.speedY; this.swingAngle += this.swingSpeed; this.x = this.baseX + Math.sin(this.swingAngle) * this.swingRadius;
+        this.rotX += this.spinX; this.rotY += this.spinY; this.rotZ += this.spinZ;
+        let currentCol = Math.floor(this.baseX / cardSize);
+        if (currentCol < 0) currentCol = 0; if (currentCol >= cols) currentCol = cols - 1;
+        let targetY = floorY - pilePxHeights[currentCol];
+        this.el.style.transform = `translate3d(${this.x}px, ${this.y}px, 0) rotateX(${this.rotX}deg) rotateY(${this.rotY}deg) rotateZ(${this.rotZ}deg)`;
+        if (this.y > targetY) this.reset(false);
+      }
+    }
+
+    let lastWidth = document.documentElement.clientWidth;
+    const resizeObserver = new ResizeObserver(() => {
+      const newWidth = document.documentElement.clientWidth;
+      if (Math.abs(newWidth - lastWidth) > 20) {
+        lastWidth = newWidth; clearTimeout(window.resizeTimer); window.resizeTimer = setTimeout(init3DEngine, 300);
+      }
+    });
+    resizeObserver.observe(document.body);
+
+    function animateEngine() {
+      // Dynamically calculate the floor line relative precisely to the fixed viewport lens
+      let currentFloorY = footerEl.getBoundingClientRect().top - 10;
+      if (Math.abs(currentFloorY - floorY) > 0.5) {
+        floorY = currentFloorY;
+        staticCardsData.forEach(c => { c.el.style.transform = `translate3d(${c.x}px, ${floorY - c.yOffset}px, ${c.z}px) rotateX(${c.rx}deg) rotateY(${c.ry}deg) rotateZ(${c.rz}deg)`; });
+      }
+      fallingLeaves.forEach(leaf => leaf.update()); requestAnimationFrame(animateEngine);
+    }
+    setTimeout(() => { init3DEngine(); animateEngine(); }, 50);
+  </script>
+
+  <script src="../../js/word-counter.js"></script>
+</body>
+
+</html>

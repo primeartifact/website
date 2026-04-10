@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrimeArtifact — Free Online Tools | No Login, No Ads, No Tracking</title>
+  <meta name="description"
+    content="Free browser-based tools for everyday tasks. Word counter, password generator, QR codes, color picker, age calculator & more. No login. No ads. Fully private.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+  <script src="js/interactive.js"></script>
+  <style>
+    .hero {
+      text-align: center;
+      padding: var(--space-3xl) 0 var(--space-xl);
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero__title {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text-primary);
+      line-height: 1.12;
+      margin-bottom: var(--space-md);
+    }
+
+    .hero__subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto var(--space-lg);
+      line-height: 1.65;
+    }
+
+    .hero__stats {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-xl);
+      margin-top: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    .hero__stat {
+      text-align: center;
+    }
+
+    .hero__stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .hero__stat-label {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    .tool-card {
+      padding: var(--space-lg);
+      text-decoration: none;
+      display: block;
+      transition: transform var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .tool-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .tool-card__icon {
+      font-size: 1.5rem;
+      margin-bottom: var(--space-sm);
+      display: block;
+    }
+
+    .tool-card__name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .tool-card__desc {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .section-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-md);
+      margin-top: var(--space-2xl);
+    }
+
+    .cta-section {
+      text-align: center;
+      margin: var(--space-3xl) 0 var(--space-xl);
+      padding: var(--space-2xl);
+    }
+
+    .cta-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .cta-section p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      max-width: 450px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .hero__title {
+        font-size: 1.75rem;
+      }
+
+      .hero__subtitle {
+        font-size: 0.92rem;
+      }
+
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero__stats {
+        gap: var(--space-lg);
+      }
+    }
+  </style>
+
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.netlify.app/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.netlify.app/">
+  <meta property="og:title" content="PrimeArtifact — Free Online Tools | No Login, No Ads, No Tracking">
+  <meta property="og:description"
+    content="Free browser-based tools for everyday tasks. Word counter, password generator, QR codes, color picker, age calculator & more. No login. No ads. Fully private.">
+  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PrimeArtifact — Free Online Tools | No Login, No Ads, No Tracking">
+  <meta name="twitter:description"
+    content="Free browser-based tools for everyday tasks. Word counter, password generator, QR codes, color picker, age calculator & more. No login. No ads. Fully private.">
+  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png.svg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "PrimeArtifact",
+  "url": "https://primeartifact.netlify.app",
+  "description": "Free online utility tools \u2014 private, ad-free, no login required.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://primeartifact.netlify.app/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+  </script>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+
+<body>
+
+  <!-- Clean, Interactive Tech Network Background for Home Page -->
+  <canvas id="home-canvas"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; opacity: 0.5;"></canvas>
+
+  <nav class="navbar"></nav>
+  <script src="js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <section class="hero animate-in">
+        <h1 class="hero__title">Every tool you need.<br>One place. No login.</h1>
+        <p class="hero__subtitle">
+          Free online utilities for text, images, PDFs, and more.
+          Fast, private, and works entirely in your browser.
+        </p>
+        <div class="hero__stats">
+          <div class="hero__stat">
+            <div class="hero__stat-value">10+</div>
+            <div class="hero__stat-label">Free Tools</div>
+          </div>
+          <div class="hero__stat">
+            <div class="hero__stat-value">0</div>
+            <div class="hero__stat-label">Ads</div>
+          </div>
+          <div class="hero__stat">
+            <div class="hero__stat-value">0</div>
+            <div class="hero__stat-label">Data Collected</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="text-tools">
+        <div class="section-title animate-in">Text Tools</div>
+        <div class="tools-grid">
+          <a href="tools/text/word-counter.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">𝐖</span>
+            <div class="tool-card__name">Word & Character Counter</div>
+            <div class="tool-card__desc">Count words, characters, sentences, paragraphs, and get reading time estimates.
+            </div>
+          </a>
+          <a href="tools/text/case-converter.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">Aa</span>
+            <div class="tool-card__name">Text Case Converter</div>
+            <div class="tool-card__desc">Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case, and
+              more.</div>
+          </a>
+          <a href="tools/text/fancy-text.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">𝓕</span>
+            <div class="tool-card__name">Fancy Text Generator</div>
+            <div class="tool-card__desc">Generate stylish Unicode text for Instagram bios, WhatsApp status, and more.
+            </div>
+          </a>
+          <a href="tools/text/lorem-ipsum.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">¶</span>
+            <div class="tool-card__name">Lorem Ipsum Generator</div>
+            <div class="tool-card__desc">Generate placeholder text — paragraphs, sentences, or words for your designs.
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section id="generators">
+        <div class="section-title animate-in">Generators</div>
+        <div class="tools-grid">
+          <a href="tools/generators/password.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">🔐</span>
+            <div class="tool-card__name">Password Generator</div>
+            <div class="tool-card__desc">Generate strong, secure passwords with custom length and character options.
+            </div>
+          </a>
+          <a href="tools/generators/qr-code.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">▣</span>
+            <div class="tool-card__name">QR Code Generator</div>
+            <div class="tool-card__desc">Create QR codes for any text, URL, or data. Download as PNG.</div>
+          </a>
+        </div>
+      </section>
+
+      <section id="converters">
+        <div class="section-title animate-in">Converters</div>
+        <div class="tools-grid">
+          <a href="tools/converters/color-picker.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">🎨</span>
+            <div class="tool-card__name">Color Picker & Converter</div>
+            <div class="tool-card__desc">Pick colors and convert between HEX, RGB, HSL, and RGBA formats.</div>
+          </a>
+          <a href="tools/converters/number-to-words.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">#→</span>
+            <div class="tool-card__name">Number to Words</div>
+            <div class="tool-card__desc">Convert numbers to words in Indian (Lakhs, Crores) and International systems.
+            </div>
+          </a>
+          <a href="tools/converters/url-encoder.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">🔗</span>
+            <div class="tool-card__name">URL Encoder / Decoder</div>
+            <div class="tool-card__desc">Encode or decode URLs for safe use in web addresses.</div>
+          </a>
+        </div>
+      </section>
+
+      <section id="utility">
+        <div class="section-title animate-in">Utility</div>
+        <div class="tools-grid">
+          <a href="tools/utility/age-calculator.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">🎂</span>
+            <div class="tool-card__name">Age Calculator</div>
+            <div class="tool-card__desc">Calculate your exact age in years, months, days. See next birthday countdown.
+            </div>
+          </a>
+          <a href="tools/utility/notepad.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">📝</span>
+            <div class="tool-card__name">Online Notepad</div>
+            <div class="tool-card__desc">Quick scratchpad that auto-saves to your browser. Private, no cloud.</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="glass cta-section animate-in">
+        <h2>More tools coming soon</h2>
+        <p>We're continuously adding new tools. Have a suggestion? <a href="pages/contact.html"
+            style="color:var(--accent);text-decoration:underline;">Let us know</a> what you'd like to see next.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">
+        <p>© 2026 <a href="index.html">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.</p>
+        <div style="display:flex;gap:var(--space-md);font-size:0.82rem;">
+          <a href="pages/about.html" style="color:var(--text-tertiary);text-decoration:none;">About</a>
+          <a href="pages/privacy.html" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>
+          <a href="pages/contact.html" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Network Background Script -->
+  <script>
+    const cvs = document.getElementById('home-canvas');
+    const ctx = cvs.getContext('2d');
+    let width, height;
+    let particles = [];
+
+    function init() {
+      width = cvs.width = window.innerWidth;
+      height = cvs.height = window.innerHeight;
+      particles = [];
+      let count = window.innerWidth < 768 ? 40 : 100;
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5
+        });
+      }
+    }
+
+    window.addEventListener('resize', init);
+    init();
+
+    let mouse = { x: -1000, y: -1000 };
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      let themeColor = getComputedStyle(document.body).getPropertyValue('--text-tertiary').trim() || '#8b909e';
+
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = themeColor;
+        ctx.fill();
+      });
+
+      // Draw lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          let dx = particles[i].x - particles[j].x;
+          let dy = particles[i].y - particles[j].y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.strokeStyle = themeColor;
+            ctx.globalAlpha = 1 - (dist / 120);
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        }
+        // Connect to mouse
+        let dx = particles[i].x - mouse.x;
+        let dy = particles[i].y - mouse.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          ctx.beginPath();
+          ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#4a6fa5';
+          ctx.globalAlpha = 1 - (dist / 150);
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+
+</html>

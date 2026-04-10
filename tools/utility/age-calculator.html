@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Age Calculator — Exact Age in Years, Months & Days | PrimeArtifact</title>
+  <meta name="description"
+    content="Calculate your exact age in years, months, days, hours, and minutes. See countdown to your next birthday. Free online age calculator, no login required.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script>
+  <style>
+    /* Safe Sticky Footer & Anti-Zoom Void */
+    html {
+      height: 100%;
+      background-color: var(--bg-page);
+    }
+
+    body {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    main.page {
+      flex-grow: 1;
+      min-height: 0 !important;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #main-footer {
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+
+    /* ========================================================
+       FIX: FORCE PERFECT 4-COLUMN STATS GRID
+       ======================================================== */
+    #result.stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      /* Always 4 in a row */
+      gap: var(--space-md);
+    }
+
+    @media (max-width: 600px) {
+      #result.stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* Perfect 2x2 on mobile */
+      }
+    }
+
+    /* ========================================================
+       PREMIUM CUSTOM DATE PICKER UI (GLASSMORPHISM)
+       ======================================================== */
+    .date-input-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      margin: var(--space-md) auto var(--space-sm);
+    }
+
+    .premium-date-input {
+      width: 100%;
+      padding: 16px 20px 16px 48px;
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--glass-bg);
+      border: 2px solid var(--glass-border-edge);
+      border-radius: var(--radius-md);
+      outline: none;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      box-shadow: var(--glass-shadow);
+      letter-spacing: 0.05em;
+    }
+
+    .premium-date-input:hover,
+    .premium-date-input:focus,
+    .date-input-wrapper.active .premium-date-input {
+      background: var(--glass-bg-hover);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft), var(--glass-shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    .date-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      pointer-events: none;
+      color: var(--accent);
+      transition: transform var(--transition-fast);
+    }
+
+    .date-input-wrapper.active .date-icon {
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    /* Custom Glass Calendar Popup */
+    .glass-calendar {
+      position: absolute;
+      top: calc(100% + 12px);
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      width: 300px;
+      background: var(--dropdown-bg);
+      border: 1px solid var(--dropdown-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--dropdown-shadow);
+      padding: var(--space-md);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all var(--transition-base);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .date-input-wrapper.active .glass-calendar {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .calendar-header {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xs);
+    }
+
+    .calendar-header select {
+      flex: 1;
+      padding: 6px 8px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family);
+      font-weight: 600;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .calendar-header select:focus {
+      border-color: var(--accent);
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .cal-day {
+      padding: 8px 0;
+      text-align: center;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .cal-day:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+    }
+
+    .cal-day.selected {
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(74, 111, 165, 0.4);
+    }
+
+    .cal-day.today {
+      color: var(--accent);
+      font-weight: 800;
+      text-decoration: underline;
+    }
+
+    .cal-day.empty {
+      visibility: hidden;
+      pointer-events: none;
+    }
+  </style>
+
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.netlify.app/tools/utility/age-calculator.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.netlify.app/tools/utility/age-calculator.html">
+  <meta property="og:title" content="Age Calculator — Exact Age in Years, Months & Days | PrimeArtifact">
+  <meta property="og:description"
+    content="Calculate your exact age in years, months, days, hours, and minutes. See countdown to your next birthday. Free online age calculator, no login required.">
+  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Age Calculator — Exact Age in Years, Months & Days | PrimeArtifact">
+  <meta name="twitter:description"
+    content="Calculate your exact age in years, months, days, hours, and minutes. See countdown to your next birthday. Free online age calculator, no login required.">
+  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="alternate icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png.svg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Age Calculator",
+  "url": "https://primeartifact.netlify.app/tools/utility/age-calculator.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Calculate your exact age in years, months, days. Shows next birthday countdown."
+}
+  </script>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+
+<body>
+
+  <!-- Harmonic Pendulums Canvas -->
+  <canvas id="bg-canvas"
+    style="position: absolute; top: 0; left: 0; width: 100vw; height: 100%; z-index: -1; pointer-events: none; opacity: 0.8;"></canvas>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container" style="max-width:750px;">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">›</span>
+          <a href="#">Utility</a><span class="page-header__breadcrumb-sep">›</span>
+          <span>Age Calculator</span>
+        </div>
+        <h1 class="page-header__title">Age Calculator</h1>
+        <p class="page-header__subtitle">Find your exact age and days until your next birthday.</p>
+      </header>
+
+      <!-- Premium Input Panel -->
+      <div class="glass glass--static input-panel animate-in" style="text-align: center; z-index: 20;">
+        <span class="input-panel__title" style="display:block; margin-bottom: 8px;">Date of Birth</span>
+
+        <div class="date-input-wrapper" id="date-wrapper">
+          <svg class="date-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+
+          <input type="text" id="fake-dob" class="premium-date-input" readonly placeholder="DD-MM-YYYY">
+          <input type="date" id="dob" style="display: none;">
+
+          <div class="glass-calendar" id="glass-calendar">
+            <div class="calendar-header">
+              <select id="cal-month-select"></select>
+              <select id="cal-year-select"></select>
+            </div>
+            <div class="calendar-weekdays">
+              <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            </div>
+            <div class="calendar-days" id="cal-days"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid animate-in" id="result" style="display:none;">
+        <div class="glass stat-card">
+          <div class="stat-card__value" id="s-years">0</div>
+          <div class="stat-card__label">Years</div>
+        </div>
+        <div class="glass stat-card">
+          <div class="stat-card__value" id="s-months">0</div>
+          <div class="stat-card__label">Months</div>
+        </div>
+        <div class="glass stat-card">
+          <div class="stat-card__value" id="s-days">0</div>
+          <div class="stat-card__label">Days</div>
+        </div>
+        <div class="glass stat-card">
+          <div class="stat-card__value" id="s-next">0</div>
+          <div class="stat-card__label">Next Birthday</div>
+        </div>
+      </div>
+
+      <!-- Details Panel -->
+      <div class="glass glass--static input-panel animate-in" id="details"
+        style="display:none; margin-top: var(--space-lg);">
+        <div class="input-panel__header"><span class="input-panel__title">Life Milestones</span></div>
+        <div class="details-grid">
+          <div class="detail-row"><span class="detail-row__label">Total Months</span><span class="detail-row__value"
+              id="d-months">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Total Weeks</span><span class="detail-row__value"
+              id="d-weeks">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Total Days</span><span class="detail-row__value"
+              id="d-days">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Total Hours</span><span class="detail-row__value"
+              id="d-hours">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Total Minutes</span><span class="detail-row__value"
+              id="d-minutes">0</span></div>
+          <div class="detail-row"><span class="detail-row__label">Born On</span><span class="detail-row__value"
+              id="d-day">—</span></div>
+          <div class="detail-row"><span class="detail-row__label">Zodiac Sign</span><span class="detail-row__value"
+              id="d-zodiac">—</span></div>
+          <div class="detail-row"><span class="detail-row__label">Birth Year (Chinese)</span><span
+              class="detail-row__value" id="d-chinese">—</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="main-footer" class="footer glass glass--static"
+    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
+    <div class="container">
+      <p>© 2026 <a href="../../index.html">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Custom Calendar UI Logic -->
+  <script>
+    (function () {
+      const wrapper = document.getElementById('date-wrapper');
+      const fakeInput = document.getElementById('fake-dob');
+      const realInput = document.getElementById('dob');
+      const calDays = document.getElementById('cal-days');
+      const monthSelect = document.getElementById('cal-month-select');
+      const yearSelect = document.getElementById('cal-year-select');
+
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const today = new Date();
+
+      let currentViewDate = new Date();
+      let selectedDate = null;
+
+      months.forEach((m, index) => {
+        let option = document.createElement('option');
+        option.value = index; option.textContent = m;
+        monthSelect.appendChild(option);
+      });
+
+      const currentYear = today.getFullYear();
+      for (let y = currentYear; y >= currentYear - 120; y--) {
+        let option = document.createElement('option');
+        option.value = y; option.textContent = y;
+        yearSelect.appendChild(option);
+      }
+
+      function renderCalendar() {
+        const year = currentViewDate.getFullYear();
+        const month = currentViewDate.getMonth();
+        monthSelect.value = month;
+        yearSelect.value = year;
+        calDays.innerHTML = '';
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+          const emptyDiv = document.createElement('div');
+          emptyDiv.className = 'cal-day empty';
+          calDays.appendChild(emptyDiv);
+        }
+
+        for (let i = 1; i <= daysInMonth; i++) {
+          const dayDiv = document.createElement('div');
+          dayDiv.className = 'cal-day';
+          dayDiv.textContent = i;
+
+          if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+            dayDiv.classList.add('today');
+          }
+          if (selectedDate && year === selectedDate.getFullYear() && month === selectedDate.getMonth() && i === selectedDate.getDate()) {
+            dayDiv.classList.add('selected');
+          }
+
+          dayDiv.addEventListener('click', () => {
+            selectedDate = new Date(year, month, i);
+            const m = String(month + 1).padStart(2, '0');
+            const d = String(i).padStart(2, '0');
+            realInput.value = `${year}-${m}-${d}`;
+            fakeInput.value = `${d}-${m}-${year}`;
+            wrapper.classList.remove('active');
+            realInput.dispatchEvent(new Event('input'));
+            renderCalendar();
+          });
+          calDays.appendChild(dayDiv);
+        }
+      }
+
+      fakeInput.addEventListener('click', () => {
+        wrapper.classList.toggle('active');
+        if (!selectedDate && !fakeInput.value) {
+          currentViewDate.setFullYear(today.getFullYear() - 30);
+        } else if (selectedDate) {
+          currentViewDate = new Date(selectedDate);
+        }
+        renderCalendar();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) wrapper.classList.remove('active');
+      });
+
+      monthSelect.addEventListener('change', (e) => { currentViewDate.setMonth(parseInt(e.target.value)); renderCalendar(); });
+      yearSelect.addEventListener('change', (e) => { currentViewDate.setFullYear(parseInt(e.target.value)); renderCalendar(); });
+
+      renderCalendar();
+    })();
+  </script>
+
+  <!-- Age Calculator Output Logic -->
+  <script>
+    (function () {
+      var dob = document.getElementById('dob');
+      var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      var zodiac = [{ s: 'Capricorn', e: [1, 19] }, { s: 'Aquarius', e: [2, 18] }, { s: 'Pisces', e: [3, 20] }, { s: 'Aries', e: [4, 19] }, { s: 'Taurus', e: [5, 20] }, { s: 'Gemini', e: [6, 20] }, { s: 'Cancer', e: [7, 22] }, { s: 'Leo', e: [8, 22] }, { s: 'Virgo', e: [9, 22] }, { s: 'Libra', e: [10, 22] }, { s: 'Scorpio', e: [11, 21] }, { s: 'Sagittarius', e: [12, 21] }, { s: 'Capricorn', e: [12, 31] }];
+      var chinese = ['Monkey', 'Rooster', 'Dog', 'Pig', 'Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat'];
+      var fmt = function (n) { return n.toLocaleString('en-IN'); };
+
+      function getZodiac(m, d) { for (var i = 0; i < zodiac.length; i++) { var z = zodiac[i]; if (m < z.e[0] || (m === z.e[0] && d <= z.e[1])) return z.s; } return 'Capricorn'; }
+
+      dob.addEventListener('input', function () {
+        var birth = new Date(this.value);
+        if (isNaN(birth)) return;
+        var now = new Date();
+        var diff = now - birth;
+        var totalDays = Math.floor(diff / 86400000);
+        var totalHours = Math.floor(diff / 3600000);
+        var totalMinutes = Math.floor(diff / 60000);
+        var totalWeeks = Math.floor(totalDays / 7);
+
+        var y = now.getFullYear() - birth.getFullYear();
+        var m = now.getMonth() - birth.getMonth();
+        var d = now.getDate() - birth.getDate();
+        if (d < 0) { m--; d += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+        if (m < 0) { y--; m += 12; }
+
+        var nextBday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
+        if (nextBday <= now) nextBday.setFullYear(nextBday.getFullYear() + 1);
+        var daysToNext = Math.ceil((nextBday - now) / 86400000);
+
+        document.getElementById('s-years').textContent = y;
+        document.getElementById('s-months').textContent = m;
+        document.getElementById('s-days').textContent = d;
+        document.getElementById('s-next').textContent = daysToNext + ' days';
+        document.getElementById('d-months').textContent = fmt(y * 12 + m);
+        document.getElementById('d-weeks').textContent = fmt(totalWeeks);
+        document.getElementById('d-days').textContent = fmt(totalDays);
+        document.getElementById('d-hours').textContent = fmt(totalHours);
+        document.getElementById('d-minutes').textContent = fmt(totalMinutes);
+        document.getElementById('d-day').textContent = days[birth.getDay()];
+        document.getElementById('d-zodiac').textContent = getZodiac(birth.getMonth() + 1, birth.getDate());
+        document.getElementById('d-chinese').textContent = 'Year of the ' + chinese[birth.getFullYear() % 12];
+
+        document.getElementById('result').style.display = '';
+        document.getElementById('details').style.display = '';
+      });
+    })();
+  </script>
+
+  <!-- Harmonic Pendulums Canvas Logic -->
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let pendulums = [];
+    let time = 0;
+
+    let targetX = 0;
+    let mx = 0;
+
+    window.addEventListener('mousemove', e => {
+      targetX = (e.clientX - window.innerWidth / 2) * 0.1;
+    });
+
+    function initCanvas() {
+      // Anchored strictly to the DOM document height to prevent zoom voids
+      width = canvas.width = document.documentElement.clientWidth;
+      height = canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
+
+      pendulums = [];
+      const count = width < 768 ? 12 : 24;
+      const spacing = width < 768 ? 40 : 50;
+
+      let startX = (width - ((count - 1) * spacing)) / 2;
+
+      for (let i = 0; i < count; i++) {
+        let oscillations = 20 - i * 0.5;
+        pendulums.push({
+          ix: startX + i * spacing,
+          // Make sure pendulums hang from the top and reach down beautifully
+          length: window.innerHeight * 0.3 + (i * 15),
+          frequency: oscillations / 60,
+          phase: 0
+        });
+      }
+    }
+
+    let lastWidth = document.documentElement.clientWidth;
+    const resizeObserver = new ResizeObserver(() => {
+      const newWidth = document.documentElement.clientWidth;
+      // Re-init if screen resizes drastically, or if height expands due to panel showing
+      if (Math.abs(newWidth - lastWidth) > 10 || canvas.height !== Math.max(document.body.scrollHeight, window.innerHeight)) {
+        lastWidth = newWidth;
+        initCanvas();
+      }
+    });
+    resizeObserver.observe(document.body);
+
+    initCanvas();
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Pull perfectly adapted theme colors from the CSS
+      let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      let themeColor = getComputedStyle(document.body).getPropertyValue('--text-tertiary').trim() || '#8b909e';
+
+      mx += (targetX - mx) * 0.05;
+      time += 0.015;
+
+      // Draw Top Anchor Bar
+      ctx.beginPath();
+      ctx.strokeStyle = themeColor;
+      ctx.globalAlpha = 0.15;
+      ctx.lineWidth = 2;
+      // Hang from the absolute top of the document
+      ctx.moveTo(0, 0);
+      ctx.lineTo(width, 0);
+      ctx.stroke();
+
+      pendulums.forEach((p, idx) => {
+        let angle = Math.sin(time * p.frequency * Math.PI) * (Math.PI / 4);
+
+        let ox = p.ix + mx * (idx * 0.2);
+        let oy = 0; // Anchor to the top
+
+        let bx = ox + Math.sin(angle) * p.length;
+        let by = oy + Math.cos(angle) * p.length;
+
+        // Draw String
+        ctx.beginPath();
+        ctx.strokeStyle = themeColor;
+        ctx.globalAlpha = 0.15;
+        ctx.lineWidth = 1;
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(bx, by);
+        ctx.stroke();
+
+        // Draw Bob
+        ctx.beginPath();
+        ctx.fillStyle = themeColor;
+        ctx.globalAlpha = isDark ? 0.3 : 0.15;
+        ctx.arc(bx, by, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Soft Glow
+        ctx.beginPath();
+        ctx.globalAlpha = isDark ? 0.1 : 0.05;
+        ctx.arc(bx, by, 12, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Reset Alpha
+      ctx.globalAlpha = 1.0;
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Case Converter — UPPER, lower, Title, camelCase & More | PrimeArtifact</title>
+  <meta name="description"
+    content="Convert text to UPPERCASE, lowercase, Title Case, Sentence case, camelCase, snake_case, kebab-case instantly. Free online text case changer, no login.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script>
+  <style>
+    /* 1. Safe Sticky Footer */
+    body {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    main.page {
+      flex: 1;
+    }
+
+    /* 2. Layering: 3D in back, UI in front */
+    .page,
+    .footer {
+      position: relative;
+      z-index: 10;
+    }
+
+    #bg-container {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      perspective: 1200px;
+      perspective-origin: 50% 80%;
+      transform-style: preserve-3d;
+    }
+
+    /* 3. Card Elements */
+    .letter-card {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .letter-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--text-tertiary);
+      background: var(--glass-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .letter-face--back {
+      transform: rotateY(180deg);
+    }
+
+    .static-card .letter-face {
+      opacity: 0.8;
+    }
+
+    /* 4. Stage */
+    .pyramid-stage {
+      height: 250px;
+      margin-top: var(--space-xl);
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Page specific styles */
+    .case-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .case-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      color: var(--text-secondary);
+      font-family: var(--font-family);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .case-btn:hover,
+    .case-btn--active {
+      background: var(--accent);
+      color: var(--text-inverse);
+      border-color: var(--accent);
+    }
+
+    .output-area {
+      width: 100%;
+      min-height: 120px;
+      padding: var(--space-md);
+      background: var(--accent-soft);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.netlify.app/tools/text/case-converter.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.netlify.app/tools/text/case-converter.html">
+  <meta property="og:title" content="Text Case Converter — UPPER, lower, Title, camelCase & More | PrimeArtifact">
+  <meta property="og:description"
+    content="Convert text to UPPERCASE, lowercase, Title Case, Sentence case, camelCase, snake_case, kebab-case instantly. Free online text case changer, no login.">
+  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Text Case Converter — UPPER, lower, Title, camelCase & More | PrimeArtifact">
+  <meta name="twitter:description"
+    content="Convert text to UPPERCASE, lowercase, Title Case, Sentence case, camelCase, snake_case, kebab-case instantly. Free online text case changer, no login.">
+  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="alternate icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png.svg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Text Case Converter",
+  "url": "https://primeartifact.netlify.app/tools/text/case-converter.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Convert text between UPPERCASE, lowercase, Title Case, camelCase, snake_case and more."
+}
+  </script>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+
+<body>
+
+  <div id="bg-container"></div>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb"><a href="../../index.html">Home</a><span
+            class="page-header__breadcrumb-sep">›</span><a href="#">Text Tools</a><span
+            class="page-header__breadcrumb-sep">›</span><span>Case Converter</span></div>
+        <h1 class="page-header__title">Text Case Converter</h1>
+        <p class="page-header__subtitle">Instantly convert your text between different cases.</p>
+      </header>
+
+      <div class="glass glass--static input-panel animate-in">
+        <div class="input-panel__header">
+          <span class="input-panel__title">Input Text</span>
+          <div class="input-panel__actions">
+            <button class="btn btn--small" id="btn-input-paste">⎘ Paste</button>
+            <button class="btn btn--small" id="btn-input-copy">⧉ Copy</button>
+            <button class="btn btn--small" id="btn-input-clear">✕ Clear</button>
+          </div>
+        </div>
+        <textarea class="textarea" id="text-input" placeholder="Paste or type your text here…" rows="6"></textarea>
+      </div>
+
+      <div class="glass glass--static input-panel animate-in">
+        <div class="input-panel__header"><span class="input-panel__title">Choose Conversion</span></div>
+        <div class="case-buttons">
+          <button class="case-btn" data-case="upper">UPPERCASE</button>
+          <button class="case-btn" data-case="lower">lowercase</button>
+          <button class="case-btn" data-case="title">Title Case</button>
+          <button class="case-btn" data-case="sentence">Sentence case</button>
+          <button class="case-btn" data-case="camel">camelCase</button>
+          <button class="case-btn" data-case="pascal">PascalCase</button>
+          <button class="case-btn" data-case="snake">snake_case</button>
+          <button class="case-btn" data-case="kebab">kebab-case</button>
+          <button class="case-btn" data-case="toggle">tOGGLE cASE</button>
+          <button class="case-btn" data-case="alternating">aLtErNaTiNg</button>
+        </div>
+        <div
+          style="font-size: 0.8rem; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; margin: var(--space-md) 0 var(--space-sm);">
+          Result</div>
+        <div class="output-area" id="output"></div>
+        <div style="margin-top:var(--space-md);display:flex;gap:var(--space-sm);">
+          <button class="btn btn--accent" id="btn-copy">⧉ Copy Result</button>
+          <button class="btn" id="btn-clear">✕ Clear</button>
+        </div>
+      </div>
+
+      <div class="pyramid-stage">
+        <!-- ↓ The Ruins ↓ -->
+      </div>
+    </div>
+  </main>
+
+  <footer id="main-footer" class="footer glass glass--static"
+    style="border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
+    <div class="container">
+      <p>© 2026 <a href="../../index.html">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var input = document.getElementById('text-input');
+      var output = document.getElementById('output');
+      var activeBtn = null;
+      var activeCase = null;
+
+      function convert(text, type) {
+        switch (type) {
+          case 'upper': return text.toUpperCase();
+          case 'lower': return text.toLowerCase();
+          case 'title': return text.replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+          case 'sentence': return text.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, function (c) { return c.toUpperCase(); });
+          case 'camel': return text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function (m, c) { return c.toUpperCase(); });
+          case 'pascal': var r = text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function (m, c) { return c.toUpperCase(); }); return r.charAt(0).toUpperCase() + r.slice(1);
+          case 'snake': return text.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_|_$/g, '');
+          case 'kebab': return text.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '');
+          case 'toggle': return text.split('').map(function (c) { return c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase(); }).join('');
+          case 'alternating': return text.split('').map(function (c, i) { return i % 2 === 0 ? c.toLowerCase() : c.toUpperCase(); }).join('');
+          default: return text;
+        }
+      }
+
+      function update() { if (activeCase) output.textContent = convert(input.value, activeCase); }
+
+      document.querySelectorAll('.case-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!input.value.trim()) { paToast('Please enter some text to convert.', { icon: '✏️' }); return; }
+          if (activeBtn) activeBtn.classList.remove('case-btn--active');
+          btn.classList.add('case-btn--active');
+          activeBtn = btn;
+          activeCase = btn.dataset.case;
+          update();
+        });
+      });
+
+      // Programs modifying .value destroy the browser's undo stack. This preserves it.
+      function updateWithUndo(el, text) {
+        el.focus();
+        el.select();
+        if (text === '') { document.execCommand('delete'); }
+        else { if (!document.execCommand('insertText', false, text)) { el.value = text; } }
+      }
+
+      input.addEventListener('input', update);
+      document.getElementById('btn-copy').addEventListener('click', function () {
+        if (output.textContent) { navigator.clipboard.writeText(output.textContent); this.textContent = '✓ Copied'; var b = this; setTimeout(function () { b.textContent = '⧉ Copy Result'; }, 1500); }
+      });
+      document.getElementById('btn-clear').addEventListener('click', function () { updateWithUndo(input, ''); output.textContent = ''; });
+
+      // Input Utility Buttons
+      document.getElementById('btn-input-paste').addEventListener('click', async () => {
+        try { const text = await navigator.clipboard.readText(); updateWithUndo(input, text); update(); } catch (e) { }
+      });
+      document.getElementById('btn-input-copy').addEventListener('click', function () {
+        navigator.clipboard.writeText(input.value);
+        var original = this.textContent; this.textContent = '✓ Copied';
+        setTimeout(() => this.textContent = original, 1200);
+      });
+      document.getElementById('btn-input-clear').addEventListener('click', () => { updateWithUndo(input, ''); output.textContent = ''; });
+    })();
+
+    // 3D Card Engine Script
+    const container = document.getElementById('bg-container');
+    const footerEl = document.getElementById('main-footer');
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const cardSize = 30;
+    let cols; let pilePxHeights = []; let fallingLeaves = []; let staticCardsData = []; let floorY = 0;
+
+    function createCardElement(char, isStatic = false) {
+      const card = document.createElement('div'); card.className = `letter-card ${isStatic ? 'static-card' : ''}`;
+      const front = document.createElement('div'); front.className = 'letter-face'; front.textContent = char;
+      const back = document.createElement('div'); back.className = 'letter-face letter-face--back'; back.textContent = char;
+      card.appendChild(front); card.appendChild(back); return card;
+    }
+
+    function init3DEngine() {
+      container.innerHTML = ''; staticCardsData = [];
+      const width = document.documentElement.clientWidth;
+      cols = Math.floor(width / cardSize);
+      floorY = footerEl.offsetTop - 10;
+      let centerCol = Math.floor(cols / 2); let maxPilePx = 150; pilePxHeights = new Array(cols).fill(0);
+
+      for (let c = 0; c < cols; c++) {
+        let dist = Math.abs(c - centerCol); let heightForCol = maxPilePx - (dist * 12);
+        if (heightForCol < 20 && Math.random() > 0.4) heightForCol = 0;
+        if (heightForCol < 0) heightForCol = 0;
+        pilePxHeights[c] = heightForCol;
+        let numCardsInPile = Math.floor(heightForCol / 5);
+
+        for (let i = 0; i < numCardsInPile; i++) {
+          let char = letters[Math.floor(Math.random() * letters.length)];
+          let card = createCardElement(char, true);
+          let x = (c * cardSize) + (Math.random() - 0.5) * 40; let yOffset = (i * 5) - (Math.random() - 0.5) * 10; let z = (Math.random() - 0.5) * 80;
+          let rx = (60 + Math.random() * 25) * (Math.random() > 0.5 ? 1 : -1); let ry = Math.random() * 360; let rz = Math.random() * 360;
+          staticCardsData.push({ el: card, x, yOffset, z, rx, ry, rz });
+          card.style.transform = `translate3d(${x}px, ${floorY - yOffset}px, ${z}px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+          container.appendChild(card);
+        }
+      }
+      fallingLeaves = []; for (let i = 0; i < 15; i++) fallingLeaves.push(new FallingCard(true));
+    }
+
+    class FallingCard {
+      constructor(initialLoad = false) { this.el = createCardElement('A', false); container.appendChild(this.el); this.reset(initialLoad); }
+      reset(initialLoad = false) {
+        this.baseX = Math.random() * document.documentElement.clientWidth;
+        let spawnY = -100;
+        this.y = initialLoad ? (Math.random() * window.innerHeight) : spawnY;
+        this.x = this.baseX;
+        let newChar = letters[Math.floor(Math.random() * letters.length)];
+        this.el.children[0].textContent = newChar; this.el.children[1].textContent = newChar;
+        this.speedY = Math.random() * 0.8 + 0.4;
+        this.swingAngle = Math.random() * Math.PI * 2; this.swingSpeed = Math.random() * 0.02 + 0.01; this.swingRadius = Math.random() * 40 + 20;
+        this.rotX = Math.random() * 360; this.rotY = Math.random() * 360; this.rotZ = Math.random() * 360;
+        this.spinX = (Math.random() - 0.5) * 3; this.spinY = (Math.random() - 0.5) * 3; this.spinZ = (Math.random() - 0.5) * 1;
+      }
+      update() {
+        this.y += this.speedY; this.swingAngle += this.swingSpeed; this.x = this.baseX + Math.sin(this.swingAngle) * this.swingRadius;
+        this.rotX += this.spinX; this.rotY += this.spinY; this.rotZ += this.spinZ;
+        let currentCol = Math.floor(this.baseX / cardSize);
+        if (currentCol < 0) currentCol = 0; if (currentCol >= cols) currentCol = cols - 1;
+        let targetY = floorY - pilePxHeights[currentCol];
+        this.el.style.transform = `translate3d(${this.x}px, ${this.y}px, 0) rotateX(${this.rotX}deg) rotateY(${this.rotY}deg) rotateZ(${this.rotZ}deg)`;
+        if (this.y > targetY) this.reset(false);
+      }
+    }
+
+    let lastWidth = document.documentElement.clientWidth;
+    const resizeObserver = new ResizeObserver(() => {
+      const newWidth = document.documentElement.clientWidth;
+      if (Math.abs(newWidth - lastWidth) > 20) {
+        lastWidth = newWidth; clearTimeout(window.resizeTimer); window.resizeTimer = setTimeout(init3DEngine, 300);
+      }
+    });
+    resizeObserver.observe(document.body);
+
+    function animateEngine() {
+      let currentFloorY = footerEl.getBoundingClientRect().top - 10;
+      if (Math.abs(currentFloorY - floorY) > 0.5) {
+        floorY = currentFloorY;
+        staticCardsData.forEach(c => { c.el.style.transform = `translate3d(${c.x}px, ${floorY - c.yOffset}px, ${c.z}px) rotateX(${c.rx}deg) rotateY(${c.ry}deg) rotateZ(${c.rz}deg)`; });
+      }
+      fallingLeaves.forEach(leaf => leaf.update()); requestAnimationFrame(animateEngine);
+    }
+    setTimeout(() => { init3DEngine(); animateEngine(); }, 50);
+  </script>
+</body>
+
+</html>

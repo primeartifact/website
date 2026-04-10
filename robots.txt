@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /effect-*.html
+Disallow: /.git/
+Disallow: /.dist/
+
+Sitemap: https://primeartifact.netlify.app/sitemap.xml

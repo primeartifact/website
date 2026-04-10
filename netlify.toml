@@ -1,0 +1,90 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  PrimeArtifact — Netlify Configuration                         ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+[build]
+  publish = "."          # Root is the published folder (no build step needed)
+  # command = ""         # No build command — pure static site
+
+# ── Security & Performance Headers ────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+    Permissions-Policy     = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# Cache HTML for 10 minutes (fresh but not stale)
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=600, stale-while-revalidate=3600"
+
+# Cache CSS / JS for 1 year (they're fingerprinted via filename when you add a build step later)
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache assets (fonts, images, icons) for 1 year
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache favicon forever
+[[headers]]
+  for = "/favicon.*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ── Redirects ──────────────────────────────────────────────────
+[[redirects]]
+  from   = "/index"
+  to     = "/"
+  status = 301
+
+# Redirect effect pages (you said you'll remove them)
+[[redirects]]
+  from   = "/effect-*.html"
+  to     = "/"
+  status = 301
+
+# Pretty URL support: /tools/word-counter → actual file
+[[redirects]]
+  from   = "/tools/word-counter"
+  to     = "/tools/text/word-counter.html"
+  status = 301
+
+[[redirects]]
+  from   = "/tools/password"
+  to     = "/tools/generators/password.html"
+  status = 301
+
+[[redirects]]
+  from   = "/tools/qr-code"
+  to     = "/tools/generators/qr-code.html"
+  status = 301
+
+[[redirects]]
+  from   = "/tools/color-picker"
+  to     = "/tools/converters/color-picker.html"
+  status = 301
+
+[[redirects]]
+  from   = "/tools/age-calculator"
+  to     = "/tools/utility/age-calculator.html"
+  status = 301
+
+# ── 404: redirect all unknown URLs to home ────────────────────
+[[redirects]]
+  from   = "/*"
+  to     = "/404.html"
+  status = 404

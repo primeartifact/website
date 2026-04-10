@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Contact PrimeArtifact — Report a Bug, Suggest a Tool, or Say Hello</title>
+  <meta name="description"
+    content="Contact the PrimeArtifact team. Share tool suggestions, report bugs, or send feedback. We respond within 24–48 hours. No account needed.">
+
+  <!-- Open Graph -->
+
+  <!-- Twitter Card -->
+
+  <!-- Favicon -->
+
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/theme.js"></script>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    .form-group {
+      margin-bottom: var(--space-md);
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .form-textarea {
+      min-height: 150px;
+      resize: vertical;
+      width: 100%;
+    }
+
+    /* ── Validation styles ── */
+    .form-group .field-error {
+      display: none;
+      font-size: 0.78rem;
+      color: var(--error);
+      margin-top: 4px;
+    }
+
+    .form-group.has-error .ctrl-input,
+    .form-group.has-error .ctrl-select {
+      border-color: var(--error) !important;
+      box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.15);
+    }
+
+    .form-group.has-error .field-error {
+      display: block;
+    }
+
+    @keyframes field-shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+    }
+
+    .form-group.has-error .ctrl-input,
+    .form-group.has-error .ctrl-select {
+      animation: field-shake 0.4s ease;
+    }
+
+    .contact-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-xl);
+    }
+
+    .info-card {
+      padding: var(--space-lg);
+      text-align: center;
+    }
+
+    .info-card__icon {
+      font-size: 1.5rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .info-card__title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .info-card__text {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .info-card__text a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .success-msg {
+      display: none;
+      padding: var(--space-xl);
+      text-align: center;
+      color: var(--text-primary);
+    }
+
+    .success-msg h3 {
+      font-size: 1.2rem;
+      margin-bottom: var(--space-sm);
+      color: var(--success);
+    }
+
+    .success-msg p {
+      color: var(--text-secondary);
+    }
+
+    .error-msg {
+      display: none;
+      font-size: 0.83rem;
+      color: var(--error);
+      margin-top: var(--space-sm);
+      text-align: center;
+    }
+
+    #btn-submit[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
+
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.netlify.app/pages/contact.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.netlify.app/pages/contact.html">
+  <meta property="og:title" content="Contact PrimeArtifact — Report a Bug, Suggest a Tool, or Say Hello">
+  <meta property="og:description"
+    content="Contact the PrimeArtifact team. Share tool suggestions, report bugs, or send feedback. We respond within 24–48 hours. No account needed.">
+  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contact PrimeArtifact — Report a Bug, Suggest a Tool, or Say Hello">
+  <meta name="twitter:description"
+    content="Contact the PrimeArtifact team. Share tool suggestions, report bugs, or send feedback. We respond within 24–48 hours. No account needed.">
+  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="alternate icon" href="../favicon.ico">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png.svg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact PrimeArtifact",
+  "url": "https://primeartifact.netlify.app/pages/contact.html"
+}
+  </script>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+
+<body>
+  <nav class="navbar"></nav>
+  <script src="../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container" style="max-width:700px;">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../index.html">Home</a>
+          <span class="page-header__breadcrumb-sep">›</span>
+          <span>Contact</span>
+        </div>
+        <h1 class="page-header__title">Contact Us</h1>
+        <p class="page-header__subtitle">Got a question, suggestion, or found a bug? We'd love to hear from you.</p>
+      </header>
+
+      <div class="glass glass--static input-panel animate-in">
+        <form id="contact-form" novalidate>
+          <!-- Honeypot: bots fill this, humans don't -->
+          <input type="text" name="_honey" style="display:none;" tabindex="-1" autocomplete="off">
+
+          <div class="form-group" id="fg-name">
+            <label for="name">Your Name</label>
+            <input class="ctrl-input" style="width:100%;" type="text" id="name" name="name" placeholder="John Doe"
+              required autocomplete="name">
+            <span class="field-error" id="err-name">Please enter your name.</span>
+          </div>
+
+          <div class="form-group" id="fg-email">
+            <label for="email">Email Address</label>
+            <input class="ctrl-input" style="width:100%;" type="email" id="email" name="email"
+              placeholder="john@example.com" required autocomplete="email">
+            <span class="field-error" id="err-email">Please enter a valid email address.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <select class="ctrl-input ctrl-select" style="width:100%;" id="subject" name="subject">
+              <option value="General">General Question</option>
+              <option value="Suggestion">Tool Suggestion</option>
+              <option value="Bug Report">Bug Report</option>
+              <option value="Feedback">Feedback</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="fg-message">
+            <label for="message">Message</label>
+            <textarea class="ctrl-input form-textarea" id="message" name="message"
+              placeholder="Tell us what's on your mind…" required></textarea>
+            <span class="field-error" id="err-message">Please enter a message.</span>
+          </div>
+
+          <button class="btn btn--accent" type="submit" id="btn-submit"
+            style="width:100%;padding:14px;font-size:1rem;margin-top:var(--space-sm);justify-content:center;">
+            Send Message
+          </button>
+          <p class="error-msg" id="form-error">Something went wrong. Please try again or email us directly at
+            primeartifact.contact@gmail.com</p>
+        </form>
+
+        <div class="success-msg" id="success">
+          <h3>✓ Message Sent!</h3>
+          <p>Thanks for reaching out. We'll get back to you within 24–48 hours.</p>
+        </div>
+      </div>
+
+      <div class="contact-info animate-in">
+        <div class="glass info-card">
+          <div class="info-card__icon">📧</div>
+          <div class="info-card__title">Email</div>
+          <div class="info-card__text"><a
+              href="mailto:primeartifact.contact@gmail.com">primeartifact.contact@gmail.com</a></div>
+        </div>
+        <div class="glass info-card">
+          <div class="info-card__icon">⏱</div>
+          <div class="info-card__title">Response Time</div>
+          <div class="info-card__text">Usually within 24–48 hours</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">
+        <p>© 2026 <a href="../index.html">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.</p>
+        <div style="display:flex;gap:var(--space-md);font-size:0.82rem;">
+          <a href="about.html" style="color:var(--text-tertiary);text-decoration:none;">About</a>
+          <a href="privacy.html" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // ─── REPLACE THESE THREE VALUES AFTER EMAILJS SETUP ───────────────────────
+      var EMAILJS_PUBLIC_KEY = '-tKXNB0POD9IB5kWP';
+      var EMAILJS_SERVICE_ID = 'service_0tbn8jn';
+      var EMAILJS_TEMPLATE_ID = 'template_0svzctj';
+      // ──────────────────────────────────────────────────────────────────────────
+
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+      var form = document.getElementById('contact-form');
+      var btn = document.getElementById('btn-submit');
+      var errMsg = document.getElementById('form-error');
+      var success = document.getElementById('success');
+
+      // ─── Validation helpers ────────────────────────────────────────────────
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      function setFieldError(groupId, show) {
+        var group = document.getElementById(groupId);
+        if (!group) return;
+        if (show) {
+          group.classList.add('has-error');
+          // Re-trigger shake animation
+          var input = group.querySelector('.ctrl-input, .ctrl-select');
+          if (input) { input.style.animation = 'none'; input.offsetHeight; input.style.animation = ''; }
+        } else {
+          group.classList.remove('has-error');
+        }
+      }
+
+      // Clear error on input
+      ['name', 'email', 'message'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', function () { setFieldError('fg-' + id, false); });
+        }
+      });
+
+      // ─── Submit handler ──────────────────────────────────────────────────────
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Honeypot check — bots fill the hidden field
+        if (form.elements['_honey'].value) return;
+
+        // Validate fields
+        var nameVal = form.elements['name'].value.trim();
+        var emailVal = form.elements['email'].value.trim();
+        var messageVal = form.elements['message'].value.trim();
+        var valid = true;
+
+        if (!nameVal) { setFieldError('fg-name', true); valid = false; }
+        else { setFieldError('fg-name', false); }
+
+        if (!emailVal || !emailRegex.test(emailVal)) { setFieldError('fg-email', true); valid = false; }
+        else { setFieldError('fg-email', false); }
+
+        if (!messageVal) { setFieldError('fg-message', true); valid = false; }
+        else { setFieldError('fg-message', false); }
+
+        if (!valid) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        errMsg.style.display = 'none';
+
+        emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, form)
+          .then(function () {
+            form.style.display = 'none';
+            success.style.display = 'block';
+          })
+          .catch(function () {
+            btn.disabled = false;
+            btn.textContent = 'Send Message';
+            errMsg.style.display = 'block';
+          });
+      });
+    })();
+  </script>
+</body>
+
+</html>

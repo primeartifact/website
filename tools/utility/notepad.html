@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Online Notepad — Auto-Saves, Private, No Login | PrimeArtifact</title>
+  <meta name="description"
+    content="A quick online notepad that auto-saves everything in your browser's local storage. No account, no cloud, no tracking. Your notes never leave your device.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script> <!-- Draggable/3D Hover script -->
+  <style>
+    body {
+      position: relative;
+    }
+
+    .notepad-textarea {
+      width: 100%;
+      min-height: 60vh;
+      padding: var(--space-lg);
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      font-size: 1rem;
+      line-height: 1.8;
+      resize: none;
+      outline: none;
+    }
+
+    .notepad-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--space-md);
+      border-top: 1px solid var(--divider);
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+  </style>
+
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.netlify.app/tools/utility/notepad.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.netlify.app/tools/utility/notepad.html">
+  <meta property="og:title" content="Free Online Notepad — Auto-Saves, Private, No Login | PrimeArtifact">
+  <meta property="og:description"
+    content="A quick online notepad that auto-saves everything in your browser's local storage. No account, no cloud, no tracking. Your notes never leave your device.">
+  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free Online Notepad — Auto-Saves, Private, No Login | PrimeArtifact">
+  <meta name="twitter:description"
+    content="A quick online notepad that auto-saves everything in your browser's local storage. No account, no cloud, no tracking. Your notes never leave your device.">
+  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="alternate icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png.svg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Online Notepad",
+  "url": "https://primeartifact.netlify.app/tools/utility/notepad.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Auto-saving online notepad. Everything stays on your device \u2014 no cloud, no account."
+}
+  </script>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+
+<body>
+
+  <!-- Elastic Bullet Journal Grid Canvas -->
+  <canvas id="bg-canvas"
+    style="position: absolute; top: 0; left: 0; width: 100vw; height: 100%; z-index: -1; pointer-events: none;"></canvas>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">›</span>
+          <a href="#">Utility</a><span class="page-header__breadcrumb-sep">›</span>
+          <span>Notepad</span>
+        </div>
+        <h1 class="page-header__title">Online Notepad</h1>
+        <p class="page-header__subtitle">A quick scratchpad that auto-saves to your browser. Private, no cloud.</p>
+      </header>
+
+      <!-- Main Notepad Panel (Made Draggable) -->
+      <div class="glass glass--static input-panel animate-in" style="padding: 0; overflow:hidden;">
+
+        <!-- Header / Drag Handle -->
+        <div class="input-panel__header"
+          style="padding: var(--space-md); margin-bottom: 0; border-bottom: 1px solid var(--divider);">
+          <span class="input-panel__title">Scratchpad</span>
+          <div class="input-panel__actions">
+            <button class="btn btn--small" id="btn-download">↓ Download .txt</button>
+            <button class="btn btn--small" id="btn-copy">⧉ Copy All</button>
+            <button class="btn btn--small" id="btn-clear">✕ Clear</button>
+          </div>
+        </div>
+
+        <textarea class="notepad-textarea" id="notepad" placeholder="Start typing your notes…"
+          spellcheck="true"></textarea>
+
+        <div class="notepad-footer">
+          <span id="save-status">Auto-saved</span>
+          <span id="word-count">0 words · 0 characters</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer glass glass--static"
+    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
+    <div class="container">
+      <p>© 2026 <a href="../../index.html">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Notepad Logic -->
+  <script>
+    (function () {
+      var np = document.getElementById('notepad');
+      var status = document.getElementById('save-status');
+      var wc = document.getElementById('word-count');
+      var KEY = 'primeartifact-notepad';
+      var saveTimer;
+
+      np.value = localStorage.getItem(KEY) || '';
+      updateCount();
+
+      np.addEventListener('input', function () {
+        updateCount();
+        status.textContent = 'Saving…';
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(function () {
+          localStorage.setItem(KEY, np.value);
+          status.textContent = 'Auto-saved';
+        }, 500);
+      });
+
+      function updateCount() {
+        var t = np.value;
+        var words = t.trim() ? t.trim().split(/\s+/).length : 0;
+        wc.textContent = words + ' words · ' + t.length + ' characters';
+      }
+
+      document.getElementById('btn-copy').addEventListener('click', function () {
+        navigator.clipboard.writeText(np.value);
+        this.textContent = '✓ Copied'; var b = this; setTimeout(function () { b.textContent = '⧉ Copy All'; }, 1500);
+      });
+
+      document.getElementById('btn-clear').addEventListener('click', function () {
+        if (confirm('Clear all notes?')) { np.value = ''; localStorage.setItem(KEY, ''); updateCount(); }
+      });
+
+      document.getElementById('btn-download').addEventListener('click', function () {
+        var blob = new Blob([np.value], { type: 'text/plain' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'primeartifact-notes.txt';
+        a.click();
+      });
+    })();
+  </script>
+
+  <!-- Interactive Elastic Bullet Journal Grid Logic -->
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let dots = [];
+    let mouseX = -1000, mouseY = -1000;
+    const spacing = 40; // The spacing of the bullet journal grid
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.pageX;
+      mouseY = e.pageY;
+    });
+
+    function initCanvas() {
+      canvas.width = document.body.scrollWidth;
+      canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
+
+      dots = [];
+      const cols = Math.floor(canvas.width / spacing) + 1;
+      const rows = Math.floor(canvas.height / spacing) + 1;
+
+      for (let x = 0; x < cols; x++) {
+        for (let y = 0; y < rows; y++) {
+          dots.push(new ElasticDot(x * spacing, y * spacing));
+        }
+      }
+    }
+
+    class ElasticDot {
+      constructor(ox, oy) {
+        // Original anchored position
+        this.ox = ox;
+        this.oy = oy;
+        // Current animated position
+        this.x = ox;
+        this.y = oy;
+      }
+
+      updateAndDraw() {
+        let dx = mouseX - this.ox;
+        let dy = mouseY - this.oy;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        let targetX = this.ox;
+        let targetY = this.oy;
+        let isHovered = false;
+
+        // Interaction: Repel away from mouse
+        if (dist < 120 && dist > 0) {
+          isHovered = true;
+          let force = (120 - dist) / 120; // 0 to 1
+
+          // Push away outwards from mouse
+          let pushOut = force * 25;
+          targetX = this.ox - (dx / dist) * pushOut;
+          targetY = this.oy - (dy / dist) * pushOut;
+        }
+
+        // Spring physics (Elastic snap back to target)
+        this.x += (targetX - this.x) * 0.15;
+        this.y += (targetY - this.y) * 0.15;
+
+        // Fetch colors dynamically
+        let themeColor = getComputedStyle(document.body).getPropertyValue('--text-tertiary').trim() || '#8b909e';
+        let accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#4a6fa5';
+
+        ctx.beginPath();
+        if (isHovered) {
+          ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = accentColor;
+          ctx.globalAlpha = 0.4;
+        } else {
+          ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = themeColor;
+          ctx.globalAlpha = 0.15; // Soft bullet journal grid
+        }
+        ctx.fill();
+      }
+    }
+
+    window.addEventListener('resize', initCanvas);
+    const resizeObserver = new ResizeObserver(() => {
+      canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
+    });
+    resizeObserver.observe(document.body);
+
+    initCanvas();
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      dots.forEach(dot => dot.updateAndDraw());
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+
+</html>

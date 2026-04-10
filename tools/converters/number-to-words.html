@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number to Words Converter — Indian & International Systems | PrimeArtifact</title>
+  <meta name="description"
+    content="Convert any number to words in Indian numbering (Lakhs, Crores) and International systems. Ideal for writing cheques, invoices, and legal documents. Free, no login.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script> <!-- Draggable/3D Hover script -->
+  <style>
+    /* Absolute background for scrollable pages */
+    body {
+      position: relative;
+    }
+  </style>
+
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.netlify.app/tools/converters/number-to-words.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.netlify.app/tools/converters/number-to-words.html">
+  <meta property="og:title" content="Number to Words Converter — Indian & International Systems | PrimeArtifact">
+  <meta property="og:description"
+    content="Convert any number to words in Indian numbering (Lakhs, Crores) and International systems. Ideal for writing cheques, invoices, and legal documents. Free, no login.">
+  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Number to Words Converter — Indian & International Systems | PrimeArtifact">
+  <meta name="twitter:description"
+    content="Convert any number to words in Indian numbering (Lakhs, Crores) and International systems. Ideal for writing cheques, invoices, and legal documents. Free, no login.">
+  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="alternate icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png.svg">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Number to Words Converter",
+  "url": "https://primeartifact.netlify.app/tools/converters/number-to-words.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Convert numbers to words in Indian (Lakhs, Crores) and International systems."
+}
+  </script>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+</head>
+
+<body>
+
+  <!-- Flowing Translation Streams Background Canvas -->
+  <canvas id="bg-canvas"
+    style="position: absolute; top: 0; left: 0; width: 100vw; height: 100%; z-index: -1; pointer-events: none;"></canvas>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container" style="max-width:750px;">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">›</span>
+          <a href="#">Converters</a><span class="page-header__breadcrumb-sep">›</span>
+          <span>Number to Words</span>
+        </div>
+        <h1 class="page-header__title">Number to Words Converter</h1>
+        <p class="page-header__subtitle">Convert numbers to words (Indian numbering — Lakhs &amp; Crores).</p>
+      </header>
+
+      <div class="glass glass--static input-panel animate-in">
+        <div class="input-panel__header"><span class="input-panel__title">Converter</span></div>
+
+        <label
+          style="font-size:0.82rem;color:var(--text-secondary);display:block;margin-bottom:var(--space-sm);font-weight:500;">Enter
+          a Number</label>
+        <input type="text" id="num-input" placeholder="e.g. 4523000"
+          style="width:100%;padding:12px 16px;border:1px solid var(--border-light);border-radius:var(--radius-md);background:transparent;color:var(--text-primary);font-family:var(--font-mono);font-size:1.2rem;outline:none;"
+          inputmode="decimal">
+
+        <div
+          style="margin-top:var(--space-md);padding:var(--space-md);background:var(--accent-soft);border-radius:var(--radius-md);min-height:60px;">
+          <div
+            style="font-size:0.7rem;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;font-weight:600;">
+            In Words (Indian System)</div>
+          <div id="result-indian" style="font-size:1.1rem;color:var(--text-primary);font-weight:500;">Type a number
+            above</div>
+        </div>
+
+        <div
+          style="margin-top:var(--space-sm);padding:var(--space-md);background:var(--accent-soft);border-radius:var(--radius-md);">
+          <div
+            style="font-size:0.7rem;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;font-weight:600;">
+            In Words (International)</div>
+          <div id="result-intl" style="font-size:1.1rem;color:var(--text-primary);font-weight:500;">Type a number above
+          </div>
+        </div>
+
+        <div
+          style="margin-top:var(--space-sm);padding:var(--space-md);background:var(--accent-soft);border-radius:var(--radius-md);">
+          <div
+            style="font-size:0.7rem;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;font-weight:600;">
+            Formatted</div>
+          <div id="result-fmt"
+            style="font-size:1.1rem;color:var(--text-primary);font-weight:500;font-family:var(--font-mono);">—</div>
+        </div>
+
+        <div style="margin-top:var(--space-md);display:flex;gap:var(--space-sm);">
+          <button class="btn" id="btn-copy">⧉ Copy Indian</button>
+          <button class="btn" id="btn-copy-intl">⧉ Copy International</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer glass glass--static"
+    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
+    <div class="container">
+      <p>© 2026 <a href="../../index.html">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Interactive Translation Streams Background Logic -->
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let ribbons = [];
+    let mouseX = -1000, mouseY = -1000;
+
+    // The data streams that will flow across the screen
+    const streamTexts = [
+      " 0 1 2 3 4 5 6 7 8 9 ",
+      " ONE TWO THREE FOUR FIVE SIX SEVEN EIGHT NINE TEN ",
+      " HUNDRED THOUSAND LAKH CRORE ",
+      " MILLION BILLION TRILLION ",
+      " ₹ $ € £ ¥ ₹ $ € £ ¥ ",
+      " 10 100 1,000 10,000 100,000 1,000,000 "
+    ];
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.pageX;
+      mouseY = e.pageY;
+    });
+
+    function initCanvas() {
+      canvas.width = document.body.scrollWidth;
+      canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
+
+      ribbons = [];
+
+      // Determine how many ribbons fit based on screen height
+      const numRibbons = Math.floor(canvas.height / 120);
+      const spacing = canvas.height / (numRibbons + 1);
+
+      for (let i = 0; i < numRibbons; i++) {
+        let text = streamTexts[i % streamTexts.length];
+        let yBase = spacing * (i + 1);
+        let direction = (i % 2 === 0) ? 1 : -1; // Alternate flowing left and right
+        let speed = Math.random() * 0.5 + 0.2;
+
+        ribbons.push(new Ribbon(text, yBase, direction, speed));
+      }
+    }
+
+    class Ribbon {
+      constructor(text, yBase, direction, speed) {
+        this.text = text;
+        this.yBase = yBase;
+        this.direction = direction;
+        this.speed = speed;
+        this.offset = 0;
+
+        // Physics for the gentle wave
+        this.waveLength = 0.002 + Math.random() * 0.002;
+        this.amp = 20 + Math.random() * 20;
+        this.charSpacing = 16;
+      }
+
+      updateAndDraw() {
+        this.offset += this.speed * this.direction;
+
+        let themeColor = getComputedStyle(document.body).getPropertyValue('--text-tertiary').trim() || '#8b909e';
+        let accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#4a6fa5';
+
+        ctx.font = `14px monospace`;
+
+        // Calculate how many characters are needed to fill the screen width
+        let totalChars = Math.ceil(canvas.width / this.charSpacing) + 2;
+
+        for (let i = 0; i < totalChars; i++) {
+          // X position flows continuously based on offset
+          let x = (i * this.charSpacing) + (this.offset % this.charSpacing);
+
+          // Figure out which character from the string to draw
+          let charIndex = (i - Math.floor(this.offset / this.charSpacing)) % this.text.length;
+          if (charIndex < 0) charIndex += this.text.length;
+          let char = this.text[charIndex];
+
+          // Base Y position follows a sine wave
+          let waveY = Math.sin(x * this.waveLength) * this.amp;
+
+          // --- Interactive Mouse Repulsion (Guitar String Effect) ---
+          let dx = mouseX - x;
+          // Calculate distance to the base wave line
+          let dy = mouseY - (this.yBase + waveY);
+          let dist = Math.sqrt(dx * dx + dy * dy);
+
+          let pushY = 0;
+          let isHovered = false;
+
+          if (dist < 150) {
+            isHovered = true;
+            // The closer the mouse, the stronger the push
+            let force = (150 - dist) / 150;
+            // Push away vertically
+            pushY = (dy > 0 ? -1 : 1) * force * 50;
+          }
+
+          let finalY = this.yBase + waveY + pushY;
+
+          // Highlight the text if it's currently being repelled by the mouse
+          if (isHovered) {
+            ctx.fillStyle = accentColor;
+            ctx.globalAlpha = 0.6;
+          } else {
+            ctx.fillStyle = themeColor;
+            ctx.globalAlpha = 0.05; // Very faint normally
+          }
+
+          ctx.fillText(char, x, finalY);
+        }
+      }
+    }
+
+    window.addEventListener('resize', initCanvas);
+    const resizeObserver = new ResizeObserver(() => {
+      canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
+    });
+    resizeObserver.observe(document.body);
+
+    initCanvas();
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ribbons.forEach(ribbon => ribbon.updateAndDraw());
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+
+  <!-- Number Converter Logic -->
+  <script>
+    (function () {
+      var ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      var tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+      function twoDigit(n) {
+        if (n < 20) return ones[n];
+        return tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '');
+      }
+      function threeDigit(n) {
+        if (n < 100) return twoDigit(n);
+        return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' and ' + twoDigit(n % 100) : '');
+      }
+
+      function toIndian(n) {
+        if (n === 0) return 'Zero';
+        if (n < 0) return 'Minus ' + toIndian(-n);
+        var parts = [];
+        if (n >= 10000000) { parts.push(toIndian(Math.floor(n / 10000000)) + ' Crore'); n %= 10000000; }
+        if (n >= 100000) { parts.push(twoDigit(Math.floor(n / 100000)) + ' Lakh'); n %= 100000; }
+        if (n >= 1000) { parts.push(twoDigit(Math.floor(n / 1000)) + ' Thousand'); n %= 1000; }
+        if (n > 0) parts.push(threeDigit(n));
+        return parts.join(' ');
+      }
+
+      function toIntl(n) {
+        if (n === 0) return 'Zero';
+        if (n < 0) return 'Minus ' + toIntl(-n);
+        var scl = ['', 'Thousand', 'Million', 'Billion', 'Trillion'];
+        var parts = []; var i = 0;
+        while (n > 0) {
+          var chunk = n % 1000;
+          if (chunk) parts.unshift(threeDigit(chunk) + (scl[i] ? ' ' + scl[i] : ''));
+          n = Math.floor(n / 1000); i++;
+        }
+        return parts.join(' ');
+      }
+
+      function formatIndian(n) {
+        var s = n.toString();
+        var neg = s[0] === '-'; if (neg) s = s.substring(1);
+        var parts = s.split('.');
+        var x = parts[0];
+        var last3 = x.substring(x.length - 3);
+        var rest = x.substring(0, x.length - 3);
+        if (rest !== '') last3 = ',' + last3;
+        var formatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + last3;
+        return (neg ? '-' : '') + '₹ ' + formatted + (parts[1] ? '.' + parts[1] : '');
+      }
+
+      var inp = document.getElementById('num-input');
+      var ri = document.getElementById('result-indian');
+      var rl = document.getElementById('result-intl');
+      var rf = document.getElementById('result-fmt');
+
+      inp.addEventListener('input', function () {
+        var v = this.value.replace(/[^0-9.-]/g, '');
+        var num = parseInt(v);
+        if (isNaN(num)) { ri.textContent = 'Type a number above'; rl.textContent = 'Type a number above'; rf.textContent = '—'; return; }
+        ri.textContent = toIndian(num);
+        rl.textContent = toIntl(num);
+        rf.textContent = formatIndian(num);
+      });
+
+      function copyText(id, btn) {
+        var t = document.getElementById(id).textContent;
+        if (t && t !== 'Type a number above') { navigator.clipboard.writeText(t); btn.textContent = '✓ Copied'; setTimeout(function () { btn.textContent = btn.dataset.orig; }, 1500); }
+      }
+      var b1 = document.getElementById('btn-copy'); b1.dataset.orig = b1.textContent;
+      b1.addEventListener('click', function () { copyText('result-indian', this); });
+      var b2 = document.getElementById('btn-copy-intl'); b2.dataset.orig = b2.textContent;
+      b2.addEventListener('click', function () { copyText('result-intl', this); });
+    })();
+  </script>
+</body>
+
+</html>

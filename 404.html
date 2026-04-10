@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found — PrimeArtifact</title>
+  <meta name="description"
+    content="The page you're looking for doesn't exist. Head back to PrimeArtifact's free online tools.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+  <style>
+    .notfound {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+      padding: var(--space-2xl) var(--space-md);
+    }
+
+    .notfound__code {
+      font-size: 6rem;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: var(--space-md);
+      opacity: 0.12;
+    }
+
+    .notfound__title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .notfound__sub {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 420px;
+      line-height: 1.65;
+      margin-bottom: var(--space-xl);
+    }
+
+    .notfound__actions {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .countdown {
+      font-size: 0.82rem;
+      color: var(--text-tertiary);
+      margin-top: var(--space-lg);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar"></nav>
+  <script src="js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <div class="notfound animate-in">
+        <div class="notfound__code">404</div>
+        <h1 class="notfound__title">Page not found</h1>
+        <p class="notfound__sub">
+          The page you were looking for doesn't exist or may have been moved.
+          Let's get you back to the tools.
+        </p>
+        <div class="notfound__actions">
+          <a href="/" class="btn btn--accent">← Back to Home</a>
+          <a href="/pages/contact.html" class="btn">Report a broken link</a>
+        </div>
+        <p class="countdown" id="countdown">Redirecting to home in <strong>5</strong>s…</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 <a href="/">PrimeArtifact</a> — Free online tools. No login. No tracking. No nonsense.</p>
+    </div>
+  </footer>
+
+  <script>
+    var s = 5;
+    var el = document.querySelector('#countdown strong');
+    var iv = setInterval(function () {
+      s--;
+      if (el) el.textContent = s;
+      if (s <= 0) { clearInterval(iv); window.location.replace('/'); }
+    }, 1000);
+  </script>
+</body>
+
+</html>

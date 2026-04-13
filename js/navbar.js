@@ -1,7 +1,7 @@
 /* ============================================
    PRIMEARTIFACT — Shared Navbar Component
    Dynamically generates consistent navbar
-   across ALL pages with dropdown tools menu.
+   across ALL pages with dropdown artifacts menu.
    ============================================ */
 (function () {
   'use strict';
@@ -33,7 +33,7 @@
   var categories = [
     {
       id: 'text-tools',
-      title: 'Text Tools',
+      title: 'Text Artifacts',
       tools: [
         { name: 'Word & Character Counter', desc: 'Count words, characters, and reading time', href: base + 'tools/text/word-counter.html' },
         { name: 'Text Case Converter', desc: 'UPPERCASE, lowercase, Title Case, and more', href: base + 'tools/text/case-converter.html' },
@@ -59,8 +59,8 @@
       ]
     },
     {
-      id: 'utility',
-      title: 'Utility',
+      id: 'everyday-tools',
+      title: 'Everyday Artifacts',
       tools: [
         { name: 'Age Calculator', desc: 'Exact age with birthday countdown', href: base + 'tools/utility/age-calculator.html' },
         { name: 'Online Notepad', desc: 'Auto-saves to your browser privately', href: base + 'tools/utility/notepad.html' }
@@ -102,7 +102,7 @@
     var html = '';
 
     html += '<a href="' + base + 'index.html" class="navbar__brand">';
-    html += '<span class="navbar__brand-icon">A</span>';
+    html += '<img src="' + base + 'assets/logo.png" class="navbar__brand-icon" alt="PrimeArtifact Logo">';
     html += '<span>PrimeArtifact</span>';
     html += '</a>';
 
@@ -112,7 +112,7 @@
     // Tools dropdown
     html += '<li class="navbar__dropdown" id="tools-dropdown">';
     html += '<a href="#" class="navbar__dropdown-toggle" aria-expanded="false" aria-haspopup="true">';
-    html += '<span>Tools</span>';
+    html += '<span>Artifacts</span>';
     html += '<span class="navbar__dropdown-chevron">▼</span>';
     html += '</a>';
     html += buildDropdownMenu();
@@ -216,7 +216,7 @@
     });
   }
 
-  // Highlight "Tools" toggle if we're on a tool page
+  // Highlight "Tools" toggle if we're on a artifact page
   if (getActivePage() === 'tools' && toggle) {
     toggle.style.color = 'var(--text-primary)';
     toggle.style.background = 'var(--accent-soft)';

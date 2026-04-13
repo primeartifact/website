@@ -298,16 +298,14 @@ img {
 }
 
 .navbar__brand-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 14px;
-  font-weight: 700;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: transform var(--transition-fast);
+}
+.navbar__brand:hover .navbar__brand-icon {
+  transform: scale(1.05);
 }
 
 .navbar__nav {

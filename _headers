@@ -1,0 +1,31 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  PrimeArtifact — Cloudflare Pages Headers                    ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+# ── Security & Performance Headers (all pages) ────────────────
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Cache HTML for 10 minutes (fresh but not stale)
+/*.html
+  Cache-Control: public, max-age=600, stale-while-revalidate=3600
+
+# Cache CSS for 1 year
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache JS for 1 year
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache assets (fonts, images, icons) for 1 year
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache favicon forever
+/favicon.*
+  Cache-Control: public, max-age=31536000, immutable

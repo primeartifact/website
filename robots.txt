@@ -5,4 +5,4 @@ Disallow: /effect-*.html
 Disallow: /.git/
 Disallow: /.dist/
 
-Sitemap: https://primeartifact.netlify.app/sitemap.xml
+Sitemap: https://primeartifact.com/sitemap.xml

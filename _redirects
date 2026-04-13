@@ -1,0 +1,14 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  PrimeArtifact — Cloudflare Pages Redirects                   ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+# ── Pretty URL redirects ──────────────────────────────────────
+/index  /  301
+/tools/word-counter  /tools/text/word-counter.html  301
+/tools/password  /tools/generators/password.html  301
+/tools/qr-code  /tools/generators/qr-code.html  301
+/tools/color-picker  /tools/converters/color-picker.html  301
+/tools/age-calculator  /tools/utility/age-calculator.html  301
+
+# ── Legacy effect pages redirect to home ──────────────────────
+/effect-*.html  /  301

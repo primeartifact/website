@@ -2,13 +2,13 @@
 
 **Free, privacy-first online utility tools — no login, no ads, no tracking.**
 
-Live site → [primeartifact.netlify.app](https://primeartifact.netlify.app)
+Live site → [primeartifact.com](https://primeartifact.com)
 
 ---
 
 ## What it is
 
-PrimeArtifact is a collection of browser-based tools that run entirely on the client. No backend, no database, no user accounts. Everything happens in your browser and nothing is sent to any server (except the contact form, which uses EmailJS).
+PrimeArtifact is a collection of browser-based tools that run entirely on the client. No backend, no database, no user accounts. Everything happens in your browser and nothing is sent to any server (except the contact form, which uses Web3Forms).
 
 ## Tools included
 
@@ -40,43 +40,34 @@ npx serve .
 
 Then open `http://localhost:3000`.
 
-## Deploying to Netlify
+## Deploying to Cloudflare Pages
 
 1. Push this repo to GitHub.
-2. Go to [netlify.com](https://netlify.com) → **Add new site → Import from Git**.
+2. Go to [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages → Create → Pages → Connect to Git**.
 3. Select your repo. Set:
-   - **Publish directory:** `.`  (root)
+   - **Build output directory:** `/`  (root)
    - **Build command:** *(leave empty)*
-4. Click **Deploy site**.
+4. Click **Save and Deploy**.
 
-The `netlify.toml` in this repo handles headers, caching, redirects, and 404 behaviour automatically.
+The `_headers` and `_redirects` files in this repo handle security headers, caching, and URL redirects automatically.
 
-## Contact form setup (EmailJS)
+## Contact form setup (Web3Forms)
 
-The contact form uses [EmailJS](https://emailjs.com) to send emails without a backend. To activate it:
+The contact form uses [Web3Forms](https://web3forms.com) to send emails without a backend — works on any hosting provider.
 
-1. Create a free account at emailjs.com.
-2. Add your Gmail (`primeartifact.contact@gmail.com`) as a service → copy the **Service ID**.
-3. Create an email template with these variables:
-   - `{{from_name}}` — sender's name
-   - `{{from_email}}` — sender's email
-   - `{{subject}}` — selected subject
-   - `{{message}}` — message body
-   Copy the **Template ID**.
-4. Copy your **Public Key** from Account → API Keys.
-5. Open `pages/contact.html` and replace the three placeholder values near the bottom of the `<script>` block:
-   ```js
-   var EMAILJS_PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';
-   var EMAILJS_SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';
-   var EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+1. Go to [web3forms.com](https://web3forms.com) and enter your email to get a free access key.
+2. Open `pages/contact.html` and replace the access key value in the hidden input:
+   ```html
+   <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY">
    ```
+3. Form submissions will be emailed directly to your registered email address.
 
 ## SEO
 
 - Every page has a unique `<title>`, `<meta description>`, canonical URL, Open Graph tags, Twitter Card tags, and JSON-LD structured data.
 - `sitemap.xml` covers all tool and content pages.
 - `robots.txt` blocks effect/lab pages and points to the sitemap.
-- Effect pages (`effect-*.html`) are excluded from the sitemap and redirected to `/` in Netlify.
+- Effect pages (`effect-*.html`) are excluded from the sitemap and redirected to `/` via `_redirects`.
 
 ## Project structure
 
@@ -87,7 +78,9 @@ primeartifact/
 ├── favicon.ico
 ├── sitemap.xml
 ├── robots.txt
-├── netlify.toml
+├── _headers
+├── _redirects
+├── netlify.toml          # legacy — kept for reference
 ├── 404.html
 ├── css/
 │   └── style.css

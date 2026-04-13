@@ -153,15 +153,15 @@
 
   <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://primeartifact.netlify.app/pages/contact.html">
+  <link rel="canonical" href="https://primeartifact.com/pages/contact.html">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://primeartifact.netlify.app/pages/contact.html">
+  <meta property="og:url" content="https://primeartifact.com/pages/contact.html">
   <meta property="og:title" content="Contact PrimeArtifact — Report a Bug, Suggest a Tool, or Say Hello">
   <meta property="og:description"
     content="Contact the PrimeArtifact team. Share tool suggestions, report bugs, or send feedback. We respond within 24–48 hours. No account needed.">
-  <meta property="og:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta property="og:image" content="https://primeartifact.com/assets/og-image.svg">
   <meta property="og:site_name" content="PrimeArtifact">
 
   <!-- Twitter Card -->
@@ -169,7 +169,7 @@
   <meta name="twitter:title" content="Contact PrimeArtifact — Report a Bug, Suggest a Tool, or Say Hello">
   <meta name="twitter:description"
     content="Contact the PrimeArtifact team. Share tool suggestions, report bugs, or send feedback. We respond within 24–48 hours. No account needed.">
-  <meta name="twitter:image" content="https://primeartifact.netlify.app/assets/og-image.svg">
+  <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.svg">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="../favicon.svg">
@@ -182,7 +182,7 @@
   "@context": "https://schema.org",
   "@type": "ContactPage",
   "name": "Contact PrimeArtifact",
-  "url": "https://primeartifact.netlify.app/pages/contact.html"
+  "url": "https://primeartifact.com/pages/contact.html"
 }
   </script>
   <!-- ═══════════════════════════════════════════════════════════ -->
@@ -205,9 +205,11 @@
       </header>
 
       <div class="glass glass--static input-panel animate-in">
-        <form id="contact-form" name="contact" method="POST" data-netlify="true" data-netlify-honeypot="_honey" novalidate>
-          <!-- Honeypot: bots fill this, humans don't -->
-          <input type="text" name="_honey" style="display:none;" tabindex="-1" autocomplete="off">
+        <form id="contact-form" novalidate>
+          <!-- Web3Forms access key -->
+          <input type="hidden" name="access_key" value="933a249b-caa7-4403-bc25-c1a3641aab88">
+          <!-- Web3Forms honeypot: bots fill this, humans don't -->
+          <input type="checkbox" name="botcheck" style="display:none;">
 
           <div class="form-group" id="fg-name">
             <label for="name">Your Name</label>
@@ -310,12 +312,9 @@
         if (el) el.addEventListener('input', function () { setFieldError('fg-' + id, false); });
       });
 
-      // ─── Netlify Forms submit ──────────────────────────────────────────────
+      // ─── Web3Forms submit ──────────────────────────────────────────────────
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-
-        // Honeypot check
-        if (form.elements['_honey'].value) return;
 
         // Validate
         var nameVal    = form.elements['name'].value.trim();
@@ -332,18 +331,27 @@
         btn.textContent = 'Sending…';
         errMsg.style.display = 'none';
 
-        // Encode and POST to Netlify Forms
-        fetch('/', {
+        // POST to Web3Forms API
+        fetch('https://api.web3forms.com/submit', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(new FormData(form)).toString()
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            access_key: '933a249b-caa7-4403-bc25-c1a3641aab88',
+            name:       nameVal,
+            email:      emailVal,
+            subject:    form.elements['subject'].value,
+            message:    messageVal,
+            from_name:  'PrimeArtifact Contact Form',
+            botcheck:   form.elements['botcheck'].checked
+          })
         })
-          .then(function (res) {
-            if (res.ok) {
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data.success) {
               form.style.display = 'none';
               success.style.display = 'block';
             } else {
-              throw new Error(res.status);
+              throw new Error(data.message || 'Submission failed');
             }
           })
           .catch(function () {

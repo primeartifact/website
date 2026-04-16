@@ -29,3 +29,9 @@
 # Cache favicon forever
 /favicon.*
   Cache-Control: public, max-age=31536000, immutable
+
+/api/*
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/tools/utility/clipboard.html
+  Cache-Control: no-store, no-cache, must-revalidate

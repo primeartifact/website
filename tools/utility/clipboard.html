@@ -1,183 +1,466 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>End-to-End Encrypted Clipboard | PrimeArtifact</title>
+  <title>Secure Online Clipboard | Zero-Knowledge Text Sharing | PrimeArtifact</title>
   <meta name="description"
-    content="Securely sync text between devices using End-to-End encryption. No data is stored tracking you.">
+    content="Create zero-knowledge secure text shares with short codes, private links, configurable expiry, and burn-after-read delivery.">
   <link rel="stylesheet" href="../../css/style.css">
   <link rel="icon" href="../../assets/favicon.png" type="image/png">
-  <!-- PWA Manifest -->
   <link rel="manifest" href="../../manifest.json">
   <script src="../../js/theme.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <meta name="turnstile-site-key" content="">
   <style>
-    .clipboard-layout {
+    .clipboard-shell {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--space-lg);
+      align-items: start;
     }
 
-    @media(max-width: 768px) {
-      .clipboard-layout {
+    .clipboard-column {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    .clip-status {
+      min-height: 22px;
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      margin-top: var(--space-sm);
+    }
+
+    .clip-status[data-state="error"],
+    .clip-status[data-state="danger"] {
+      color: var(--error);
+    }
+
+    .clip-status[data-state="success"] {
+      color: var(--success);
+    }
+
+    .clip-control-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    .clip-badge-row {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-md);
+    }
+
+    .clip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--text-primary);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .clip-divider {
+      height: 1px;
+      background: var(--divider);
+      margin: var(--space-md) 0;
+    }
+
+    .clip-output {
+      display: none;
+    }
+
+    .clip-output textarea {
+      min-height: 220px;
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .clip-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .clip-field label {
+      font-size: 0.76rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .clip-field-row {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .clip-field-row .ctrl-input,
+    .clip-field-row .textarea {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .clip-share-results {
+      display: none;
+      margin-top: var(--space-md);
+    }
+
+    .clip-result-grid {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .clip-result-card {
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .clip-code-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 var(--space-lg);
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      border: 1px dashed var(--accent-border);
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      letter-spacing: 0.22em;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .clip-qr-panel {
+      display: grid;
+      place-items: center;
+      min-height: 220px;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--border-medium);
+      background: rgba(255, 255, 255, 0.04);
+      padding: var(--space-md);
+    }
+
+    .clip-qr-panel img {
+      border-radius: var(--radius-sm);
+      background: #fff;
+      padding: 12px;
+    }
+
+    .clip-qr-empty {
+      font-size: 0.84rem;
+      color: var(--text-tertiary);
+      text-align: center;
+      max-width: 220px;
+    }
+
+    .clip-metadata {
+      display: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-sm) var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    .clip-meta-item {
+      padding: var(--space-sm);
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-light);
+    }
+
+    .clip-meta-label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .clip-meta-value {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--text-primary);
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .clip-actions {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-top: var(--space-md);
+    }
+
+    .clip-helper {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .clip-counter {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      text-align: right;
+      margin-top: 8px;
+    }
+
+    .clip-counter[data-state="danger"] {
+      color: var(--error);
+    }
+
+    @media (max-width: 960px) {
+      .clipboard-shell {
         grid-template-columns: 1fr;
       }
     }
 
-    .clipboard-panel {
-      background: var(--glass-bg);
-      border: 1px solid var(--border-medium);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      box-shadow: var(--glass-shadow-lg);
-    }
+    @media (max-width: 640px) {
+      .clip-control-grid,
+      .clip-metadata {
+        grid-template-columns: 1fr;
+      }
 
-    .clipboard-panel__title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: var(--space-md);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+      .clip-field-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
 
-    .status-text {
-      font-size: 0.85rem;
-      margin-top: var(--space-sm);
-      color: var(--text-secondary);
-      min-height: 20px;
-    }
-
-    .e2e-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.75rem;
-      color: var(--success);
-      background: rgba(46, 204, 113, 0.1);
-      padding: 4px 10px;
-      border-radius: 20px;
-      margin-bottom: var(--space-lg);
-      border: 1px solid rgba(46, 204, 113, 0.2);
-    }
-
-    .sync-code-output {
-      font-size: 1.8rem;
-      letter-spacing: 4px;
-      font-family: monospace;
-      color: var(--accent);
-      text-align: center;
-      margin: var(--space-lg) 0;
-      padding: var(--space-md);
-      background: var(--bg-dark);
-      border-radius: var(--radius-md);
-      border: 1px dashed var(--accent-border);
-      user-select: all;
-    }
-
-    .sync-input {
-      width: 100%;
-      padding: 14px;
-      font-size: 1.2rem;
-      text-align: center;
-      letter-spacing: 2px;
-      font-family: monospace;
-      text-transform: uppercase;
-      margin-bottom: var(--space-md);
-      background: var(--bg-dark);
-      border: 1px solid var(--border-medium);
-      color: var(--text-primary);
-      border-radius: var(--radius-md);
-    }
-
-    .sync-input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      .clip-code-pill {
+        font-size: 1.15rem;
+        letter-spacing: 0.16em;
+      }
     }
   </style>
+
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.com/tools/utility/clipboard.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.com/tools/utility/clipboard.html">
+  <meta property="og:title" content="Secure Online Clipboard | Zero-Knowledge Text Sharing | PrimeArtifact">
+  <meta property="og:description"
+    content="Share text securely with short codes, private links, configurable expiry, and optional burn-after-read delivery.">
+  <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Secure Online Clipboard | Zero-Knowledge Text Sharing | PrimeArtifact">
+  <meta name="twitter:description"
+    content="Create zero-knowledge secure text shares that decrypt only in the browser.">
+  <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
+
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Secure Online Clipboard",
+  "url": "https://primeartifact.com/tools/utility/clipboard.html",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Zero-knowledge text sharing with private links, short codes, configurable expiry, and browser-side decryption."
+}
+  </script>
 </head>
 
 <body>
-  <canvas id="bg-canvas"
-    style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;"></canvas>
-
-  <!-- Dynamic Navbar -->
   <nav class="navbar"></nav>
   <script src="../../js/navbar.js"></script>
-  <script src="../../js/crypto-utils.js"></script>
 
   <main class="page">
-    <div class="container">
-      <div class="page-header animate-in">
+    <div class="container container--wide">
+      <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
           <a href="../../index.html">Home</a>
           <span class="page-header__breadcrumb-sep">/</span>
           <span>Everyday Artifacts</span>
         </div>
         <h1 class="page-header__title">Secure Online Clipboard</h1>
-        <p class="page-header__subtitle">End-to-End Encrypted. Sync text across devices instantly.</p>
+        <p class="page-header__subtitle">Zero-knowledge text sharing with short codes, private links, configurable expiry, and optional burn-after-read delivery.</p>
+      </header>
+
+      <div class="clip-badge-row animate-in">
+        <div class="clip-badge">Zero-knowledge encryption</div>
+        <div class="clip-badge">1h / 24h / 7d expiry</div>
+        <div class="clip-badge">Code + link retrieval</div>
+        <div class="clip-badge">Burn after read</div>
       </div>
 
-      <div class="e2e-badge animate-in">
-        <span>🔒</span> 100% End-to-End Encrypted. The server only sees math gibberish.
-      </div>
+      <div class="clipboard-shell">
+        <section class="clipboard-column">
+          <div class="glass glass--static input-panel animate-in">
+            <div class="input-panel__header">
+              <span class="input-panel__title">Create Secure Clip</span>
+            </div>
 
-      <div class="clipboard-layout">
-        <!-- UPLOAD PANEL -->
-        <div class="clipboard-panel animate-in" style="animation-delay: 0.1s;">
-          <h2 class="clipboard-panel__title">
-            <span>📤</span> Send to Cloud
-          </h2>
-          <textarea id="clip-send-text" class="textarea input-panel" style="min-height: 150px; margin-bottom: 0;"
-            placeholder="Paste text you want to securely sync here... (Max 100K chars)"></textarea>
+            <p class="clip-helper">Your text is encrypted in this browser before upload. The server stores ciphertext only. The decryption key lives in the share link fragment or can be shared separately with the short code.</p>
 
-          <div id="clip-send-ui" style="margin-top: 15px;">
-            <button id="clip-upload-btn" class="btn btn--accent"
-              style="width: 100%; justify-content: center; padding: 12px;">
-              Encrypt & Upload
-            </button>
-            <div id="clip-upload-status" class="status-text text-center"></div>
+            <textarea id="clip-compose-text" class="textarea" placeholder="Paste the text you want to share securely..." spellcheck="false"></textarea>
+            <div id="clip-text-counter" class="clip-counter">0 B / 64 KB</div>
+
+            <div class="clip-control-grid">
+              <div class="ctrl-group" style="position: relative;" id="clip-ttl-wrapper">
+                <label class="ctrl-label" for="clip-ttl">Expiry</label>
+                <div id="clip-ttl-btn" class="ctrl-input ctrl-select custom-select-btn" tabindex="0">24 hours</div>
+                <div id="clip-ttl-menu" class="custom-select-menu">
+                  <div class="custom-select-item" data-value="1h">1 hour</div>
+                  <div class="custom-select-item active" data-value="24h">24 hours</div>
+                  <div class="custom-select-item" data-value="7d">7 days</div>
+                </div>
+                <input id="clip-ttl" type="hidden" value="24h">
+              </div>
+
+              <div class="ctrl-group" style="justify-content:flex-end;">
+                <label class="ctrl-label" style="visibility:hidden;">Read policy</label>
+                <label class="ctrl-checkbox-wrapper">
+                  <input id="clip-burn-after-read" class="ctrl-checkbox-input" type="checkbox">
+                  <span class="ctrl-checkbox-box"></span>
+                  <span class="ctrl-checkbox-text">Burn after first read</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="clip-actions">
+              <button id="clip-create-btn" class="btn btn--accent">Encrypt & Create Share</button>
+            </div>
+            <div id="clip-create-status" class="clip-status" aria-live="polite"></div>
+
+            <div id="clip-share-results" class="clip-share-results">
+              <div class="clip-divider"></div>
+              <div class="clip-result-grid">
+                <div class="clip-result-card">
+                  <div class="clip-field">
+                    <label>Short Code</label>
+                    <input id="clip-short-code" class="ctrl-input clip-code-pill" type="text" readonly>
+                  </div>
+                  <div class="clip-actions">
+                    <button id="clip-copy-code" class="btn" type="button">Copy Code</button>
+                  </div>
+                </div>
+
+                <div class="clip-result-card">
+                  <div class="clip-field">
+                    <label>Secret Key</label>
+                    <div class="clip-field-row">
+                      <input id="clip-secret-key" class="ctrl-input" type="text" readonly>
+                      <button id="clip-copy-secret" class="btn" type="button">Copy Key</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="clip-result-card">
+                  <div class="clip-field">
+                    <label>Private Share Link</label>
+                    <div class="clip-field-row">
+                      <textarea id="clip-share-link" class="textarea" rows="3" readonly></textarea>
+                      <button id="clip-copy-link" class="btn" type="button">Copy Link</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="clip-result-card">
+                  <div class="clip-field">
+                    <label>Expires At</label>
+                    <input id="clip-expires-at" class="ctrl-input" type="text" readonly>
+                  </div>
+                </div>
+
+                <div class="clip-result-card">
+                  <div class="clip-field">
+                    <label>Share Link QR</label>
+                    <div class="clip-qr-panel">
+                      <div id="clip-qr-empty" class="clip-qr-empty">Create a clip to generate a QR code for the private link.</div>
+                      <div id="clip-qr"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="clipboard-column">
+          <div class="glass glass--static input-panel animate-in">
+            <div class="input-panel__header">
+              <span class="input-panel__title">Open Secure Clip</span>
+            </div>
+
+            <p class="clip-helper">Paste a full share link to auto-load the clip, or resolve a short code and enter the secret key separately.</p>
+
+            <div class="clip-field">
+              <label for="clip-link-input">Share Link</label>
+              <textarea id="clip-link-input" class="textarea" rows="3" placeholder="Paste a PrimeArtifact secure share link here..."></textarea>
+            </div>
+
+            <div class="clip-divider"></div>
+
+            <div class="clip-control-grid">
+              <div class="clip-field">
+                <label for="clip-receive-code">Short Code</label>
+                <input id="clip-receive-code" class="ctrl-input" type="text" maxlength="7" placeholder="ABC-DEF" spellcheck="false">
+              </div>
+              <div class="clip-field">
+                <label for="clip-receive-secret">Secret Key</label>
+                <input id="clip-receive-secret" class="ctrl-input" type="text" placeholder="Paste the secret key" spellcheck="false">
+              </div>
+            </div>
+
+            <div class="clip-actions">
+              <button id="clip-resolve-btn" class="btn" type="button">Resolve Code</button>
+              <button id="clip-fetch-btn" class="btn btn--accent" type="button">Fetch & Decrypt</button>
+            </div>
+            <div id="clip-fetch-status" class="clip-status" aria-live="polite"></div>
+
+            <div id="clip-metadata" class="clip-metadata">
+              <div class="clip-meta-item">
+                <span class="clip-meta-label">Short Code</span>
+                <span id="clip-meta-code" class="clip-meta-value">-</span>
+              </div>
+              <div class="clip-meta-item">
+                <span class="clip-meta-label">Expiry</span>
+                <span id="clip-meta-expiry" class="clip-meta-value">-</span>
+              </div>
+              <div class="clip-meta-item">
+                <span class="clip-meta-label">Reads</span>
+                <span id="clip-meta-reads" class="clip-meta-value">-</span>
+              </div>
+              <div class="clip-meta-item">
+                <span class="clip-meta-label">Mode</span>
+                <span id="clip-meta-mode" class="clip-meta-value">-</span>
+              </div>
+            </div>
           </div>
 
-          <div id="clip-code-ui" style="display: none;">
-            <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 15px;">Your
-              Secret Sync Code (expires in 24h):</p>
-            <div id="clip-sync-code" class="sync-code-output"></div>
-            <button id="clip-copy-link-btn" class="btn" style="width: 100%; justify-content: center;">
-              Copy Sync Code
-            </button>
+          <div id="clip-output-panel" class="glass glass--static input-panel clip-output animate-in">
+            <div class="input-panel__header">
+              <span class="input-panel__title">Decrypted Output</span>
+            </div>
+            <textarea id="clip-output-text" class="textarea" readonly></textarea>
+            <div class="clip-actions">
+              <button id="clip-copy-output" class="btn" type="button">Copy Decrypted Text</button>
+            </div>
           </div>
-        </div>
-
-        <!-- DOWNLOAD PANEL -->
-        <div class="clipboard-panel animate-in" style="animation-delay: 0.2s;">
-          <h2 class="clipboard-panel__title">
-            <span>📥</span> Fetch from Cloud
-          </h2>
-          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">
-            Enter the 6-character Sync Code from your other device to fetch and decrypt the text.
-          </p>
-          <input type="text" id="clip-receive-code" class="sync-input" placeholder="ABC-DEF" maxlength="7">
-
-          <button id="clip-download-btn" class="btn btn--accent"
-            style="width: 100%; justify-content: center; padding: 12px; margin-bottom: 15px;">
-            Fetch & Decrypt
-          </button>
-          <div id="clip-download-status" class="status-text text-center"></div>
-
-          <textarea id="clip-receive-text" class="textarea input-panel"
-            style="min-height: 150px; margin-bottom: 0; background-color: var(--bg-dark);"
-            placeholder="Your decrypted text will appear here..." readonly></textarea>
-          <button id="clip-copy-text-btn" class="btn"
-            style="width: 100%; justify-content: center; margin-top: 15px; display: none;">
-            Copy to Clipboard
-          </button>
-        </div>
+        </section>
       </div>
     </div>
   </main>
@@ -185,8 +468,7 @@
   <footer class="footer">
     <div class="container">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">
-        <p>&copy; 2026 <a href="../../index.html">PrimeArtifact</a> â€” Free online artifacts. No login. No tracking. No
-          nonsense.</p>
+        <p>&copy; 2026 <a href="../../index.html">PrimeArtifact</a> - Free online artifacts. No login. No tracking. No nonsense.</p>
         <div style="display:flex;gap:var(--space-md);font-size:0.82rem;">
           <a href="../../pages/about.html" style="color:var(--text-tertiary);text-decoration:none;">About</a>
           <a href="../../pages/privacy.html" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>
@@ -197,131 +479,8 @@
   </footer>
 
   <script src="../../js/interactive.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-
-      // --- SENDING LOGIC ---
-      const uploadBtn = document.getElementById('clip-upload-btn');
-      const sendText = document.getElementById('clip-send-text');
-      const uploadStatus = document.getElementById('clip-upload-status');
-      const codeUi = document.getElementById('clip-code-ui');
-      const sendUi = document.getElementById('clip-send-ui');
-      const syncCodeDisplay = document.getElementById('clip-sync-code');
-
-      uploadBtn.addEventListener('click', async () => {
-        const text = sendText.value.trim();
-        if (!text) {
-          uploadStatus.innerHTML = "<span style='color: var(--error);'>Please enter some text to sync.</span>";
-          return;
-        }
-
-        uploadBtn.disabled = true;
-        uploadBtn.innerHTML = "Encrypting...";
-        uploadStatus.innerHTML = "Locking payload with AES-GCM...";
-
-        try {
-          const syncCode = CryptoUtils.generateSyncCode();
-          const dbId = await CryptoUtils.generateDatabaseId(syncCode);
-          const encryptedData = await CryptoUtils.encryptData(text, syncCode);
-
-          uploadStatus.innerHTML = "Uploading to Cloudflare KV...";
-
-          const response = await fetch('/api/clip', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ dbId, encryptedData })
-          });
-
-          const result = await response.json();
-
-          if (result.success) {
-            uploadStatus.innerHTML = "";
-            sendUi.style.display = 'none';
-            codeUi.style.display = 'block';
-            syncCodeDisplay.innerText = syncCode;
-          } else {
-            uploadStatus.innerHTML = `<span style='color: var(--error);'>Error: ${result.error}</span>`;
-            uploadBtn.disabled = false;
-            uploadBtn.innerHTML = "Encrypt & Upload";
-          }
-        } catch (e) {
-          uploadStatus.innerHTML = "<span style='color: var(--error);'>Network error or payload formatting failed.</span>";
-          uploadBtn.disabled = false;
-          uploadBtn.innerHTML = "Encrypt & Upload";
-        }
-      });
-
-      document.getElementById('clip-copy-link-btn').addEventListener('click', function () {
-        const code = syncCodeDisplay.innerText;
-        navigator.clipboard.writeText(code);
-        this.innerHTML = "Copied!";
-        setTimeout(() => this.innerHTML = "Copy Sync Code", 2000);
-      });
-
-      // --- RECEIVE LOGIC ---
-      const downloadBtn = document.getElementById('clip-download-btn');
-      const codeInput = document.getElementById('clip-receive-code');
-      const receiveText = document.getElementById('clip-receive-text');
-      const downloadStatus = document.getElementById('clip-download-status');
-      const copyTextBtn = document.getElementById('clip-copy-text-btn');
-
-      codeInput.addEventListener('input', function () {
-        // Auto format ABCDEF to ABC-DEF
-        let val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        if (val.length > 3) {
-          val = val.slice(0, 3) + '-' + val.slice(3, 6);
-        }
-        this.value = val;
-      });
-
-      downloadBtn.addEventListener('click', async () => {
-        const code = codeInput.value.toUpperCase();
-        if (code.length !== 7 || !code.includes('-')) {
-          downloadStatus.innerHTML = "<span style='color: var(--error);'>Invalid Sync Code format.</span>";
-          return;
-        }
-
-        downloadBtn.disabled = true;
-        downloadBtn.innerHTML = "Fetching...";
-        downloadStatus.innerHTML = "Fetching from Cloudflare KV...";
-        receiveText.value = '';
-
-        try {
-          const dbId = await CryptoUtils.generateDatabaseId(code);
-          const response = await fetch('/api/clip?id=' + dbId);
-          const result = await response.json();
-
-          if (result.success) {
-            downloadStatus.innerHTML = "Decrypting locally...";
-            const plainText = await CryptoUtils.decryptData(result.encryptedData, code);
-
-            if (plainText) {
-              downloadStatus.innerHTML = "<span style='color: var(--success);'>Successfully decrypted!</span>";
-              receiveText.value = plainText;
-              copyTextBtn.style.display = 'flex';
-            } else {
-              downloadStatus.innerHTML = "<span style='color: var(--error);'>Decryption failed. Incorrect code?</span>";
-            }
-          } else {
-            downloadStatus.innerHTML = `<span style='color: var(--error);'>Error: ${result.error}</span>`;
-          }
-        } catch (e) {
-          downloadStatus.innerHTML = "<span style='color: var(--error);'>Network error.</span>";
-        }
-
-        downloadBtn.disabled = false;
-        downloadBtn.innerHTML = "Fetch & Decrypt";
-      });
-
-      copyTextBtn.addEventListener('click', function () {
-        navigator.clipboard.writeText(receiveText.value);
-        this.innerHTML = "Copied to Clipboard!";
-        if (window.showToast) window.showToast("Copied decrypted text securely.");
-        setTimeout(() => this.innerHTML = "Copy to Clipboard", 2000);
-      });
-
-    });
-  </script>
+  <script src="../../js/crypto-utils.js"></script>
+  <script src="../../js/clipboard.js"></script>
 </body>
 
 </html>

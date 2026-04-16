@@ -1,4 +1,4 @@
-const CACHE_NAME = 'primeartifact-v1';
+const CACHE_NAME = 'primeartifact-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -7,10 +7,10 @@ const ASSETS_TO_CACHE = [
   '/js/interactive.js',
   '/js/effects.js',
   '/js/crypto-utils.js',
+  '/js/clipboard.js',
   '/assets/logo.png',
   '/assets/favicon.png',
-  '/manifest.json',
-  '/tools/utility/clipboard.html'
+  '/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {

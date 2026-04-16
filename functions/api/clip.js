@@ -1,73 +1,98 @@
+import {
+  fail,
+  getBindings,
+  ok,
+  parseJson,
+  ttlToSeconds,
+  validateEnvelope,
+  randomId,
+  createShortCode,
+  mapClipRow,
+  enforceRateLimit,
+  maybeVerifyTurnstile,
+  nowEpochSeconds
+} from './_clip-utils.js';
+
 export async function onRequestPost(context) {
   try {
     const { request, env } = context;
-    const body = await request.json();
-    
-    const { dbId, encryptedData } = body;
-    
-    if (!dbId || !encryptedData) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), { 
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+    const { db, kv } = getBindings(env);
+    await enforceRateLimit(db, request, 'create', 20, 3600);
+
+    const body = await parseJson(request);
+    if (!body) {
+      return fail('INVALID_JSON', 'Send a valid JSON payload.', 400);
     }
 
-    // Hard limit on payload size (approx 100kb string)
-    if (encryptedData.length > 150000) {
-      return new Response(JSON.stringify({ error: "Payload too large" }), { 
-        status: 413,
-        headers: { "Content-Type": "application/json" }
-      });
+    const envelopeError = validateEnvelope(body.envelope);
+    if (envelopeError) {
+      return fail(
+        envelopeError.includes('64 KB') ? 'PAYLOAD_TOO_LARGE' : 'INVALID_PAYLOAD',
+        envelopeError,
+        envelopeError.includes('64 KB') ? 413 : 400
+      );
     }
 
-    // Save to KV namespace (bound as 'CLIPBOARD' in Cloudflare Dashboard)
-    // Automatically expires exactly 24 hours (86400 seconds) from now.
-    await env.CLIPBOARD.put(dbId, encryptedData, { expirationTtl: 86400 });
+    const ttlSeconds = ttlToSeconds(body.ttl);
+    if (!ttlSeconds) {
+      return fail('INVALID_TTL', 'Choose 1 hour, 24 hours, or 7 days.', 400);
+    }
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" }
-    });
-    
+    await maybeVerifyTurnstile(env, request, body.turnstileToken);
+
+    const now = nowEpochSeconds();
+    const expiresAt = now + ttlSeconds;
+    const burnAfterRead = !!body.burnAfterRead;
+    const maxReads = burnAfterRead ? 1 : 0;
+
+    let row = null;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const clipId = randomId(18);
+      const shortCode = createShortCode();
+      const ciphertextKey = `clip:${clipId}`;
+      try {
+        await kv.put(ciphertextKey, JSON.stringify(body.envelope), { expirationTtl: ttlSeconds });
+        const result = await db.prepare(
+          `INSERT INTO clips (
+            id, short_code, ciphertext_key, expires_at, created_at,
+            max_reads, read_count, burn_after_read, status, last_read_at
+          ) VALUES (?, ?, ?, ?, ?, ?, 0, ?, 'active', NULL)`
+        ).bind(
+          clipId,
+          shortCode,
+          ciphertextKey,
+          expiresAt,
+          now,
+          maxReads,
+          burnAfterRead ? 1 : 0
+        ).run();
+
+        if (result.success) {
+          row = await db.prepare('SELECT * FROM clips WHERE id = ?').bind(clipId).first();
+          break;
+        }
+      } catch (err) {
+        await kv.delete(ciphertextKey);
+        if (String(err && err.message || '').includes('UNIQUE')) {
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    if (!row) {
+      return fail('CREATE_FAILED', 'Unable to reserve a secure short code right now.', 503);
+    }
+
+    return ok({ clip: mapClipRow(row) }, 201);
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Internal server error" }), { 
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    if (err.code && err.status) {
+      return fail(err.code, err.message, err.status);
+    }
+    return fail('INTERNAL_ERROR', 'Unable to create the secure clip right now.', 500);
   }
 }
 
-export async function onRequestGet(context) {
-  try {
-    const { request, env } = context;
-    const url = new URL(request.url);
-    const dbId = url.searchParams.get('id');
-
-    if (!dbId) {
-      return new Response(JSON.stringify({ error: "No Database ID provided" }), { 
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    const encryptedData = await env.CLIPBOARD.get(dbId);
-
-    if (!encryptedData) {
-      return new Response(JSON.stringify({ error: "Artifact not found, expired, or invalid sync code." }), { 
-        status: 404,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    return new Response(JSON.stringify({ success: true, encryptedData }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" }
-    });
-
-  } catch (err) {
-    return new Response(JSON.stringify({ error: "Internal server error" }), { 
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
+export async function onRequestGet() {
+  return fail('METHOD_NOT_ALLOWED', 'Use POST to create a clip.', 405);
 }

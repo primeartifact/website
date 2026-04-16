@@ -1,7 +1,5 @@
-const CACHE_NAME = 'primeartifact-v2';
+const CACHE_NAME = 'primeartifact-v3';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
   '/css/style.css',
   '/js/navbar.js',
   '/js/interactive.js',
@@ -20,13 +18,40 @@ self.addEventListener('install', (event) => {
         return cache.addAll(ASSETS_TO_CACHE);
       })
   );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+      );
+    })
+  );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET and API requests
+  if (event.request.method !== 'GET') return;
+  if (event.request.url.includes('/api/')) return;
+
+  // For navigation requests (HTML pages), always go network-first
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match(event.request);
+      })
+    );
+    return;
+  }
+
+  // For static assets, use cache-first
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached response if found, otherwise fetch network
         return response || fetch(event.request);
       })
   );

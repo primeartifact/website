@@ -98,6 +98,36 @@
       line-height: 1.55;
     }
 
+    /* Distinct styling for Recent Artifacts */
+    .tool-card--recent {
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      background: linear-gradient(135deg, rgba(74, 111, 165, 0.06), rgba(0,0,0,0));
+      border: 1px solid var(--accent-border);
+    }
+
+    .tool-card--recent:hover {
+      background: linear-gradient(135deg, rgba(74, 111, 165, 0.12), rgba(0,0,0,0));
+      box-shadow: 0 8px 24px rgba(74, 111, 165, 0.08);
+      border-color: rgba(74, 111, 165, 0.4);
+    }
+    
+    .tool-card--recent .tool-card__icon {
+      margin-bottom: 0;
+      font-size: 1.2rem;
+    }
+    
+    .tool-card--recent .tool-card__name {
+      margin-bottom: 0;
+      font-size: 0.9rem;
+    }
+    
+    .tool-card--recent .tool-card__desc {
+      display: none;
+    }
+
     .section-title {
       font-size: 0.78rem;
       font-weight: 600;
@@ -188,6 +218,9 @@
 }
   </script>
   <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
@@ -222,6 +255,40 @@
           </div>
         </div>
       </section>
+
+      <section id="recent-artifacts" style="display: none; margin-bottom: var(--space-3xl);">
+        <div class="section-title animate-in" style="color: var(--accent); font-weight: 700;">Your Recent Artifacts</div>
+        <div class="tools-grid" id="recent-grid"></div>
+      </section>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          try {
+            var recentStr = localStorage.getItem('prime_recent');
+            if (!recentStr) return;
+            var recent = JSON.parse(recentStr);
+            if (!recent || recent.length === 0) return;
+            
+            var grid = document.getElementById('recent-grid');
+            var added = false;
+            
+            recent.forEach(function(href) {
+              var original = document.querySelector('a.tool-card[href="' + href + '"]');
+              if (original) {
+                var clone = original.cloneNode(true);
+                clone.classList.remove('animate-in'); // prevent double animation artifacts
+                clone.classList.add('tool-card--recent');
+                grid.appendChild(clone);
+                added = true;
+              }
+            });
+            
+            if (added) {
+              document.getElementById('recent-artifacts').style.display = 'block';
+            }
+          } catch(e) {}
+        });
+      </script>
 
       <section id="text-tools">
         <div class="section-title animate-in">Text Artifacts</div>
@@ -305,6 +372,11 @@
             <span class="tool-card__icon">📝</span>
             <div class="tool-card__name">Online Notepad</div>
             <div class="tool-card__desc">Quick scratchpad that auto-saves to your browser. Private, no cloud.</div>
+          </a>
+          <a href="tools/utility/clipboard.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">📋</span>
+            <div class="tool-card__name">Secure Clipboard</div>
+            <div class="tool-card__desc">End-to-End encrypted text sync across devices. Secure and 100% private.</div>
           </a>
         </div>
       </section>

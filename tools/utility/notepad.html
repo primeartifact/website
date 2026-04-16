@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Online Notepad — Auto-Saves, Private, No Login | PrimeArtifact</title>
+  <title>Free Online Notepad â€” Auto-Saves, Private, No Login | PrimeArtifact</title>
   <meta name="description"
     content="A quick online notepad that auto-saves everything in your browser's local storage. No account, no cloud, no tracking. Your notes never leave your device.">
   <link rel="stylesheet" href="../../css/style.css">
@@ -42,14 +42,14 @@
     }
   </style>
 
-  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <!-- â•â•â• SEO META â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://primeartifact.com/tools/utility/notepad.html">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://primeartifact.com/tools/utility/notepad.html">
-  <meta property="og:title" content="Free Online Notepad — Auto-Saves, Private, No Login | PrimeArtifact">
+  <meta property="og:title" content="Free Online Notepad â€” Auto-Saves, Private, No Login | PrimeArtifact">
   <meta property="og:description"
     content="A quick online notepad that auto-saves everything in your browser's local storage. No account, no cloud, no tracking. Your notes never leave your device.">
   <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
@@ -57,7 +57,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Free Online Notepad — Auto-Saves, Private, No Login | PrimeArtifact">
+  <meta name="twitter:title" content="Free Online Notepad â€” Auto-Saves, Private, No Login | PrimeArtifact">
   <meta name="twitter:description"
     content="A quick online notepad that auto-saves everything in your browser's local storage. No account, no cloud, no tracking. Your notes never leave your device.">
   <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
@@ -83,7 +83,10 @@
   "description": "Auto-saving online notepad. Everything stays on your device \u2014 no cloud, no account."
 }
   </script>
-  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../../manifest.json">
 </head>
 
 <body>
@@ -99,8 +102,8 @@
     <div class="container">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
-          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">›</span>
-          <a href="#">Utility</a><span class="page-header__breadcrumb-sep">›</span>
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">â€º</span>
+          <a href="#">Utility</a><span class="page-header__breadcrumb-sep">â€º</span>
           <span>Notepad</span>
         </div>
         <h1 class="page-header__title">Online Notepad</h1>
@@ -115,18 +118,18 @@
           style="padding: var(--space-md); margin-bottom: 0; border-bottom: 1px solid var(--divider);">
           <span class="input-panel__title">Scratchpad</span>
           <div class="input-panel__actions">
-            <button class="btn btn--small" id="btn-download">↓ Download .txt</button>
-            <button class="btn btn--small" id="btn-copy">⧉ Copy All</button>
-            <button class="btn btn--small" id="btn-clear">✕ Clear</button>
+            <button class="btn btn--small" id="btn-download">â†“ Download .txt</button>
+            <button class="btn btn--small" id="btn-copy">â§‰ Copy All</button>
+            <button class="btn btn--small" id="btn-clear">âœ• Clear</button>
           </div>
         </div>
 
-        <textarea class="notepad-textarea" id="notepad" placeholder="Start typing your notes…"
+        <textarea class="notepad-textarea" id="notepad" placeholder="Start typing your notesâ€¦"
           spellcheck="true"></textarea>
 
         <div class="notepad-footer">
           <span id="save-status">Auto-saved</span>
-          <span id="word-count">0 words · 0 characters</span>
+          <span id="word-count">0 words Â· 0 characters</span>
         </div>
       </div>
     </div>
@@ -135,7 +138,7 @@
   <footer class="footer glass glass--static"
     style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
     <div class="container">
-      <p>© 2026 <a href="../../index.html">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.
+      <p>Â© 2026 <a href="../../index.html">PrimeArtifact</a> â€” Free online artifacts. No login. No tracking. No nonsense.
       </p>
     </div>
   </footer>
@@ -154,7 +157,7 @@
 
       np.addEventListener('input', function () {
         updateCount();
-        status.textContent = 'Saving…';
+        status.textContent = 'Savingâ€¦';
         clearTimeout(saveTimer);
         saveTimer = setTimeout(function () {
           localStorage.setItem(KEY, np.value);
@@ -165,12 +168,12 @@
       function updateCount() {
         var t = np.value;
         var words = t.trim() ? t.trim().split(/\s+/).length : 0;
-        wc.textContent = words + ' words · ' + t.length + ' characters';
+        wc.textContent = words + ' words Â· ' + t.length + ' characters';
       }
 
       document.getElementById('btn-copy').addEventListener('click', function () {
         navigator.clipboard.writeText(np.value);
-        this.textContent = '✓ Copied'; var b = this; setTimeout(function () { b.textContent = '⧉ Copy All'; }, 1500);
+        this.textContent = 'âœ“ Copied'; var b = this; setTimeout(function () { b.textContent = 'â§‰ Copy All'; }, 1500);
       });
 
       document.getElementById('btn-clear').addEventListener('click', function () {

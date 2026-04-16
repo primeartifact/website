@@ -1,0 +1,327 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>End-to-End Encrypted Clipboard | PrimeArtifact</title>
+  <meta name="description"
+    content="Securely sync text between devices using End-to-End encryption. No data is stored tracking you.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="icon" href="../../assets/favicon.png" type="image/png">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../../manifest.json">
+  <script src="../../js/theme.js"></script>
+  <style>
+    .clipboard-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media(max-width: 768px) {
+      .clipboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .clipboard-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      box-shadow: var(--glass-shadow-lg);
+    }
+
+    .clipboard-panel__title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-text {
+      font-size: 0.85rem;
+      margin-top: var(--space-sm);
+      color: var(--text-secondary);
+      min-height: 20px;
+    }
+
+    .e2e-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      color: var(--success);
+      background: rgba(46, 204, 113, 0.1);
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: var(--space-lg);
+      border: 1px solid rgba(46, 204, 113, 0.2);
+    }
+
+    .sync-code-output {
+      font-size: 1.8rem;
+      letter-spacing: 4px;
+      font-family: monospace;
+      color: var(--accent);
+      text-align: center;
+      margin: var(--space-lg) 0;
+      padding: var(--space-md);
+      background: var(--bg-dark);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--accent-border);
+      user-select: all;
+    }
+
+    .sync-input {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.2rem;
+      text-align: center;
+      letter-spacing: 2px;
+      font-family: monospace;
+      text-transform: uppercase;
+      margin-bottom: var(--space-md);
+      background: var(--bg-dark);
+      border: 1px solid var(--border-medium);
+      color: var(--text-primary);
+      border-radius: var(--radius-md);
+    }
+
+    .sync-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg-canvas"
+    style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;"></canvas>
+
+  <!-- Dynamic Navbar -->
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+  <script src="../../js/crypto-utils.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../index.html">Home</a>
+          <span class="page-header__breadcrumb-sep">/</span>
+          <span>Everyday Artifacts</span>
+        </div>
+        <h1 class="page-header__title">Secure Online Clipboard</h1>
+        <p class="page-header__subtitle">End-to-End Encrypted. Sync text across devices instantly.</p>
+      </div>
+
+      <div class="e2e-badge animate-in">
+        <span>🔒</span> 100% End-to-End Encrypted. The server only sees math gibberish.
+      </div>
+
+      <div class="clipboard-layout">
+        <!-- UPLOAD PANEL -->
+        <div class="clipboard-panel animate-in" style="animation-delay: 0.1s;">
+          <h2 class="clipboard-panel__title">
+            <span>📤</span> Send to Cloud
+          </h2>
+          <textarea id="clip-send-text" class="textarea input-panel" style="min-height: 150px; margin-bottom: 0;"
+            placeholder="Paste text you want to securely sync here... (Max 100K chars)"></textarea>
+
+          <div id="clip-send-ui" style="margin-top: 15px;">
+            <button id="clip-upload-btn" class="btn btn--accent"
+              style="width: 100%; justify-content: center; padding: 12px;">
+              Encrypt & Upload
+            </button>
+            <div id="clip-upload-status" class="status-text text-center"></div>
+          </div>
+
+          <div id="clip-code-ui" style="display: none;">
+            <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-top: 15px;">Your
+              Secret Sync Code (expires in 24h):</p>
+            <div id="clip-sync-code" class="sync-code-output"></div>
+            <button id="clip-copy-link-btn" class="btn" style="width: 100%; justify-content: center;">
+              Copy Sync Code
+            </button>
+          </div>
+        </div>
+
+        <!-- DOWNLOAD PANEL -->
+        <div class="clipboard-panel animate-in" style="animation-delay: 0.2s;">
+          <h2 class="clipboard-panel__title">
+            <span>📥</span> Fetch from Cloud
+          </h2>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">
+            Enter the 6-character Sync Code from your other device to fetch and decrypt the text.
+          </p>
+          <input type="text" id="clip-receive-code" class="sync-input" placeholder="ABC-DEF" maxlength="7">
+
+          <button id="clip-download-btn" class="btn btn--accent"
+            style="width: 100%; justify-content: center; padding: 12px; margin-bottom: 15px;">
+            Fetch & Decrypt
+          </button>
+          <div id="clip-download-status" class="status-text text-center"></div>
+
+          <textarea id="clip-receive-text" class="textarea input-panel"
+            style="min-height: 150px; margin-bottom: 0; background-color: var(--bg-dark);"
+            placeholder="Your decrypted text will appear here..." readonly></textarea>
+          <button id="clip-copy-text-btn" class="btn"
+            style="width: 100%; justify-content: center; margin-top: 15px; display: none;">
+            Copy to Clipboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">
+        <p>&copy; 2026 <a href="../../index.html">PrimeArtifact</a> â€” Free online artifacts. No login. No tracking. No
+          nonsense.</p>
+        <div style="display:flex;gap:var(--space-md);font-size:0.82rem;">
+          <a href="../../pages/about.html" style="color:var(--text-tertiary);text-decoration:none;">About</a>
+          <a href="../../pages/privacy.html" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>
+          <a href="../../pages/contact.html" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../../js/interactive.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // --- SENDING LOGIC ---
+      const uploadBtn = document.getElementById('clip-upload-btn');
+      const sendText = document.getElementById('clip-send-text');
+      const uploadStatus = document.getElementById('clip-upload-status');
+      const codeUi = document.getElementById('clip-code-ui');
+      const sendUi = document.getElementById('clip-send-ui');
+      const syncCodeDisplay = document.getElementById('clip-sync-code');
+
+      uploadBtn.addEventListener('click', async () => {
+        const text = sendText.value.trim();
+        if (!text) {
+          uploadStatus.innerHTML = "<span style='color: var(--error);'>Please enter some text to sync.</span>";
+          return;
+        }
+
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = "Encrypting...";
+        uploadStatus.innerHTML = "Locking payload with AES-GCM...";
+
+        try {
+          const syncCode = CryptoUtils.generateSyncCode();
+          const dbId = await CryptoUtils.generateDatabaseId(syncCode);
+          const encryptedData = await CryptoUtils.encryptData(text, syncCode);
+
+          uploadStatus.innerHTML = "Uploading to Cloudflare KV...";
+
+          const response = await fetch('/api/clip', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dbId, encryptedData })
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            uploadStatus.innerHTML = "";
+            sendUi.style.display = 'none';
+            codeUi.style.display = 'block';
+            syncCodeDisplay.innerText = syncCode;
+          } else {
+            uploadStatus.innerHTML = `<span style='color: var(--error);'>Error: ${result.error}</span>`;
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = "Encrypt & Upload";
+          }
+        } catch (e) {
+          uploadStatus.innerHTML = "<span style='color: var(--error);'>Network error or payload formatting failed.</span>";
+          uploadBtn.disabled = false;
+          uploadBtn.innerHTML = "Encrypt & Upload";
+        }
+      });
+
+      document.getElementById('clip-copy-link-btn').addEventListener('click', function () {
+        const code = syncCodeDisplay.innerText;
+        navigator.clipboard.writeText(code);
+        this.innerHTML = "Copied!";
+        setTimeout(() => this.innerHTML = "Copy Sync Code", 2000);
+      });
+
+      // --- RECEIVE LOGIC ---
+      const downloadBtn = document.getElementById('clip-download-btn');
+      const codeInput = document.getElementById('clip-receive-code');
+      const receiveText = document.getElementById('clip-receive-text');
+      const downloadStatus = document.getElementById('clip-download-status');
+      const copyTextBtn = document.getElementById('clip-copy-text-btn');
+
+      codeInput.addEventListener('input', function () {
+        // Auto format ABCDEF to ABC-DEF
+        let val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (val.length > 3) {
+          val = val.slice(0, 3) + '-' + val.slice(3, 6);
+        }
+        this.value = val;
+      });
+
+      downloadBtn.addEventListener('click', async () => {
+        const code = codeInput.value.toUpperCase();
+        if (code.length !== 7 || !code.includes('-')) {
+          downloadStatus.innerHTML = "<span style='color: var(--error);'>Invalid Sync Code format.</span>";
+          return;
+        }
+
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = "Fetching...";
+        downloadStatus.innerHTML = "Fetching from Cloudflare KV...";
+        receiveText.value = '';
+
+        try {
+          const dbId = await CryptoUtils.generateDatabaseId(code);
+          const response = await fetch('/api/clip?id=' + dbId);
+          const result = await response.json();
+
+          if (result.success) {
+            downloadStatus.innerHTML = "Decrypting locally...";
+            const plainText = await CryptoUtils.decryptData(result.encryptedData, code);
+
+            if (plainText) {
+              downloadStatus.innerHTML = "<span style='color: var(--success);'>Successfully decrypted!</span>";
+              receiveText.value = plainText;
+              copyTextBtn.style.display = 'flex';
+            } else {
+              downloadStatus.innerHTML = "<span style='color: var(--error);'>Decryption failed. Incorrect code?</span>";
+            }
+          } else {
+            downloadStatus.innerHTML = `<span style='color: var(--error);'>Error: ${result.error}</span>`;
+          }
+        } catch (e) {
+          downloadStatus.innerHTML = "<span style='color: var(--error);'>Network error.</span>";
+        }
+
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = "Fetch & Decrypt";
+      });
+
+      copyTextBtn.addEventListener('click', function () {
+        navigator.clipboard.writeText(receiveText.value);
+        this.innerHTML = "Copied to Clipboard!";
+        if (window.showToast) window.showToast("Copied decrypted text securely.");
+        setTimeout(() => this.innerHTML = "Copy to Clipboard", 2000);
+      });
+
+    });
+  </script>
+</body>
+
+</html>

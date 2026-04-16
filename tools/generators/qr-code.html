@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free QR Code Generator — Create & Download QR Codes Online | PrimeArtifact</title>
+  <title>Free QR Code Generator â€” Create & Download QR Codes Online | PrimeArtifact</title>
   <meta name="description"
     content="Create QR codes for any URL, text, phone number, or data in seconds. Download as PNG. Free, no login, no watermark, no account required.">
   <link rel="stylesheet" href="../../css/style.css">
@@ -44,14 +44,14 @@
     }
   </style>
 
-  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <!-- â•â•â• SEO META â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://primeartifact.com/tools/generators/qr-code.html">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://primeartifact.com/tools/generators/qr-code.html">
-  <meta property="og:title" content="Free QR Code Generator — Create & Download QR Codes Online | PrimeArtifact">
+  <meta property="og:title" content="Free QR Code Generator â€” Create & Download QR Codes Online | PrimeArtifact">
   <meta property="og:description"
     content="Create QR codes for any URL, text, phone number, or data in seconds. Download as PNG. Free, no login, no watermark, no account required.">
   <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
@@ -59,7 +59,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Free QR Code Generator — Create & Download QR Codes Online | PrimeArtifact">
+  <meta name="twitter:title" content="Free QR Code Generator â€” Create & Download QR Codes Online | PrimeArtifact">
   <meta name="twitter:description"
     content="Create QR codes for any URL, text, phone number, or data in seconds. Download as PNG. Free, no login, no watermark, no account required.">
   <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
@@ -85,7 +85,10 @@
   "description": "Create QR codes for any text or URL instantly. Download as PNG. Free and no watermark."
 }
   </script>
-  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../../manifest.json">
 </head>
 
 <body>
@@ -102,8 +105,8 @@
     <div class="container" style="max-width:700px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
-          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">›</span>
-          <a href="#">Generators</a><span class="page-header__breadcrumb-sep">›</span>
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">â€º</span>
+          <a href="#">Generators</a><span class="page-header__breadcrumb-sep">â€º</span>
           <span>QR Code</span>
         </div>
         <h1 class="page-header__title">QR Code Generator</h1>
@@ -112,7 +115,7 @@
 
       <div class="glass glass--static input-panel animate-in">
         <div class="input-panel__header"><span class="input-panel__title">Data Input</span></div>
-        <textarea class="textarea" id="text-input" placeholder="Enter text or URL…"
+        <textarea class="textarea" id="text-input" placeholder="Enter text or URLâ€¦"
           rows="3">https://primeartifact.com</textarea>
       </div>
 
@@ -147,8 +150,8 @@
             </div>
           </div>
           <div class="action-row">
-            <button class="btn btn--accent" id="btn-download">↓ Download PNG</button>
-            <button class="btn" id="btn-copy">⧉ Copy to Clipboard</button>
+            <button class="btn btn--accent" id="btn-download">â†“ Download PNG</button>
+            <button class="btn" id="btn-copy">â§‰ Copy to Clipboard</button>
           </div>
         </div>
       </div>
@@ -158,7 +161,7 @@
   <footer class="footer glass glass--static"
     style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
     <div class="container">
-      <p>© 2026 <a href="../../index.html">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.
+      <p>Â© 2026 <a href="../../index.html">PrimeArtifact</a> â€” Free online artifacts. No login. No tracking. No nonsense.
       </p>
     </div>
   </footer>
@@ -258,7 +261,7 @@
 
       function generate() {
         var text = input.value.trim();
-        if (!text) { paToast('Please enter some text or a URL to generate a QR code.', { icon: '📱' }); return; }
+        if (!text) { paToast('Please enter some text or a URL to generate a QR code.', { icon: 'ðŸ“±' }); return; }
         var ecl = eclSelect.value;
         var cellSize = parseInt(sizeSelect.value);
         try {
@@ -318,9 +321,9 @@
         c.toBlob(function (blob) {
           navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
         });
-        this.textContent = '✓ Copied';
+        this.textContent = 'âœ“ Copied';
         var b = this;
-        setTimeout(function () { b.textContent = '⧉ Copy to Clipboard'; }, 1500);
+        setTimeout(function () { b.textContent = 'â§‰ Copy to Clipboard'; }, 1500);
       });
 
       generate();

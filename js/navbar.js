@@ -63,7 +63,8 @@
       title: 'Everyday Artifacts',
       tools: [
         { name: 'Age Calculator', desc: 'Exact age with birthday countdown', href: base + 'tools/utility/age-calculator.html' },
-        { name: 'Online Notepad', desc: 'Auto-saves to your browser privately', href: base + 'tools/utility/notepad.html' }
+        { name: 'Online Notepad', desc: 'Auto-saves to your browser privately', href: base + 'tools/utility/notepad.html' },
+        { name: 'Secure Clipboard', desc: 'E2E Encrypted device sync', href: base + 'tools/utility/clipboard.html' }
       ]
     }
   ];
@@ -232,5 +233,51 @@
   effectsScript.src = base + 'js/effects.js';
   effectsScript.defer = true;
   document.body.appendChild(effectsScript);
+
+  // --- Track Recent Artifacts ---
+  var currentPath = window.location.pathname;
+  if (currentPath.includes('/tools/')) {
+    var rawMatch = currentPath.match(/tools\/[a-z-]+\/[a-z-]+\.html/);
+    if (rawMatch) {
+      var toolPath = currentPath.substring(currentPath.indexOf('/tools/') + 1);
+      try {
+        var recentObjStr = localStorage.getItem('prime_recent') || '[]';
+        var recent = JSON.parse(recentObjStr);
+        recent = recent.filter(function (i) { return i !== toolPath; });
+        recent.unshift(toolPath);
+        if (recent.length > 4) recent.pop();
+        localStorage.setItem('prime_recent', JSON.stringify(recent));
+      } catch (e) { }
+    }
+  }
+
+  // --- Global Footer Injection ---
+  function buildFooter() {
+    return '<div class="container">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">' +
+        '<p>&copy; 2026 <a href="' + base + 'index.html">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.</p>' +
+        '<div style="display:flex;gap:var(--space-md);font-size:0.82rem;">' +
+          '<a href="' + base + 'pages/about.html" style="color:var(--text-tertiary);text-decoration:none;">About</a>' +
+          '<a href="' + base + 'pages/privacy.html" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>' +
+          '<a href="' + base + 'pages/contact.html" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var footerElement = document.querySelector('footer');
+    if (footerElement) {
+      footerElement.className = "footer"; // Standardize CSS globally
+      footerElement.innerHTML = buildFooter();
+    }
+  });
+
+  // --- PWA Service Worker Registration ---
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register(base + 'sw.js').catch(function (err) { });
+    });
+  }
 
 })();

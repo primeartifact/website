@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Number to Words Converter â€” Indian & International Systems | PrimeArtifact</title>
+  <title>Number to Words Converter &mdash; Indian & International Systems | PrimeArtifact</title>
   <meta name="description"
     content="Convert any number to words in Indian numbering (Lakhs, Crores) and International systems. Ideal for writing cheques, invoices, and legal documents. Free, no login.">
   <link rel="stylesheet" href="../../css/style.css">
@@ -24,7 +24,7 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://primeartifact.com/tools/converters/number-to-words.html">
-  <meta property="og:title" content="Number to Words Converter â€” Indian & International Systems | PrimeArtifact">
+  <meta property="og:title" content="Number to Words Converter &mdash; Indian & International Systems | PrimeArtifact">
   <meta property="og:description"
     content="Convert any number to words in Indian numbering (Lakhs, Crores) and International systems. Ideal for writing cheques, invoices, and legal documents. Free, no login.">
   <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
@@ -32,7 +32,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Number to Words Converter â€” Indian & International Systems | PrimeArtifact">
+  <meta name="twitter:title" content="Number to Words Converter &mdash; Indian & International Systems | PrimeArtifact">
   <meta name="twitter:description"
     content="Convert any number to words in Indian numbering (Lakhs, Crores) and International systems. Ideal for writing cheques, invoices, and legal documents. Free, no login.">
   <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
@@ -77,12 +77,12 @@
     <div class="container" style="max-width:750px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
-          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">â€º</span>
-          <a href="#">Converters</a><span class="page-header__breadcrumb-sep">â€º</span>
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">/</span>
+          <a href="#">Converters</a><span class="page-header__breadcrumb-sep">/</span>
           <span>Number to Words</span>
         </div>
         <h1 class="page-header__title">Number to Words Converter</h1>
-        <p class="page-header__subtitle">Convert any number to words â€” Indian (Lakhs, Crores) and International systems.</p>
+        <p class="page-header__subtitle">Convert any number to words &mdash; Indian (Lakhs, Crores) and International systems.</p>
       </header>
 
       <div class="glass glass--static input-panel animate-in">
@@ -119,12 +119,12 @@
             style="font-size:0.7rem;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;font-weight:600;">
             Formatted</div>
           <div id="result-fmt"
-            style="font-size:1.1rem;color:var(--text-primary);font-weight:500;font-family:var(--font-mono);">â€”</div>
+            style="font-size:1.1rem;color:var(--text-primary);font-weight:500;font-family:var(--font-mono);">&mdash;</div>
         </div>
 
         <div style="margin-top:var(--space-md);display:flex;gap:var(--space-sm);">
-          <button class="btn" id="btn-copy">â§‰ Copy Indian</button>
-          <button class="btn" id="btn-copy-intl">â§‰ Copy International</button>
+          <button class="btn" id="btn-copy"><i class="fas fa-copy"></i> Copy Indian</button>
+          <button class="btn" id="btn-copy-intl"><i class="fas fa-copy"></i> Copy International</button>
         </div>
       </div>
     </div>
@@ -133,7 +133,7 @@
   <footer class="footer glass glass--static"
     style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
     <div class="container">
-      <p>Â© 2026 <a href="../../index.html">PrimeArtifact</a> â€” Free online artifacts. No login. No tracking. No nonsense.
+      <p>&copy; 2026 <a href="../../index.html">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
       </p>
     </div>
   </footer>
@@ -328,7 +328,7 @@
       inp.addEventListener('input', function () {
         var v = this.value.replace(/[^0-9.-]/g, '');
         var num = parseInt(v);
-        if (isNaN(num)) { ri.textContent = 'Type a number above'; rl.textContent = 'Type a number above'; rf.textContent = 'â€”'; return; }
+        if (isNaN(num)) { ri.textContent = 'Type a number above'; rl.textContent = 'Type a number above'; rf.textContent = '&mdash;'; return; }
         ri.textContent = toIndian(num);
         rl.textContent = toIntl(num);
         rf.textContent = formatIndian(num);
@@ -336,7 +336,7 @@
 
       function copyText(id, btn) {
         var t = document.getElementById(id).textContent;
-        if (t && t !== 'Type a number above') { navigator.clipboard.writeText(t); btn.textContent = 'âœ“ Copied'; setTimeout(function () { btn.textContent = btn.dataset.orig; }, 1500); }
+        if (t && t !== 'Type a number above') { navigator.clipboard.writeText(t); btn.textContent = '<i class="fas fa-check"></i> Copied'; setTimeout(function () { btn.textContent = btn.dataset.orig; }, 1500); }
       }
       var b1 = document.getElementById('btn-copy'); b1.dataset.orig = b1.textContent;
       b1.addEventListener('click', function () { copyText('result-indian', this); });

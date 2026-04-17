@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lorem Ipsum Generator â€” Paragraphs, Sentences & Words | PrimeArtifact</title>
+  <title>Lorem Ipsum Generator &mdash; Paragraphs, Sentences & Words | PrimeArtifact</title>
   <meta name="description"
     content="Generate Lorem Ipsum placeholder text instantly. Choose paragraphs, sentences, or words. Great for UI mockups, design wireframes, and prototyping. Free, no login.">
   <link rel="stylesheet" href="../../css/style.css">
@@ -143,7 +143,7 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://primeartifact.com/tools/text/lorem-ipsum.html">
-  <meta property="og:title" content="Lorem Ipsum Generator â€” Paragraphs, Sentences & Words | PrimeArtifact">
+  <meta property="og:title" content="Lorem Ipsum Generator &mdash; Paragraphs, Sentences & Words | PrimeArtifact">
   <meta property="og:description"
     content="Generate Lorem Ipsum placeholder text instantly. Choose paragraphs, sentences, or words. Great for UI mockups, design wireframes, and prototyping. Free, no login.">
   <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
@@ -151,7 +151,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Lorem Ipsum Generator â€” Paragraphs, Sentences & Words | PrimeArtifact">
+  <meta name="twitter:title" content="Lorem Ipsum Generator &mdash; Paragraphs, Sentences & Words | PrimeArtifact">
   <meta name="twitter:description"
     content="Generate Lorem Ipsum placeholder text instantly. Choose paragraphs, sentences, or words. Great for UI mockups, design wireframes, and prototyping. Free, no login.">
   <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
@@ -194,8 +194,8 @@
     <div class="container" style="max-width:800px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb"><a href="../../index.html">Home</a><span
-            class="page-header__breadcrumb-sep">â€º</span><a href="#">Text Artifacts</a><span
-            class="page-header__breadcrumb-sep">â€º</span><span>Lorem Ipsum</span></div>
+            class="page-header__breadcrumb-sep">/</span><a href="#">Text Artifacts</a><span
+            class="page-header__breadcrumb-sep">/</span><span>Lorem Ipsum</span></div>
         <h1 class="page-header__title">Lorem Ipsum Generator</h1>
         <p class="page-header__subtitle">Generate placeholder text for your designs and layouts.</p>
       </header>
@@ -235,8 +235,8 @@
         <div class="input-panel__header">
           <span class="input-panel__title">Resulting Text</span>
           <div class="input-panel__actions">
-            <button class="btn btn--small" id="btn-copy">â§‰ Copy</button>
-            <button class="btn btn--small" id="btn-clear">âœ• Clear</button>
+            <button class="btn btn--small" id="btn-copy"><i class="fas fa-copy"></i> Copy</button>
+            <button class="btn btn--small" id="btn-clear"><i class="fas fa-times"></i> Clear</button>
           </div>
         </div>
         <div id="output"
@@ -246,7 +246,7 @@
       </div>
 
       <div class="pyramid-stage">
-        <!-- â†“ The Ruins â†“ -->
+        <!-- &darr; The Ruins &darr; -->
       </div>
     </div>
   </main>
@@ -254,7 +254,7 @@
   <footer id="main-footer" class="footer glass glass--static"
     style="border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
     <div class="container">
-      <p>Â© 2026 <a href="../../index.html">PrimeArtifact</a> â€” Free online artifacts. No login. No tracking. No nonsense.
+      <p>&copy; 2026 <a href="../../index.html">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
       </p>
     </div>
   </footer>
@@ -306,7 +306,7 @@
       document.getElementById('btn-gen').addEventListener('click', generate);
       document.getElementById('btn-copy').addEventListener('click', function () {
         var t = document.getElementById('output').textContent;
-        if (t) { navigator.clipboard.writeText(t); var ob = this.textContent; this.textContent = 'âœ“ Copied'; var b = this; setTimeout(function () { b.textContent = ob; }, 1200); }
+        if (t) { navigator.clipboard.writeText(t); var ob = this.textContent; this.textContent = '<i class="fas fa-check"></i> Copied'; var b = this; setTimeout(function () { b.textContent = ob; }, 1200); }
       });
       document.getElementById('btn-clear').addEventListener('click', function () {
         document.getElementById('output').textContent = '';

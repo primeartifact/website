@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>URL Encoder & Decoder Online â€” Free Artifact | PrimeArtifact</title>
+  <title>URL Encoder & Decoder Online &mdash; Free Artifact | PrimeArtifact</title>
   <meta name="description"
     content="Encode or decode URLs and query strings instantly. Supports percent-encoding, component encoding, and full URL encoding. Free, no login, works in your browser.">
   <link rel="stylesheet" href="../../css/style.css">
@@ -24,7 +24,7 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://primeartifact.com/tools/converters/url-encoder.html">
-  <meta property="og:title" content="URL Encoder & Decoder Online â€” Free Artifact | PrimeArtifact">
+  <meta property="og:title" content="URL Encoder & Decoder Online &mdash; Free Artifact | PrimeArtifact">
   <meta property="og:description"
     content="Encode or decode URLs and query strings instantly. Supports percent-encoding, component encoding, and full URL encoding. Free, no login, works in your browser.">
   <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
@@ -32,7 +32,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="URL Encoder & Decoder Online â€” Free Artifact | PrimeArtifact">
+  <meta name="twitter:title" content="URL Encoder & Decoder Online &mdash; Free Artifact | PrimeArtifact">
   <meta name="twitter:description"
     content="Encode or decode URLs and query strings instantly. Supports percent-encoding, component encoding, and full URL encoding. Free, no login, works in your browser.">
   <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
@@ -77,8 +77,8 @@
     <div class="container" style="max-width:800px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
-          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">â€º</span>
-          <a href="#">Converters</a><span class="page-header__breadcrumb-sep">â€º</span>
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">/</span>
+          <a href="#">Converters</a><span class="page-header__breadcrumb-sep">/</span>
           <span>URL Encoder</span>
         </div>
         <h1 class="page-header__title">URL Encoder / Decoder</h1>
@@ -87,25 +87,25 @@
 
       <div class="glass glass--static input-panel animate-in">
         <div class="input-panel__header"><span class="input-panel__title">Input</span></div>
-        <textarea class="textarea" id="input" placeholder="Enter text or URL to encode/decodeâ€¦" rows="4"></textarea>
+        <textarea class="textarea" id="input" placeholder="Enter text or URL to encode/decode..." rows="4"></textarea>
 
         <div style="margin:var(--space-md) 0;display:flex;gap:var(--space-sm);flex-wrap:wrap;">
-          <button class="btn btn--accent" id="btn-encode">Encode â†’</button>
+          <button class="btn btn--accent" id="btn-encode">Encode &rarr;</button>
           <button class="btn btn--accent" id="btn-decode">â† Decode</button>
           <button class="btn" id="btn-encode-comp">Encode Component</button>
           <button class="btn" id="btn-decode-comp">Decode Component</button>
-          <button class="btn" id="btn-swap">â‡… Swap</button>
+          <button class="btn" id="btn-swap"><i class="fas fa-exchange-alt"></i> Swap</button>
         </div>
 
         <div
           style="font-size:0.8rem;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:var(--space-sm);">
           Output</div>
-        <textarea class="textarea" id="output" placeholder="Result will appear hereâ€¦" rows="4" readonly
+        <textarea class="textarea" id="output" placeholder="Result will appear here..." rows="4" readonly
           style="background:var(--accent-soft);"></textarea>
 
         <div style="margin-top:var(--space-md);display:flex;gap:var(--space-sm);">
-          <button class="btn" id="btn-copy">â§‰ Copy</button>
-          <button class="btn" id="btn-clear">âœ• Clear</button>
+          <button class="btn" id="btn-copy"><i class="fas fa-copy"></i> Copy</button>
+          <button class="btn" id="btn-clear"><i class="fas fa-times"></i> Clear</button>
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@
   <footer class="footer glass glass--static"
     style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
     <div class="container">
-      <p>Â© 2026 <a href="../../index.html">PrimeArtifact</a> â€” Free online artifacts. No login. No tracking. No nonsense.
+      <p>&copy; 2026 <a href="../../index.html">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
       </p>
     </div>
   </footer>
@@ -136,7 +136,7 @@
         }
       }
 
-      function checkEmpty() { if (!inp.value.trim()) { paToast('Please enter some text to process.', { icon: 'ðŸ”—' }); return true; } return false; }
+      function checkEmpty() { if (!inp.value.trim()) { paToast('Please enter some text to process.', { icon: 'ðŸ” - ' }); return true; } return false; }
 
       document.getElementById('btn-encode').addEventListener('click', function () { if (checkEmpty()) return; try { out.value = encodeURI(inp.value); } catch (e) { out.value = 'Error: ' + e.message; } });
       document.getElementById('btn-decode').addEventListener('click', function () { if (checkEmpty()) return; try { out.value = decodeURI(inp.value); } catch (e) { out.value = 'Error: ' + e.message; } });
@@ -152,9 +152,9 @@
       document.getElementById('btn-copy').addEventListener('click', function () {
         if (out.value) {
           navigator.clipboard.writeText(out.value);
-          this.textContent = 'âœ“ Copied';
+          this.textContent = '<i class="fas fa-check"></i> Copied';
           var b = this;
-          setTimeout(function () { b.textContent = 'â§‰ Copy'; }, 1500);
+          setTimeout(function () { b.textContent = '<i class="fas fa-copy"></i> Copy'; }, 1500);
         }
       });
 

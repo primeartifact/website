@@ -234,6 +234,12 @@
   effectsScript.defer = true;
   document.body.appendChild(effectsScript);
 
+  // Inject Font Awesome for icons across all tools
+  var faLink = document.createElement('link');
+  faLink.rel = 'stylesheet';
+  faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+  document.head.appendChild(faLink);
+
   // --- Track Recent Artifacts ---
   var currentPath = window.location.pathname;
   if (currentPath.includes('/tools/')) {

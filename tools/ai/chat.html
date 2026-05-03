@@ -676,14 +676,13 @@
         <div class="chat-input-wrapper">
           <div class="custom-dropdown" id="model-dropdown">
             <div class="custom-dropdown-selected" id="dropdown-selected">
-              <span id="dropdown-text">Google Gemini</span> <i class="fas fa-chevron-up"
+              <span class="dropdown-text" id="dropdown-text">Meta Llama 4</span> <i class="fas fa-chevron-up"
                 style="font-size:0.7em; margin-left: 4px;"></i>
             </div>
             <div class="custom-dropdown-options" id="dropdown-options">
-              <div class="custom-dropdown-option active" data-value="google_gemini" data-name="Google Gemini">Google Gemini <span class="model-badge">by Google</span></div>
-              <div class="custom-dropdown-option" data-value="meta_llama" data-name="Meta Llama 4">Meta Llama 4 <span class="model-badge">by Meta</span></div>
-              <div class="custom-dropdown-option" data-value="deepseek" data-name="DeepSeek">DeepSeek <span class="model-badge">by DeepSeek</span></div>
-              <div class="custom-dropdown-option" data-value="mistral_ai" data-name="Mistral AI">Mistral AI <span class="model-badge">by Mistral</span></div>
+              <div class="custom-dropdown-option active" data-value="llama_4" data-name="Meta Llama 4">Meta Llama 4 <span class="model-badge">by Meta</span></div>
+              <div class="custom-dropdown-option" data-value="llama_3_3" data-name="Llama 3.3 (70B)">Llama 3.3 (70B) <span class="model-badge">by Meta</span></div>
+              <div class="custom-dropdown-option" data-value="gemma_2" data-name="Google Gemma 2">Google Gemma 2 <span class="model-badge">by Google</span></div>
             </div>
           </div>
           <div id="file-preview-container" class="file-preview-container"></div>
@@ -801,8 +800,8 @@
         deleteBtn: document.getElementById('btn-delete')
       };
 
-      let currentModel = 'google_gemini';
-      let currentModelName = 'Google Gemini';
+      let currentModel = 'llama_4';
+      let currentModelName = 'Meta Llama 4';
 
       function setDropdownValue(val, name) {
         currentModel = val;

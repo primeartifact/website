@@ -93,6 +93,7 @@
     var path = window.location.pathname;
     if (path.includes('/pages/about')) return 'about';
     if (path.includes('/pages/contact')) return 'contact';
+    if (path.includes('/tools/ai/')) return 'ai';
     if (path.includes('/tools/')) return 'tools';
     return 'home';
   }
@@ -109,6 +110,7 @@
 
     html += '<ul class="navbar__nav" id="main-nav">';
     html += '<li><a href="' + base + 'index.html" class="navbar__link' + (active === 'home' ? ' navbar__link--active' : '') + '">Home</a></li>';
+    html += '<li><a href="' + base + 'tools/ai/chat.html" class="navbar__link' + (active === 'ai' ? ' navbar__link--active' : '') + '">AI Chat</a></li>';
 
     // Tools dropdown
     html += '<li class="navbar__dropdown" id="tools-dropdown">';

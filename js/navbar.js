@@ -39,7 +39,7 @@
       id: 'ai-tools',
       title: 'AI Artifacts',
       tools: [
-        { name: 'PrimeArtifact AI', desc: 'Powerful Llama 4 AI assistant', href: base + 'tools/ai/chat.html' }
+        { name: 'PrimeArtifact AI', desc: 'Powerful AI assistant', href: base + 'tools/ai/chat.html' }
       ]
     },
     {
@@ -310,68 +310,6 @@
     }
 
     // --- INJECT DYNAMIC MODALS (Cmd+K & Mega Menu) ---
-    var styleEl = document.createElement('style');
-    styleEl.innerHTML = `
-      .nav-btn {
-        background: transparent;
-        border: 1px solid var(--border-light);
-        color: var(--text-secondary);
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        padding: 0;
-        margin-left: 8px;
-      }
-      .nav-btn:hover {
-        background: var(--bg-hover);
-        color: var(--text-primary);
-        border-color: var(--text-tertiary);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      }
-      .nav-btn svg { width: 18px; height: 18px; }
-      
-      .demo-modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(11, 13, 18, 0.7);
-        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        z-index: 99999; display: none; align-items: flex-start; justify-content: center;
-        padding-top: 8vh; opacity: 0; transition: opacity 0.2s;
-      }
-      .demo-modal-overlay.active { display: flex; opacity: 1; }
-      .demo-close { position: absolute; top: 20px; right: 30px; font-size: 2rem; color: #fff; cursor: pointer; background: none; border: none; z-index: 10; }
-      
-      .demo-cmd-k {
-        background: var(--glass-bg); border: 1px solid var(--glass-border-edge);
-        width: 650px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden;
-      }
-      .demo-cmd-k input { width: 100%; padding: 20px 24px; font-size: 1.3rem; background: transparent; border: none; border-bottom: 1px solid var(--border-light); color: var(--text-primary); }
-      .demo-cmd-k input:focus { outline: none; }
-      .demo-cmd-list { padding: 12px; max-height: 400px; overflow-y: auto; }
-      .demo-cmd-item { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-radius: 8px; cursor: pointer; color: var(--text-primary); font-weight: 600; text-decoration:none; }
-      .demo-cmd-item:hover { background: var(--accent-soft); color: var(--accent); }
-      .demo-cmd-item span.desc { color: var(--text-tertiary); font-size: 0.85rem; font-weight: 400; pointer-events: none; }
-
-      .demo-mega {
-        background: var(--glass-bg); border: 1px solid var(--glass-border-edge);
-        width: 1000px; height: 600px; border-radius: 16px; display: flex; box-shadow: 0 30px 60px rgba(0,0,0,0.5); overflow: hidden;
-      }
-      .demo-mega-sidebar { width: 260px; border-right: 1px solid var(--border-light); padding: 24px; background: rgba(0,0,0,0.1); overflow-y:auto; }
-      .demo-mega-sidebar-item { padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-weight: 600; color: var(--text-secondary); transition: all 0.2s; }
-      .demo-mega-sidebar-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
-      .demo-mega-sidebar-item.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(74, 111, 165, 0.4); }
-      .demo-mega-content { flex-grow: 1; padding: 32px; display: block; align-content: start; overflow-y: auto; }
-      .demo-mega-card { background: var(--bg-secondary); border: 1px solid var(--border-light); padding: 24px; border-radius: 12px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; text-decoration:none; display:block; }
-      .demo-mega-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-      .demo-mega-card h3 { margin: 0 0 8px 0; font-size: 1.15rem; color: var(--text-primary); }
-      .demo-mega-card p { margin: 0; font-size: 0.9rem; color: var(--text-tertiary); line-height: 1.5; }
-    `;
-    document.head.appendChild(styleEl);
 
     // Build Cmd+K items
     var cmdkItemsHTML = '';
@@ -412,12 +350,12 @@
       
       <!-- MEGA MENU MODAL -->
       <div class="demo-modal-overlay" id="modal-mega"><button class="demo-close">&times;</button>
-        <div class="demo-mega" style="flex-direction: column;">
-          <div style="padding: 24px 32px; border-bottom: 1px solid var(--border-light); background: rgba(0,0,0,0.1); position: relative;">
-            <input type="text" id="mega-search-input" placeholder="Type to search all artifacts instantly..." style="width: 100%; padding: 18px 48px 18px 24px; font-size: 1.2rem; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-light); color: var(--text-primary); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border-light)'">
-            <button id="mega-search-clear" style="position: absolute; right: 48px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-tertiary); font-size: 1.5rem; cursor: pointer; display: none;">&times;</button>
+        <div class="demo-mega">
+          <div class="mega-search-bar">
+            <input type="text" id="mega-search-input" placeholder="Type to search all artifacts instantly...">
+            <button id="mega-search-clear">&times;</button>
           </div>
-          <div style="display: flex; flex-grow: 1; overflow: hidden;">
+          <div class="mega-container">
             <div class="demo-mega-sidebar" id="mega-sidebar">
               ${megaSidebarHTML}
             </div>

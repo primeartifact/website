@@ -668,7 +668,7 @@
           <div class="empty-state">
             <i class="fas fa-robot"></i>
             <h2>How can I help you today?</h2>
-            <p>Select a model from the top left and start typing.</p>
+            <p>Start typing to interact with PrimeArtifact AI.</p>
           </div>
         </div>
 
@@ -694,18 +694,18 @@
     const ctx = canvas.getContext('2d');
     let dots = [];
     let mouseX = -1000, mouseY = -1000;
-    const spacing = 40;
+    const spacing = 60; // Increased spacing to reduce dot count
 
     window.addEventListener('mousemove', (e) => {
       mouseX = e.pageX; mouseY = e.pageY;
     });
 
     function initCanvas() {
-      canvas.width = document.body.scrollWidth;
-      canvas.height = window.innerHeight; // Fill viewport
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
       dots = [];
-      const cols = Math.floor(canvas.width / spacing) + 1;
-      const rows = Math.floor(canvas.height / spacing) + 1;
+      const cols = Math.ceil(canvas.width / spacing) + 1;
+      const rows = Math.ceil(canvas.height / spacing) + 1;
       for (let x = 0; x < cols; x++) {
         for (let y = 0; y < rows; y++) {
           dots.push(new ElasticDot(x * spacing, y * spacing));
@@ -721,14 +721,17 @@
       updateAndDraw() {
         let dx = mouseX - this.ox;
         let dy = mouseY - this.oy;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-        let targetX = this.ox; let targetY = this.oy;
+        let distSq = dx * dx + dy * dy;
+        let targetX = this.ox; 
+        let targetY = this.oy;
         let isHovered = false;
 
-        if (dist < 120 && dist > 0) {
+        // Interaction radius (sq) - reduced for performance
+        if (distSq < 10000) { 
           isHovered = true;
-          let force = (120 - dist) / 120;
-          let pushOut = force * 25;
+          let dist = Math.sqrt(distSq);
+          let force = (100 - dist) / 100;
+          let pushOut = force * 20;
           targetX = this.ox - (dx / dist) * pushOut;
           targetY = this.oy - (dy / dist) * pushOut;
         }
@@ -736,18 +739,15 @@
         this.x += (targetX - this.x) * 0.15;
         this.y += (targetY - this.y) * 0.15;
 
-        let themeColor = getComputedStyle(document.body).getPropertyValue('--text-tertiary').trim() || '#8b909e';
-        let accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#4a6fa5';
-
+        // Cache colors or use fixed ones if possible
         ctx.beginPath();
+        ctx.arc(this.x, this.y, isHovered ? 2 : 1.2, 0, Math.PI * 2);
         if (isHovered) {
-          ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = accentColor;
+          ctx.fillStyle = '#4a6fa5';
           ctx.globalAlpha = 0.4;
         } else {
-          ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
-          ctx.fillStyle = themeColor;
-          ctx.globalAlpha = 0.15;
+          ctx.fillStyle = '#8b909e';
+          ctx.globalAlpha = 0.1;
         }
         ctx.fill();
       }
@@ -777,19 +777,9 @@
         exportBtn: document.getElementById('btn-export'),
         deleteBtn: document.getElementById('btn-delete')
       };
-
-              chat.model = currentModel;
-              chat.modelName = currentModelName;
-              chat.updatedAt = Date.now();
-              saveToStorage();
-            }
-          });
-        });
-      }
-
-      // State
       let chats = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
       let activeChatId = null;
+      const currentModelName = 'PrimeArtifact AI';
 
       // Initialize
       function init() {
@@ -811,10 +801,16 @@
       }
 
       function createNewChat() {
+        // Reset generating state if switching to a new chat
+        isGenerating = false;
+        elements.input.disabled = false;
+        elements.input.placeholder = 'Message the AI... (Shift+Enter for new line)';
+        document.querySelector('.chat-input-container').classList.remove('generating');
+
         const newChat = {
           id: 'chat_' + Date.now(),
           title: 'New Conversation',
-          model: currentModel,
+          model: 'prime_ai',
           modelName: currentModelName,
           updatedAt: Date.now(),
           messages: []
@@ -824,7 +820,10 @@
         saveToStorage();
         renderHistorySidebar();
         renderActiveChat();
+        elements.input.value = '';
+        elements.input.style.height = 'auto';
         elements.input.focus();
+        handleInput(); // Re-validate button state
       }
 
       function getActiveChat() {
@@ -1099,29 +1098,6 @@
         const chatMain = document.querySelector('.chat-main');
 
         // Drag and Drop Logic
-        chatMain.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          chatMain.classList.add('drag-active');
-        });
-
-        chatMain.addEventListener('dragleave', (e) => {
-          e.preventDefault();
-          // Make sure we only remove if we're actually leaving the container, not just entering a child element
-          if (e.target === chatMain) {
-            chatMain.classList.remove('drag-active');
-          }
-        });
-
-        chatMain.addEventListener('drop', (e) => {
-          e.preventDefault();
-          chatMain.classList.remove('drag-active');
-          if (e.dataTransfer.files.length > 0) {
-            Array.from(e.dataTransfer.files).forEach(f => currentFiles.push(f));
-            renderFilePreview();
-            handleInput();
-          }
-        });
-
         elements.input.addEventListener('input', handleInput);
 
         elements.input.addEventListener('keydown', (e) => {

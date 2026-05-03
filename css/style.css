@@ -1183,7 +1183,7 @@ input[type="number"] {
   }
 
   .navbar__dropdown--open .navbar__dropdown-menu {
-    max-height: 600px;
+    max-height: 2000px;
     opacity: 1;
     visibility: visible;
     transform: none;

@@ -52,9 +52,9 @@ export async function onRequestPost(context) {
       case 'meta_llama':
         return await callGroq(messages, 'meta-llama/llama-4-scout-17b-16e-instruct', env.GROQ_API_KEY, corsHeaders);
 
-      // ✅ Mistral AI → Real Mistral model (Mixtral 8x7B), hosted on Groq
+      // ✅ Mistral AI → Real Mistral model, hosted on Groq
       case 'mistral_ai':
-        return await callGroq(messages, 'mixtral-8x7b-32768', env.GROQ_API_KEY, corsHeaders);
+        return await callGroq(messages, 'mistral-saba-24b', env.GROQ_API_KEY, corsHeaders);
 
       // ✅ DeepSeek → DeepSeek's own API (direct)
       case 'deepseek':
@@ -102,7 +102,7 @@ async function callGemini(messages, apiKey, headers) {
   });
 
   const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received from Google Gemini.';
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || `⚠️ Error from Google Gemini: ${data.error?.message || JSON.stringify(data)}`;
 
   return new Response(JSON.stringify({ content: text }), { headers });
 }
@@ -140,7 +140,7 @@ async function callGroq(messages, modelId, apiKey, headers) {
   });
 
   const data = await response.json();
-  const text = data.choices?.[0]?.message?.content || 'No response received from Groq.';
+  const text = data.choices?.[0]?.message?.content || `⚠️ Error from Groq: ${data.error?.message || JSON.stringify(data)}`;
 
   return new Response(JSON.stringify({ content: text }), { headers });
 }
@@ -175,7 +175,7 @@ async function callDeepSeek(messages, apiKey, headers) {
   });
 
   const data = await response.json();
-  const text = data.choices?.[0]?.message?.content || 'No response received from DeepSeek.';
+  const text = data.choices?.[0]?.message?.content || `⚠️ Error from DeepSeek: ${data.error?.message || JSON.stringify(data)}`;
 
   return new Response(JSON.stringify({ content: text }), { headers });
 }

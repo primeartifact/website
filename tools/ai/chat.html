@@ -465,6 +465,18 @@
       background: var(--bg-secondary);
     }
 
+    .chat-input-container.generating {
+      opacity: 0.5;
+      pointer-events: none;
+      border-color: var(--accent);
+      animation: pulseGlow 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.1); }
+      50% { box-shadow: 0 0 0 4px rgba(74, 111, 165, 0.3), 0 0 20px rgba(74, 111, 165, 0.1); }
+    }
+
     .chat-textarea {
       flex: 1;
       background: transparent;
@@ -1096,9 +1108,14 @@
         elements.sendBtn.disabled = elements.input.value.trim() === '' && currentFiles.length === 0;
       }
 
+      let isGenerating = false;
+
       async function sendMessage() {
         const text = elements.input.value.trim();
         if (!text && currentFiles.length === 0) return;
+        if (isGenerating) return; // Block duplicate sends
+
+        isGenerating = true;
 
         const chat = getActiveChat();
 
@@ -1110,7 +1127,12 @@
         elements.input.style.height = 'auto';
         currentFiles = [];
         renderFilePreview();
+
+        // Lock the input area visually
         elements.sendBtn.disabled = true;
+        elements.input.disabled = true;
+        elements.input.placeholder = 'Waiting for response...';
+        document.querySelector('.chat-input-container').classList.add('generating');
 
         // Add user message
         chat.messages.push({ role: 'user', content: messageContent, attachments: attachments });
@@ -1138,7 +1160,7 @@
           <div class="message-content-wrapper">
             <div class="message-avatar"><i class="fas fa-robot"></i></div>
             <div class="message-body" style="color: var(--text-tertiary);">
-              <i><i class="fas fa-circle-notch fa-spin"></i> Generating response via ${selectedModel}...</i>
+              <i><i class="fas fa-circle-notch fa-spin"></i> Generating response via ${currentModelName}...</i>
             </div>
           </div>
         `;
@@ -1146,7 +1168,6 @@
         scrollToBottom();
 
         try {
-          // Note: '/api/ai' is a relative path that works automatically when deployed on Cloudflare Pages
           const response = await fetch('/api/ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1161,7 +1182,6 @@
           const data = await response.json();
           const aiResponse = data.content;
 
-          // Remove typing indicator
           document.getElementById(typingId)?.remove();
 
           chat.messages.push({ role: 'assistant', content: aiResponse });
@@ -1173,6 +1193,14 @@
           console.error('Chat Error:', error);
           document.getElementById(typingId)?.remove();
           appendMessageUI('assistant', '⚠️ **Connection Error**: I could not reach the AI bridge. Please ensure your Cloudflare Worker is deployed and API keys are set.');
+        } finally {
+          // Unlock input area
+          isGenerating = false;
+          elements.input.disabled = false;
+          elements.input.placeholder = 'Message the AI... (Shift+Enter for new line)';
+          elements.sendBtn.disabled = false;
+          document.querySelector('.chat-input-container').classList.remove('generating');
+          elements.input.focus();
         }
       }
 

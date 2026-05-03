@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Flow Command Center | PrimeArtifact</title>
+  <meta name="description"
+    content="Professional 12h work hours tracker with futuristic HUD and linear status tracking.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <style>
+    /* ═══ BRAND-ALIGNED DESIGN SYSTEM ═══ */
+    :root {
+      /* Dark Theme (Brand Match) */
+      --bg: #0d1117;
+      --text-main: #f0f6fc;
+      --text-dim: #8b949e;
+      --panel-bg: rgba(22, 27, 34, 0.8);
+      --accent: #6a8db3;
+      --accent-glow: rgba(106, 141, 179, 0.25);
+      --gear-stroke: rgba(106, 141, 179, 0.15);
+      --border: rgba(106, 141, 179, 0.2);
+      --input-bg: rgba(255, 255, 255, 0.03);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="light"] {
+      /* Light Theme (Brand Match) */
+      --bg: #f6f8fa;
+      --text-main: #1f2328;
+      --text-dim: #656d76;
+      --panel-bg: rgba(255, 255, 255, 0.9);
+      --accent: #4a6fa5;
+      --accent-glow: rgba(74, 111, 165, 0.12);
+      --gear-stroke: rgba(74, 111, 165, 0.1);
+      --border: rgba(74, 111, 165, 0.15);
+      --input-bg: rgba(0, 0, 0, 0.03);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: background 0.3s, color 0.3s;
+      overflow-x: hidden;
+    }
+
+    main.page {
+      padding-top: 100px;
+      padding-bottom: 80px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 25px;
+    }
+
+    .page-title {
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: block;
+      opacity: 0.8;
+    }
+
+    .main-h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin: 0 0 40px 0;
+      letter-spacing: -1px;
+      color: var(--text-main);
+    }
+
+    .main-clock {
+      font-family: var(--font-mono);
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      font-weight: 900;
+      color: var(--text-main);
+      margin: 0;
+      letter-spacing: -2px;
+      text-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .ist-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* ═══ LINEAR STATUS BAR ═══ */
+    .status-hub {
+      width: 100%;
+      max-width: 900px;
+      margin: 40px auto;
+      position: relative;
+    }
+
+    .hud-bar-container {
+      height: 52px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .hud-bar-segments {
+      display: flex;
+      gap: 5px;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 8px;
+      box-sizing: border-box;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .segment {
+      flex: 1;
+      border-right: 1px solid rgba(128, 128, 128, 0.1);
+    }
+
+    .hud-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #8fb6e1);
+      box-shadow: 0 0 20px var(--accent-glow);
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 1;
+      border-radius: 4px;
+    }
+
+    .hud-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    #percent-val {
+      font-size: 1.5rem;
+      letter-spacing: 0;
+      color: var(--text-main);
+    }
+
+    /* ═══ INTERFACE ═══ */
+    .action-interface {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 60px;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      backdrop-filter: blur(40px) saturate(150%);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: var(--shadow);
+      transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .panel > * { position: relative; z-index: 2; }
+
+    .panel > * { position: relative; z-index: 2; }
+
+    .panel:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+    }
+
+    .res-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .clock-panel {
+      margin-top: 30px;
+      padding: 35px 50px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      display: inline-block;
+      box-shadow: var(--shadow);
+    }
+
+    .tool-panel::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      bottom: 25px;
+      left: 0;
+      width: 4px;
+      background: var(--accent);
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 15px var(--accent);
+      z-index: 10;
+    }
+
+    .form-group { margin-bottom: 30px; }
+    .label-tag { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 15px; display: block; letter-spacing: 2px; }
+
+    .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .cyber-input-wrapper {
+      position: relative;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 15px;
+      transition: all 0.3s;
+    }
+    .cyber-input-wrapper:focus-within {
+      border-color: var(--accent);
+      background: var(--input-bg);
+      opacity: 0.9;
+    }
+    .cyber-input-wrapper::after {
+      content: attr(data-unit); position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+      font-size: 0.6rem; color: var(--text-dim); font-weight: 800;
+    }
+
+    .cyber-input {
+      width: 100%; background: transparent; border: none; color: var(--text-main); font-family: var(--font-mono);
+      font-size: 1.8rem; font-weight: 800; outline: none; text-align: center;
+    }
+
+    .result-panel {
+      justify-content: center;
+      text-align: center;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+    }
+
+    .res-time {
+      font-family: var(--font-mono);
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      font-weight: 900;
+      color: var(--text-main);
+      line-height: 1;
+      text-shadow: 0 0 25px var(--accent-glow), 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .res-sub {
+      font-size: 0.88rem;
+      color: var(--text-main);
+      margin-top: 30px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 900px) {
+      .action-interface {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 30px;
+      }
+
+      .main-h1 {
+        font-size: 1.8rem;
+      }
+
+      .main-clock {
+        font-size: 3.5rem;
+      }
+
+      .res-time {
+        font-size: 3rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg-canvas"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none;"></canvas>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+
+      <!-- HUD HEADER -->
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">/</span>
+          <a href="#">Everyday Artifacts</a><span class="page-header__breadcrumb-sep">/</span>
+          <span>Work Hours</span>
+        </div>
+        <h1 class="page-header__title">Work-Hours Completion Tracker</h1>
+        <p class="page-header__subtitle">Professional IST shift tracking and mission progress command center.</p>
+
+        <div style="text-align: center;">
+          <div class="clock-panel animate-in">
+            <span class="ist-label" style="margin-top: 0;">Indian Standard Time (12H) Sync</span>
+            <div id="live-ist" class="main-clock">00:00:00 AM</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- COMMAND HUD BAR -->
+      <div class="status-hub animate-in">
+        <div class="hud-bar-container">
+          <div class="hud-fill" id="hud-fill"></div>
+          <div class="hud-bar-segments" id="segments-container"></div>
+        </div>
+        <div class="hud-stats">
+          <span>Shift Status: Active</span>
+          <span id="percent-val">0%</span>
+          <span>Mission Progress</span>
+        </div>
+      </div>
+
+      <!-- INTERFACE GRID -->
+      <div class="action-interface animate-in">
+
+        <!-- INPUT PANEL -->
+        <div class="panel tool-panel">
+          <div class="form-group">
+            <span class="label-tag">Time Already Completed</span>
+            <div class="input-grid">
+              <div class="cyber-input-wrapper" data-unit="HRS">
+                <input type="number" id="comp-h" class="cyber-input" placeholder="03" oninput="calculate()"
+                  onkeypress="return this.value.length < 4">
+              </div>
+              <div class="cyber-input-wrapper" data-unit="MIN">
+                <input type="number" id="comp-m" class="cyber-input" placeholder="00" oninput="calculate()"
+                  onkeypress="return this.value.length < 2">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <span class="label-tag">Total Shift Target</span>
+            <div class="input-grid">
+              <div class="cyber-input-wrapper" data-unit="HRS">
+                <input type="number" id="target-h" class="cyber-input" value="8" oninput="calculate()"
+                  onkeypress="return this.value.length < 4">
+              </div>
+              <div class="cyber-input-wrapper" data-unit="MIN">
+                <input type="number" id="target-m" class="cyber-input" value="20" oninput="calculate()"
+                  onkeypress="return this.value.length < 2">
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="font-size: 0.6rem; color: var(--text-dim); margin-top: 25px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">
+            * Precision Tracking Sync
+          </div>
+        </div>
+
+        <!-- RESULT PANEL -->
+        <div class="panel result-panel">
+          <div class="res-label">Expected Completion</div>
+          <div id="res-time" class="res-time">--:--:-- --</div>
+          <div id="res-sub" class="res-sub">Syncing shifts...</div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script>
+    // --- GENERATE HUD SEGMENTS ---
+    const segs = document.getElementById('segments-container');
+    for (let i = 0; i < 40; i++) {
+      const s = document.createElement('div');
+      s.className = 'segment';
+      segs.appendChild(s);
+    }
+
+    // --- LIVE CLOCK ---
+    function getIST() {
+      const d = new Date();
+      const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      return new Date(utc + (3600000 * 5.5));
+    }
+
+    function formatTime(date) {
+      if (!date || isNaN(date.getTime())) return "00:00:00 AM";
+      let h = date.getHours();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return `${String(h).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')} ${ampm}`;
+    }
+
+    setInterval(() => {
+      document.getElementById('live-ist').textContent = formatTime(getIST());
+    }, 1000);
+
+    // --- MAIN CALCULATION ---
+    function calculate() {
+      const ch = Math.min(parseInt(document.getElementById('comp-h').value) || 0, 9999);
+      const cm = Math.min(parseInt(document.getElementById('comp-m').value) || 0, 59);
+      const th = Math.min(parseInt(document.getElementById('target-h').value) || 0, 9999);
+      const tm = Math.min(parseInt(document.getElementById('target-m').value) || 0, 59);
+
+      // Clamp minutes to 59
+      if (document.getElementById('comp-m').value > 59) document.getElementById('comp-m').value = 59;
+      if (document.getElementById('target-m').value > 59) document.getElementById('target-m').value = 59;
+
+      const totalTarget = (th * 60) + tm;
+      const totalCompleted = (ch * 60) + cm;
+      const remaining = totalTarget - totalCompleted;
+
+      const ist = getIST();
+      const leaveDate = new Date(ist.getTime() + (remaining * 60000));
+
+      const resTimeEl = document.getElementById('res-time');
+      const resSubEl = document.getElementById('res-sub');
+
+      if (isNaN(leaveDate.getTime()) || Math.abs(remaining) > 1000000) {
+        resTimeEl.textContent = "OUT OF BOUNDS";
+        resSubEl.textContent = "PLEASE ENTER VALID SHIFT HOURS";
+        return;
+      }
+
+      resTimeEl.textContent = formatTime(leaveDate);
+
+      const percent = Math.min(Math.max((totalCompleted / (totalTarget || 1)) * 100, 0), 100);
+      document.getElementById('hud-fill').style.width = percent + "%";
+      document.getElementById('percent-val').textContent = Math.round(percent) + "%";
+
+      if (remaining > 0) {
+        resSubEl.textContent = `${Math.floor(remaining / 60)}h ${Math.round(remaining % 60)}m UNTIL MISSION COMPLETION`;
+      } else {
+        resSubEl.textContent = "SHIFT TARGET REACHED";
+        if (remaining <= 0 && totalTarget > 0) {
+          if (window.paToast) window.paToast("Shift Mission Accomplished", { icon: '🏆' });
+        }
+      }
+    }
+
+    // --- GEAR MESH BACKGROUND ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h, gears = [];
+    let mouse = { x: -1000, y: -1000 };
+
+    window.addEventListener('resize', initCanvas);
+    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    function initCanvas() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      gears = [];
+      for (let i = 0; i < 4; i++) {
+        gears.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: 60 + Math.random() * 120,
+          rot: 0,
+          v: (Math.random() - 0.5) * 0.04
+        });
+      }
+    }
+
+    function animateGears() {
+      ctx.clearRect(0, 0, w, h);
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+
+      gears.forEach(p => {
+        const dx = mouse.x - p.x, dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        // Speed up when mouse is near
+        p.rot += dist < p.r ? p.v * 6 : p.v;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+
+        // Brand aligned gear color
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--gear-stroke').trim();
+        ctx.lineWidth = 12;
+        ctx.beginPath(); ctx.arc(0, 0, p.r, 0, Math.PI * 2); ctx.stroke();
+
+        // Inner detail
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(0, 0, p.r * 0.4, 0, Math.PI * 2); ctx.stroke();
+
+        // Teeth
+        ctx.lineWidth = 12;
+        for (let i = 0; i < 12; i++) {
+          ctx.rotate(Math.PI / 6);
+          ctx.strokeRect(p.r - 5, -10, 20, 20);
+        }
+        ctx.restore();
+      });
+      requestAnimationFrame(animateGears);
+    }
+
+    initCanvas();
+    animateGears();
+
+    // Initial run
+    calculate();
+  </script>
+</body>
+
+</html>

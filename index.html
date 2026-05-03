@@ -4,9 +4,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrimeArtifact — Free online artifacts | No Login, No Ads, No Tracking</title>
+  <title>PrimeArtifact — Premium Free Online Utility Tools | Private & Ad-Free</title>
   <meta name="description"
-    content="Free browser-based artifacts for everyday tasks. Word counter, password generator, QR codes, color picker, age calculator & more. No login. No ads. Fully private.">
+    content="PrimeArtifact offers a suite of high-performance, private, and free online utility tools. From AI assistants and text processors to secure generators and time calculators, everything works in your browser with no login, no ads, and 100% privacy.">
+  <meta name="keywords" content="free online tools, time calculator, age calculator, password generator, qr code generator, word counter, text converter, secure clipboard, private notepad, ai assistant, primeartifact">
+  <meta name="author" content="PrimeArtifact">
+  
+  <!-- Robots & Canonical -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.com/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.com/">
+  <meta property="og:title" content="PrimeArtifact — Premium Free Online Utility Tools | Private & Ad-Free">
+  <meta property="og:description"
+    content="Access premium utility tools for text, passwords, and time management. 100% private, no login required, no tracking. Fast and secure browser-based artifacts.">
+  <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://primeartifact.com/">
+  <meta name="twitter:title" content="PrimeArtifact — Premium Free Online Utility Tools | Private & Ad-Free">
+  <meta name="twitter:description"
+    content="High-performance online artifacts for everyday tasks. No ads. No tracking. No login. Just pure utility.">
+  <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
+
   <link rel="stylesheet" href="css/style.css">
   <script src="js/theme.js"></script>
   <script src="js/interactive.js"></script>
@@ -178,46 +202,27 @@
     }
   </style>
 
-  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://primeartifact.com/">
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://primeartifact.com/">
-  <meta property="og:title" content="PrimeArtifact — Free online artifacts | No Login, No Ads, No Tracking">
-  <meta property="og:description"
-    content="Free browser-based artifacts for everyday tasks. Word counter, password generator, QR codes, color picker, age calculator & more. No login. No ads. Fully private.">
-  <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
-  <meta property="og:site_name" content="PrimeArtifact">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="PrimeArtifact — Free online artifacts | No Login, No Ads, No Tracking">
-  <meta name="twitter:description"
-    content="Free browser-based artifacts for everyday tasks. Word counter, password generator, QR codes, color picker, age calculator & more. No login. No ads. Fully private.">
-  <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
-
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
   <!-- Structured Data -->
   <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "PrimeArtifact",
-  "url": "https://primeartifact.com",
-  "description": "Free online utility tools \u2014 private, ad-free, no login required.",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://primeartifact.com/?q={search_term_string}",
-    "query-input": "required name=search_term_string"
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "PrimeArtifact",
+    "url": "https://primeartifact.com",
+    "description": "Premium free online utility tools — private, ad-free, no login required.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://primeartifact.com/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   }
-}
   </script>
-  <!-- ═══════════════════════════════════════════════════════════ -->
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -273,10 +278,19 @@
             var added = false;
             
             recent.forEach(function(href) {
-              var original = document.querySelector('a.tool-card[href="' + href + '"]');
+              // Try exact match, then try matching without extension, then with .html
+              var selector = 'a.tool-card[href="' + href + '"]';
+              var original = document.querySelector(selector);
+              
+              if (!original) {
+                var cleanHref = href.replace('.html', '');
+                original = document.querySelector('a.tool-card[href="' + cleanHref + '"]') || 
+                           document.querySelector('a.tool-card[href="' + cleanHref + '.html' + '"]');
+              }
+
               if (original) {
                 var clone = original.cloneNode(true);
-                clone.classList.remove('animate-in'); // prevent double animation artifacts
+                clone.classList.remove('animate-in');
                 clone.classList.add('tool-card--recent');
                 grid.appendChild(clone);
                 added = true;
@@ -290,14 +304,25 @@
         });
       </script>
 
+      <section id="ai-tools">
+        <div class="section-title animate-in" style="color: var(--accent); border-bottom-color: var(--accent-border);">AI Artifacts</div>
+        <div class="tools-grid">
+          <a href="tools/ai/chat.html" class="glass tool-card animate-in" style="border-color: rgba(74, 111, 165, 0.4); background: linear-gradient(135deg, rgba(74, 111, 165, 0.08), rgba(0,0,0,0));">
+            <span class="tool-card__icon">🤖</span>
+            <div class="tool-card__name">PrimeArtifact AI Assistant</div>
+            <div class="tool-card__desc">Powerful, private AI assistant powered by high-performance Llama infrastructure. No login required.</div>
+          </a>
+        </div>
+      </section>
+
       <section id="text-tools">
         <div class="section-title animate-in">Text Artifacts</div>
         <div class="tools-grid">
           <a href="tools/text/word-counter.html" class="glass tool-card animate-in">
-            <span class="tool-card__icon">𝐖</span>
+            <span class="tool-card__icon">123</span>
             <div class="tool-card__name">Word & Character Counter</div>
-            <div class="tool-card__desc">Count words, characters, sentences, paragraphs, and get reading time estimates.
-            </div>
+            <div class="tool-card__desc">Count words, characters, sentences, and paragraphs in real-time. Estimate reading
+              time.</div>
           </a>
           <a href="tools/text/case-converter.html" class="glass tool-card animate-in">
             <span class="tool-card__icon">Aa</span>
@@ -315,6 +340,28 @@
             <span class="tool-card__icon">¶</span>
             <div class="tool-card__name">Lorem Ipsum Generator</div>
             <div class="tool-card__desc">Generate placeholder text — paragraphs, sentences, or words for your designs.
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section id="time-tools">
+        <div class="section-title animate-in">Time Artifacts</div>
+        <div class="tools-grid">
+          <!-- <a href="tools/utility/work-hours.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">🏢</span>
+            <div class="tool-card__name">Work Hours Calculator</div>
+            <div class="tool-card__desc">Calculate when you can leave office based on your check-in time and lunch break.</div>
+          </a> -->
+          <a href="tools/utility/time-calculator.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">⏱️</span>
+            <div class="tool-card__name">Time Calculator</div>
+            <div class="tool-card__desc">Calculate the sum of hours and minutes easily. Add time together.</div>
+          </a>
+          <a href="tools/utility/age-calculator.html" class="glass tool-card animate-in">
+            <span class="tool-card__icon">🎂</span>
+            <div class="tool-card__name">Age Calculator</div>
+            <div class="tool-card__desc">Calculate your exact age in years, months, days. See next birthday countdown.
             </div>
           </a>
         </div>
@@ -359,15 +406,9 @@
         </div>
       </section>
 
-      <section id="everyday-tools">
-        <div class="section-title animate-in">Everyday Artifacts</div>
+      <section id="utility-artifacts">
+        <div class="section-title animate-in">Utility Artifacts</div>
         <div class="tools-grid">
-          <a href="tools/utility/age-calculator.html" class="glass tool-card animate-in">
-            <span class="tool-card__icon">🎂</span>
-            <div class="tool-card__name">Age Calculator</div>
-            <div class="tool-card__desc">Calculate your exact age in years, months, days. See next birthday countdown.
-            </div>
-          </a>
           <a href="tools/utility/notepad.html" class="glass tool-card animate-in">
             <span class="tool-card__icon">📝</span>
             <div class="tool-card__name">Online Notepad</div>
@@ -377,11 +418,6 @@
             <span class="tool-card__icon">📋</span>
             <div class="tool-card__name">Secure Clipboard</div>
             <div class="tool-card__desc">End-to-End encrypted text sync across devices. Secure and 100% private.</div>
-          </a>
-          <a href="tools/ai/chat.html" class="glass tool-card animate-in" style="border-color: rgba(74, 111, 165, 0.4);">
-            <span class="tool-card__icon">🤖</span>
-            <div class="tool-card__name">PrimeArtifact AI Assistant</div>
-            <div class="tool-card__desc">Free, private AI assistant powered by high-performance infrastructure.</div>
           </a>
         </div>
       </section>

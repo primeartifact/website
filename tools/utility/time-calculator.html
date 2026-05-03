@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Calculator &mdash; Add Hours and Minutes | PrimeArtifact</title>
+  <meta name="description"
+    content="Calculate the sum of hours and minutes easily. Free online time calculator, no login required.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script>
+  <style>
+    /* Safe Sticky Footer & Anti-Zoom Void */
+    html {
+      height: 100%;
+      background-color: var(--bg-page);
+    }
+
+    body {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    main.page {
+      flex-grow: 1;
+      min-height: 0 !important;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 10;
+    }
+
+    .container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #main-footer {
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+
+    /* ═══ ENTRIES GRID ═══ */
+    #entries-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .time-entry {
+      position: relative;
+      background: var(--glass-bg);
+      border: 1.5px solid var(--glass-border-edge);
+      border-radius: var(--radius-md);
+      padding: 16px 14px 14px;
+      text-align: center;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      animation: cascadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .time-entry:hover,
+    .time-entry:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    @keyframes cascadeIn {
+      0%   { opacity: 0; transform: translateY(-18px) scale(0.95); }
+      60%  { opacity: 1; transform: translateY(4px) scale(1.01); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .entry-number {
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      background: var(--accent);
+      color: #fff;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(74, 111, 165, 0.4);
+    }
+
+    .time-fields {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .premium-time-input {
+      width: 70px;
+      padding: 12px 6px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .premium-time-input:hover,
+    .premium-time-input:focus {
+      background: var(--glass-bg-hover);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .premium-time-input.invalid {
+      border-color: #e74c3c !important;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2) !important;
+      animation: shake 0.3s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* Typing Ripple */
+    .ripple-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+      animation: rippleExpand 0.6s ease-out forwards;
+    }
+
+    @keyframes rippleExpand {
+      0%   { width: 10px; height: 10px; opacity: 0.45; transform: translate(-50%, -50%) scale(0.5); }
+      100% { width: 160px; height: 160px; opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    /* Hide spinner arrows */
+    .premium-time-input::-webkit-outer-spin-button,
+    .premium-time-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .premium-time-input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .time-separator {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      user-select: none;
+    }
+
+    .remove-btn {
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      color: var(--text-tertiary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+      font-size: 0.85rem;
+      line-height: 1;
+      padding: 0;
+      opacity: 0;
+    }
+
+    .time-entry:hover .remove-btn {
+      opacity: 1;
+    }
+
+    .remove-btn:hover {
+      background: #e74c3c;
+      color: #fff;
+      border-color: #e74c3c;
+      transform: scale(1.15);
+    }
+
+    /* ═══ ACTIONS BAR ═══ */
+    .actions-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    .calculate-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+    }
+
+    .calculate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(74, 111, 165, 0.4);
+      background: var(--accent-hover);
+    }
+
+    .add-btn {
+      background: transparent;
+      color: var(--accent);
+      border: 2px dashed var(--accent-border);
+      padding: 12px 22px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .add-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .add-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .reset-btn {
+      background: transparent;
+      color: var(--text-tertiary);
+      border: 1.5px solid var(--border-light);
+      padding: 12px 22px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reset-btn:hover {
+      color: #e74c3c;
+      border-color: #e74c3c;
+      background: rgba(231, 76, 60, 0.06);
+    }
+
+    .reset-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ═══ ENTRY COUNTER ═══ */
+    .entry-counter {
+      text-align: center;
+      margin-top: var(--space-md);
+      font-size: 0.78rem;
+      color: var(--text-tertiary);
+      font-weight: 600;
+    }
+
+    .entry-counter span {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    /* ═══ RESULT ═══ */
+    .result-panel {
+      margin-top: var(--space-xl);
+      text-align: center;
+      padding: var(--space-lg) var(--space-md);
+      border-top: 1.5px solid var(--border-light);
+      position: relative;
+    }
+
+    .result-value {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      margin-bottom: 2px;
+      letter-spacing: 0.04em;
+    }
+
+    .result-label {
+      font-size: 0.78rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+
+    .result-detail {
+      margin-top: 8px;
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+    }
+
+    .copy-result-btn {
+      margin-top: var(--space-md);
+      background: transparent;
+      color: var(--accent);
+      border: 1.5px solid var(--accent-border);
+      padding: 8px 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .copy-result-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .copy-result-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ═══ LIVE TOTAL BAR ═══ */
+    .live-total-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: var(--space-md);
+      padding: 10px 16px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border-edge);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      color: var(--text-tertiary);
+      font-weight: 600;
+      transition: all var(--transition-fast);
+    }
+
+    .live-total-bar .live-value {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 1.1rem;
+      transition: transform 0.15s ease;
+    }
+
+    .live-total-bar .live-value.pulse {
+      transform: scale(1.12);
+    }
+
+    /* ═══ EXTRA FORMATS ═══ */
+    .result-extras {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .result-extra-item {
+      text-align: center;
+    }
+
+    .result-extra-item .rex-value {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    .result-extra-item .rex-label {
+      font-size: 0.68rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 900px) {
+      #entries-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      #entries-container {
+        grid-template-columns: 1fr;
+      }
+
+      .premium-time-input {
+        width: 80px;
+        padding: 14px 8px;
+        font-size: 1.15rem;
+      }
+
+      .time-entry {
+        padding: 18px 16px 16px;
+      }
+
+      .result-value {
+        font-size: 2.6rem;
+      }
+
+      .actions-bar {
+        gap: var(--space-sm);
+      }
+
+      .calculate-btn,
+      .add-btn,
+      .reset-btn {
+        padding: 12px 18px;
+        font-size: 0.85rem;
+      }
+
+      .remove-btn {
+        opacity: 1;
+      }
+    }
+  </style>
+
+  <!-- SEO META -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.com/tools/utility/time-calculator.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.com/tools/utility/time-calculator.html">
+  <meta property="og:title" content="Time Calculator &mdash; Add Hours and Minutes | PrimeArtifact">
+  <meta property="og:description"
+    content="Calculate the sum of hours and minutes easily. Free online time calculator, no login required.">
+  <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
+  <meta property="og:site_name" content="PrimeArtifact">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Time Calculator &mdash; Add Hours and Minutes | PrimeArtifact">
+  <meta name="twitter:description"
+    content="Calculate the sum of hours and minutes easily. Free online time calculator, no login required.">
+  <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
+  <link rel="icon" type="image/png" href="../../assets/favicon.png">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+
+</head>
+
+<body>
+
+  <canvas id="bg-canvas"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none;"></canvas>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container" style="max-width:750px;">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../index.html">Home</a><span class="page-header__breadcrumb-sep">/</span>
+          <a href="#">Utility</a><span class="page-header__breadcrumb-sep">/</span>
+          <span>Time Calculator</span>
+        </div>
+        <h1 class="page-header__title">Time Calculator</h1>
+        <p class="page-header__subtitle">Add multiple time entries together. Start with 3 and add as many as you need.</p>
+      </header>
+
+      <div class="glass glass--static input-panel animate-in" style="z-index: 20;">
+
+        <div id="entries-container">
+          <!-- Entries created by JS -->
+        </div>
+
+        <div class="entry-counter" id="entry-counter">
+          <span>3</span> entries
+        </div>
+
+        <div class="actions-bar">
+          <button id="add-btn" class="add-btn" title="Add 3 more time entries">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Add 3 More
+          </button>
+          <button id="calc-btn" class="calculate-btn">Calculate</button>
+          <button id="reset-btn" class="reset-btn" title="Clear all values">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            Reset
+          </button>
+        </div>
+
+        <div class="live-total-bar">
+          Running Total: <span class="live-value" id="live-total">00:00</span>
+        </div>
+
+        <div id="result-container" class="result-panel" style="display: none;">
+          <div class="result-value" id="total-time">00:00</div>
+          <div class="result-label">Total Time</div>
+          <div class="result-detail" id="total-details"></div>
+          <div class="result-extras">
+            <div class="result-extra-item">
+              <div class="rex-value" id="total-mins">0</div>
+              <div class="rex-label">Total Minutes</div>
+            </div>
+            <div class="result-extra-item">
+              <div class="rex-value" id="total-decimal">0.00</div>
+              <div class="rex-label">Decimal Hours</div>
+            </div>
+          </div>
+          <button class="copy-result-btn" id="copy-btn" title="Copy result to clipboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span id="copy-text">Copy Result</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer id="main-footer" class="footer glass glass--static"
+    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
+    <div class="container">
+      <p>&copy; 2026 <a href="../../index.html">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const container = document.getElementById('entries-container');
+      const counterEl = document.getElementById('entry-counter');
+      const liveEl = document.getElementById('live-total');
+
+      function getTotals() {
+        var entries = container.querySelectorAll('.time-entry');
+        var totalH = 0, totalM = 0;
+        entries.forEach(function (entry) {
+          totalH += parseInt(entry.querySelector('.time-h').value) || 0;
+          totalM += parseInt(entry.querySelector('.time-m').value) || 0;
+        });
+        totalH += Math.floor(totalM / 60);
+        totalM = totalM % 60;
+        return { h: totalH, m: totalM };
+      }
+
+      function updateLiveTotal() {
+        var t = getTotals();
+        var formatted = t.h.toString().padStart(2, '0') + ':' + t.m.toString().padStart(2, '0');
+        liveEl.textContent = formatted;
+        liveEl.classList.add('pulse');
+        setTimeout(function () { liveEl.classList.remove('pulse'); }, 150);
+      }
+
+      function updateCounter() {
+        var count = container.querySelectorAll('.time-entry').length;
+        counterEl.innerHTML = '<span>' + count + '</span> entr' + (count === 1 ? 'y' : 'ies');
+      }
+
+      function clampInput(el, min, max, maxLen) {
+        var raw = el.value;
+        if (raw.length > maxLen) {
+          el.value = raw.slice(0, maxLen);
+        }
+        var val = parseInt(el.value);
+        if (!isNaN(val) && val > max) {
+          el.value = max;
+          el.classList.add('invalid');
+          setTimeout(function () { el.classList.remove('invalid'); }, 400);
+        }
+        if (!isNaN(val) && val < min) {
+          el.value = min;
+        }
+      }
+
+      function spawnRipple(inputEl, entryEl) {
+        var rect = inputEl.getBoundingClientRect();
+        var er = entryEl.getBoundingClientRect();
+        var ring = document.createElement('div');
+        ring.className = 'ripple-ring';
+        ring.style.left = (rect.left + rect.width / 2 - er.left) + 'px';
+        ring.style.top = (rect.top + rect.height / 2 - er.top) + 'px';
+        entryEl.appendChild(ring);
+        ring.addEventListener('animationend', function () { ring.remove(); });
+      }
+
+      function createEntry(skipAnim, delay) {
+        var entry = document.createElement('div');
+        entry.className = 'time-entry';
+        if (skipAnim) entry.style.animation = 'none';
+        else if (delay) {
+          entry.style.animationDelay = delay + 'ms';
+          entry.style.opacity = '0';
+          entry.addEventListener('animationend', function () { entry.style.opacity = ''; }, { once: true });
+        }
+        entry.innerHTML =
+          '<span class="entry-number"></span>' +
+          '<div class="time-fields">' +
+            '<input type="number" class="premium-time-input time-h" placeholder="HH" min="0" max="99" aria-label="Hours">' +
+            '<span class="time-separator">:</span>' +
+            '<input type="number" class="premium-time-input time-m" placeholder="MM" min="0" max="59" aria-label="Minutes">' +
+          '</div>' +
+          '<button class="remove-btn" title="Remove" aria-label="Remove this entry">&times;</button>';
+
+        // Input validation & live update
+        var hInput = entry.querySelector('.time-h');
+        var mInput = entry.querySelector('.time-m');
+
+        hInput.addEventListener('input', function () {
+          clampInput(this, 0, 99, 2);
+          updateLiveTotal();
+          spawnRipple(this, entry);
+          // Auto-advance to minutes when 2 digits entered
+          if (this.value.length >= 2) {
+            mInput.focus();
+            mInput.select();
+          }
+        });
+        mInput.addEventListener('input', function () {
+          clampInput(this, 0, 59, 2);
+          updateLiveTotal();
+          spawnRipple(this, entry);
+          // Auto-advance to next entry's hours when 2 digits entered
+          if (this.value.length >= 2) {
+            var next = entry.nextElementSibling;
+            if (next && next.classList.contains('time-entry')) {
+              var nextH = next.querySelector('.time-h');
+              nextH.focus();
+              nextH.select();
+            }
+          }
+        });
+
+        // Remove handler
+        entry.querySelector('.remove-btn').addEventListener('click', function () {
+          entry.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+          entry.style.opacity = '0';
+          entry.style.transform = 'scale(0.9)';
+          setTimeout(function () {
+            entry.remove();
+            refreshNumbers();
+            updateCounter();
+            updateLiveTotal();
+          }, 200);
+        });
+
+        // Auto-advance: Enter on MM jumps to next row HH
+        entry.querySelector('.time-m').addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            var next = entry.nextElementSibling;
+            if (next && next.classList.contains('time-entry')) {
+              next.querySelector('.time-h').focus();
+            }
+          }
+        });
+
+        // Auto-advance: Enter on HH jumps to MM
+        entry.querySelector('.time-h').addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            entry.querySelector('.time-m').focus();
+          }
+        });
+
+        container.appendChild(entry);
+        refreshNumbers();
+        updateCounter();
+        return entry;
+      }
+
+      function refreshNumbers() {
+        var entries = container.querySelectorAll('.time-entry');
+        entries.forEach(function (el, i) {
+          el.querySelector('.entry-number').textContent = i + 1;
+        });
+        var removeBtns = container.querySelectorAll('.remove-btn');
+        removeBtns.forEach(function (btn) {
+          btn.style.visibility = entries.length <= 2 ? 'hidden' : '';
+        });
+      }
+
+      // Create 3 default entries
+      createEntry(true);
+      createEntry(true);
+      createEntry(true);
+
+      // Add 3 entries on click (staggered cascade)
+      document.getElementById('add-btn').addEventListener('click', function () {
+        var first = createEntry(false, 0);
+        createEntry(false, 120);
+        createEntry(false, 240);
+        first.querySelector('.time-h').focus();
+        first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+
+      // Reset
+      document.getElementById('reset-btn').addEventListener('click', function () {
+        container.querySelectorAll('.premium-time-input').forEach(function (input) {
+          input.value = '';
+        });
+        document.getElementById('result-container').style.display = 'none';
+        updateLiveTotal();
+      });
+
+      // Calculate
+      document.getElementById('calc-btn').addEventListener('click', calculate);
+
+      document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          calculate();
+        }
+      });
+
+      function animateOdometer(el, targetH, targetM) {
+        var steps = Math.max(targetH, targetM, 8);
+        var stepTime = Math.min(800 / steps, 60);
+        var cur = 0;
+        function tick() {
+          cur++;
+          var ch = Math.min(Math.round((targetH / steps) * cur), targetH);
+          var cm = Math.min(Math.round((targetM / steps) * cur), targetM);
+          el.textContent = ch.toString().padStart(2, '0') + ':' + cm.toString().padStart(2, '0');
+          if (cur < steps) { setTimeout(tick, stepTime); }
+          else {
+            el.textContent = targetH.toString().padStart(2, '0') + ':' + targetM.toString().padStart(2, '0');
+            el.style.transition = 'transform 0.15s ease';
+            el.style.transform = 'scale(1.08)';
+            setTimeout(function () { el.style.transform = 'scale(1)'; }, 150);
+          }
+        }
+        tick();
+      }
+
+      function calculate() {
+        var t = getTotals();
+        var rawMins = t.h * 60 + t.m;
+
+        // Odometer count-up animation
+        animateOdometer(document.getElementById('total-time'), t.h, t.m);
+
+        document.getElementById('total-details').textContent =
+          t.h + ' hour' + (t.h !== 1 ? 's' : '') + ' and ' + t.m + ' minute' + (t.m !== 1 ? 's' : '');
+        document.getElementById('total-mins').textContent = rawMins.toLocaleString('en-IN');
+        document.getElementById('total-decimal').textContent = (rawMins / 60).toFixed(2);
+
+        var resultContainer = document.getElementById('result-container');
+        resultContainer.style.display = 'block';
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Copy result
+      document.getElementById('copy-btn').addEventListener('click', function () {
+        var text = document.getElementById('total-time').textContent + ' (' + document.getElementById('total-details').textContent + ')';
+        navigator.clipboard.writeText(text).then(function () {
+          var copyText = document.getElementById('copy-text');
+          copyText.textContent = 'Copied!';
+          setTimeout(function () { copyText.textContent = 'Copy Result'; }, 1500);
+        });
+      });
+
+    })();
+  </script>
+
+  <!-- Magnetic Button Effect -->
+  <script>
+    (function () {
+      var btns = document.querySelectorAll('.calculate-btn, .add-btn, .reset-btn');
+      var threshold = 100, maxPull = 4;
+      document.addEventListener('mousemove', function (e) {
+        btns.forEach(function (btn) {
+          var r = btn.getBoundingClientRect();
+          var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+          var dx = e.clientX - cx, dy = e.clientY - cy;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < threshold) {
+            var pull = (1 - dist / threshold) * maxPull;
+            btn.style.transform = 'translate(' + (dx / dist * pull) + 'px,' + (dy / dist * pull) + 'px)';
+          } else {
+            btn.style.transform = '';
+          }
+        });
+      });
+    })();
+  </script>
+
+  <!-- Time-Themed Background Canvas Logic (Orbital Rings) -->
+  <script>
+    var c = document.getElementById('bg-canvas'), ctx = c.getContext('2d');
+    var w, h, mx = 0, my = 0, t = 0;
+    var ac, tc, dk;
+    var rings = [];
+
+    function colors() {
+      dk = document.documentElement.getAttribute('data-theme') === 'dark';
+      ac = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#4a6fa5';
+      tc = getComputedStyle(document.body).getPropertyValue('--text-tertiary').trim() || '#8b909e';
+    }
+    new MutationObserver(colors).observe(document.documentElement, { attributes: true });
+
+    function init() {
+      w = c.width = document.documentElement.clientWidth;
+      h = c.height = window.innerHeight;
+      mx = w / 2; my = h / 2; colors();
+      
+      rings = [
+        { rx: 0.8, ry: 0.2, rz: 0.5, speed: 0.005, radius: Math.min(w,h)*0.35, nodes: 3 },
+        { rx: -0.5, ry: 0.7, rz: 0.3, speed: -0.004, radius: Math.min(w,h)*0.4, nodes: 4 },
+        { rx: 0.3, ry: -0.6, rz: 0.8, speed: 0.006, radius: Math.min(w,h)*0.3, nodes: 2 }
+      ];
+    }
+    
+    let lastWidth = document.documentElement.clientWidth;
+    const resizeObserver = new ResizeObserver(() => {
+      const newWidth = document.documentElement.clientWidth;
+      if (Math.abs(newWidth - lastWidth) > 10 || c.height !== window.innerHeight) {
+        lastWidth = newWidth;
+        init();
+      }
+    });
+    resizeObserver.observe(document.body);
+    
+    window.addEventListener('mousemove', function(e) { mx = e.clientX; my = e.clientY + window.scrollY; });
+    init();
+
+    // 3D rotation helpers
+    function rotateX(p, a) {
+      var cos = Math.cos(a), sin = Math.sin(a);
+      return { x: p.x, y: p.y * cos - p.z * sin, z: p.y * sin + p.z * cos };
+    }
+    function rotateY(p, a) {
+      var cos = Math.cos(a), sin = Math.sin(a);
+      return { x: p.x * cos + p.z * sin, y: p.y, z: -p.x * sin + p.z * cos };
+    }
+    function rotateZ(p, a) {
+      var cos = Math.cos(a), sin = Math.sin(a);
+      return { x: p.x * cos - p.y * sin, y: p.x * sin + p.y * cos, z: p.z };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      t += 1;
+      
+      var cx = w / 2;
+      var cy = h / 2;
+      
+      // Mouse perspective shift
+      var viewRotX = (my - cy) * 0.001;
+      var viewRotY = (mx - cx) * 0.001;
+
+      var allPoints = [];
+
+      rings.forEach(function(ring, rIdx) {
+        var baseAngle = t * ring.speed;
+        var points = [];
+        
+        // Generate ring path
+        for (var a = 0; a < Math.PI * 2; a += 0.1) {
+          var p = { x: Math.cos(a) * ring.radius, y: Math.sin(a) * ring.radius, z: 0 };
+          p = rotateX(p, ring.rx + baseAngle);
+          p = rotateY(p, ring.ry + baseAngle);
+          p = rotateZ(p, ring.rz);
+          
+          p = rotateX(p, viewRotX);
+          p = rotateY(p, viewRotY);
+          
+          points.push({ x: p.x, y: p.y, z: p.z, type: 'path', rIdx: rIdx });
+        }
+        
+        // Generate nodes on the ring
+        for(var n=0; n<ring.nodes; n++) {
+            var nodeAngle = (n * (Math.PI*2)/ring.nodes) + (t * ring.speed * 3);
+            var np = { x: Math.cos(nodeAngle) * ring.radius, y: Math.sin(nodeAngle) * ring.radius, z: 0 };
+            np = rotateX(np, ring.rx + baseAngle);
+            np = rotateY(np, ring.ry + baseAngle);
+            np = rotateZ(np, ring.rz);
+            
+            np = rotateX(np, viewRotX);
+            np = rotateY(np, viewRotY);
+            
+            points.push({ x: np.x, y: np.y, z: np.z, type: 'node', rIdx: rIdx });
+        }
+        
+        allPoints = allPoints.concat(points);
+      });
+
+      // Sort by Z depth
+      allPoints.sort(function(a, b) { return a.z - b.z; });
+
+      // Draw depth-sorted elements
+      var fov = 800;
+      allPoints.forEach(function(p) {
+        var scale = fov / (fov - p.z);
+        if (scale < 0) return; // Behind camera
+        
+        var x = cx + p.x * scale;
+        var y = cy + p.y * scale;
+        
+        var alpha = Math.min(1, Math.max(0.1, (p.z + ringRadius()) / (ringRadius() * 2)));
+        alpha *= (dk ? 0.3 : 0.2);
+
+        if (p.type === 'path') {
+            ctx.fillStyle = tc;
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.arc(x, y, 1.5 * scale, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (p.type === 'node') {
+            ctx.fillStyle = ac;
+            ctx.globalAlpha = alpha * 3;
+            ctx.beginPath();
+            ctx.arc(x, y, 4 * scale, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Glow
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.arc(x, y, 12 * scale, 0, Math.PI * 2);
+            ctx.fill();
+        }
+      });
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+    
+    function ringRadius() {
+        return rings.length ? rings[1].radius : 400;
+    }
+    
+    draw();
+  </script>
+</body>
+</html>

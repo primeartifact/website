@@ -674,22 +674,7 @@
 
         <!-- Input Area -->
         <div class="chat-input-wrapper">
-          <div class="custom-dropdown" id="model-dropdown">
-            <div class="custom-dropdown-selected" id="dropdown-selected">
-              <span class="dropdown-text" id="dropdown-text">Meta Llama 4</span> <i class="fas fa-chevron-up"
-                style="font-size:0.7em; margin-left: 4px;"></i>
-            </div>
-            <div class="custom-dropdown-options" id="dropdown-options">
-              <div class="custom-dropdown-option active" data-value="llama_4" data-name="Meta Llama 4">Meta Llama 4 <span class="model-badge">by Meta</span></div>
-              <div class="custom-dropdown-option" data-value="llama_3_3" data-name="Llama 3.3 (70B)">Llama 3.3 (70B) <span class="model-badge">by Meta</span></div>
-              <div class="custom-dropdown-option" data-value="gemma_2" data-name="Google Gemma 2">Google Gemma 2 <span class="model-badge">by Google</span></div>
-            </div>
-          </div>
-          <div id="file-preview-container" class="file-preview-container"></div>
           <div class="chat-input-container">
-            <button id="btn-attach" class="btn-attach" title="Attach file"><i class="fas fa-paperclip"></i></button>
-            <input type="file" id="file-upload" style="display: none;" multiple
-              accept="image/*,.txt,.md,.csv,.json,.pdf">
             <textarea id="chat-input" class="chat-textarea" placeholder="Message the AI... (Shift+Enter for new line)"
               rows="1"></textarea>
             <button id="btn-send" class="send-btn" title="Send message" disabled><i
@@ -789,91 +774,10 @@
         input: document.getElementById('chat-input'),
         sendBtn: document.getElementById('btn-send'),
         newChatBtn: document.getElementById('btn-new-chat'),
-        dropdown: document.getElementById('model-dropdown'),
-        dropdownSelected: document.getElementById('dropdown-selected'),
-        dropdownText: document.getElementById('dropdown-text'),
-        dropdownOptions: document.querySelectorAll('.custom-dropdown-option'),
-        btnAttach: document.getElementById('btn-attach'),
-        fileUpload: document.getElementById('file-upload'),
-        filePreviewContainer: document.getElementById('file-preview-container'),
         exportBtn: document.getElementById('btn-export'),
         deleteBtn: document.getElementById('btn-delete')
       };
 
-      let currentModel = 'llama_4';
-      let currentModelName = 'Meta Llama 4';
-
-      function setDropdownValue(val, name) {
-        currentModel = val;
-        currentModelName = name;
-        if (elements.dropdownText) elements.dropdownText.textContent = name;
-        if (elements.dropdownOptions) {
-          elements.dropdownOptions.forEach(o => o.classList.remove('active'));
-          const activeOpt = Array.from(elements.dropdownOptions).find(o => o.dataset.value === val);
-          if (activeOpt) activeOpt.classList.add('active');
-        }
-      }
-
-      let currentFiles = [];
-
-      function renderFilePreview() {
-        if (!elements.filePreviewContainer) return;
-        elements.filePreviewContainer.innerHTML = '';
-        currentFiles.forEach((f, idx) => {
-          const div = document.createElement('div');
-          div.className = 'file-preview-item';
-          div.innerHTML = `<span><i class="fas fa-file"></i> ${escapeHTML(f.name)}</span> <i class="fas fa-times remove-file" data-idx="${idx}" title="Remove file"></i>`;
-          elements.filePreviewContainer.appendChild(div);
-        });
-
-        // Add remove listeners
-        elements.filePreviewContainer.querySelectorAll('.remove-file').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const idx = parseInt(e.target.dataset.idx);
-            currentFiles.splice(idx, 1);
-            renderFilePreview();
-            handleInput(); // Re-evaluate send button
-          });
-        });
-      }
-
-      if (elements.btnAttach && elements.fileUpload) {
-        elements.btnAttach.addEventListener('click', () => {
-          elements.fileUpload.click();
-        });
-
-        elements.fileUpload.addEventListener('change', (e) => {
-          if (e.target.files.length > 0) {
-            Array.from(e.target.files).forEach(f => currentFiles.push(f));
-            renderFilePreview();
-            elements.fileUpload.value = ''; // Reset input
-            handleInput(); // Re-evaluate send button
-          }
-        });
-      }
-
-      // Dropdown UI Logic
-      if (elements.dropdownSelected) {
-        elements.dropdownSelected.addEventListener('click', (e) => {
-          e.stopPropagation();
-          elements.dropdown.classList.toggle('open');
-        });
-      }
-
-      document.addEventListener('click', () => {
-        if (elements.dropdown) elements.dropdown.classList.remove('open');
-      });
-
-      if (elements.dropdownOptions) {
-        elements.dropdownOptions.forEach(opt => {
-          opt.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setDropdownValue(opt.dataset.value, opt.dataset.name);
-            elements.dropdown.classList.remove('open');
-
-            // Save to active chat
-            const chat = getActiveChat();
-            if (chat) {
               chat.model = currentModel;
               chat.modelName = currentModelName;
               chat.updatedAt = Date.now();
@@ -1031,19 +935,12 @@
         const chat = getActiveChat();
         if (!chat) return;
 
-        // Update model selector to reflect the chat's current model state
-        if (chat.model && chat.modelName) {
-          setDropdownValue(chat.model, chat.modelName);
-        } else if (chat.model) {
-          setDropdownValue(chat.model, chat.model); // Fallback
-        }
-
         if (chat.messages.length === 0) {
           elements.messagesArea.innerHTML = `
             <div class="empty-state">
               <i class="fas fa-robot"></i>
               <h2>How can I help you today?</h2>
-              <p>Select a model from the top left and start typing.</p>
+              <p>Start typing to interact with PrimeArtifact AI.</p>
             </div>
           `;
           return;
@@ -1104,14 +1001,14 @@
         elements.input.style.height = (elements.input.scrollHeight) + 'px';
 
         // Enable/disable send button
-        elements.sendBtn.disabled = elements.input.value.trim() === '' && currentFiles.length === 0;
+        elements.sendBtn.disabled = elements.input.value.trim() === '';
       }
 
       let isGenerating = false;
 
       async function sendMessage() {
         const text = elements.input.value.trim();
-        if (!text && currentFiles.length === 0) return;
+        if (!text) return;
         if (isGenerating) return; // Block duplicate sends
 
         isGenerating = true;
@@ -1119,13 +1016,11 @@
         const chat = getActiveChat();
 
         let messageContent = text;
-        const attachments = currentFiles.map(f => ({ name: f.name, type: f.type }));
+        const attachments = [];
 
         // Reset input immediately
         elements.input.value = '';
         elements.input.style.height = 'auto';
-        currentFiles = [];
-        renderFilePreview();
 
         // Lock the input area visually
         elements.sendBtn.disabled = true;
@@ -1147,9 +1042,6 @@
         saveToStorage();
         appendMessageUI('user', messageContent, attachments);
 
-        // --- REAL AI RESPONSE LOGIC (Connecting to Cloudflare Worker) ---
-        const selectedModelValue = currentModel;
-
         // Show typing indicator
         const typingId = 'typing_' + Date.now();
         const typingDiv = document.createElement('div');
@@ -1159,7 +1051,7 @@
           <div class="message-content-wrapper">
             <div class="message-avatar"><i class="fas fa-robot"></i></div>
             <div class="message-body" style="color: var(--text-tertiary);">
-              <i><i class="fas fa-circle-notch fa-spin"></i> Generating response via ${currentModelName}...</i>
+              <i><i class="fas fa-circle-notch fa-spin"></i> Generating response...</i>
             </div>
           </div>
         `;
@@ -1171,7 +1063,6 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              model: selectedModelValue,
               messages: chat.messages.map(m => ({ role: m.role, content: m.content }))
             })
           });

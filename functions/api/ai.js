@@ -3,54 +3,43 @@
  * CLOUDFLARE PAGES FUNCTION: /api/ai
  * PrimeArtifact — Secure AI Bridge (Groq Only)
  * ═══════════════════════════════════════════════════════════════════
- * 
- * This function securely routes chat messages using Groq's high-speed
- * inference servers. This ensures 100% free usage via a single key.
- * 
- * ─── SETUP STEPS ───────────────────────────────────────────────────
- * 
- * 1. Go to https://console.groq.com/keys → Create API Key
- *    Save it as: GROQ_API_KEY
- * 
- * 2. In Cloudflare Dashboard:
- *    Workers & Pages → [Your Project] → Settings → Environment Variables
- *    Add GROQ_API_KEY (mark as "Encrypted").
- * 
- * ═══════════════════════════════════════════════════════════════════
  */
 
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  // Add CORS headers for safety
   const corsHeaders = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*'
   };
 
   try {
-    const { model, messages } = await request.json();
+    const { messages } = await request.json();
 
-    // ─── ROUTING: All models use Groq ─────────
-    switch (model) {
+    // ─── SYSTEM PROMPT ───────────────────────────────────────────────
+    // This gives the AI its identity and context about PrimeArtifact.
+    const systemPrompt = {
+      role: 'system',
+      content: `You are PrimeArtifact AI, an advanced, highly intelligent assistant embedded directly into the PrimeArtifact platform. 
+PrimeArtifact is a premium platform featuring high-quality web artifacts and utilities. 
+Current tools available on the website include:
+- A Time Calculator (for advanced duration math)
+- A Secure E2EE Clipboard (for encrypted text sharing)
+- This AI Chat Assistant
 
-      // ✅ Meta Llama 4
-      case 'llama_4':
-        return await callGroq(messages, 'meta-llama/llama-4-scout-17b-16e-instruct', env.GROQ_API_KEY, corsHeaders);
+Guidelines:
+1. Always be helpful, professional, and concise.
+2. If the user asks about you or your capabilities, mention that you are PrimeArtifact AI.
+3. If the user asks about the website, recommend checking out the 'Artifacts' dropdown in the navigation bar to see the Time Calculator and Secure Clipboard.`
+    };
 
-      // ✅ Meta Llama 3.3 (70B)
-      case 'llama_3_3':
-        return await callGroq(messages, 'llama-3.3-70b-versatile', env.GROQ_API_KEY, corsHeaders);
+    // Prepend system prompt to the chat history
+    const fullMessages = [systemPrompt, ...messages];
 
-      // ✅ Google Gemma 2 (9B)
-      case 'gemma_2':
-        return await callGroq(messages, 'gemma2-9b-it', env.GROQ_API_KEY, corsHeaders);
+    // Always use Llama 4 as the default PrimeArtifact AI model
+    const defaultModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
-      default:
-        return new Response(JSON.stringify({ error: 'Model not supported' }), {
-          status: 400, headers: corsHeaders
-        });
-    }
+    return await callGroq(fullMessages, defaultModel, env.GROQ_API_KEY, corsHeaders);
 
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
@@ -61,8 +50,6 @@ export async function onRequestPost(context) {
 
 /**
  * ─── GROQ INFERENCE ────────────────────────────────────────────────
- * Groq uses custom LPU chips for extremely fast responses.
- * Docs: https://console.groq.com/docs/quickstart
  */
 async function callGroq(messages, modelId, apiKey, headers) {
   if (!apiKey) {

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
@@ -197,16 +197,18 @@
   <script src="../../js/navbar.js"></script>
 
   <main class="page">
+    
     <div class="container" style="max-width:750px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb"><a href="../../index.html">Home</a><span
             class="page-header__breadcrumb-sep">/</span><a href="#">Converters</a><span
             class="page-header__breadcrumb-sep">/</span><span>Color Picker</span></div>
-        <h1 class="page-header__title">Color Picker & Converter</h1>
+        <h1 class="page-header__title">Color Picker & Converter <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
         <p class="page-header__subtitle">Pick any color and get its HEX, RGB, and HSL values.</p>
       </header>
 
       <div class="glass glass--static input-panel animate-in">
+        
         <div class="input-panel__header"><span class="input-panel__title">Color Tool</span></div>
         <div class="color-hero">
           <div class="color-preview" id="preview" style="background:#4a6fa5;">
@@ -233,6 +235,78 @@
         <div class="palette-grid" id="palette"></div>
       </div>
     </div>
+    
+  <!-- FAQ Modal & Overlay -->
+  <div class="faq-modal-overlay" id="faq-modal">
+    <div class="faq-modal">
+      <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
+      <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>What color formats does this tool support?</h3>
+        <p>Our color picker supports HEX, RGB, HSL, and HSV formats. You can easily convert and copy the color codes between these formats instantly.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I save my favorite colors?</h3>
+        <p>Currently, the tool acts as a fast, on-the-fly converter and picker. However, you can quickly copy the values to your clipboard for use in your projects.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How accurate are the color conversions?</h3>
+        <p>We use standard sRGB conversion formulas to ensure the highest accuracy possible across modern web browsers and design tools.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('faq-modal');
+      const openBtn = document.getElementById('open-faq');
+      const closeBtn = document.getElementById('close-faq');
+      if(openBtn && modal && closeBtn) {
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What color formats does this tool support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our color picker supports HEX, RGB, HSL, and HSV formats. You can easily convert and copy the color codes between these formats instantly."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I save my favorite colors?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Currently, the tool acts as a fast, on-the-fly converter and picker. However, you can quickly copy the values to your clipboard for use in your projects."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How accurate are the color conversions?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We use standard sRGB conversion formulas to ensure the highest accuracy possible across modern web browsers and design tools."
+      }
+    }
+  ]
+}
+    </script>
   </main>
 
   <footer class="footer glass glass--static"
@@ -289,7 +363,7 @@
         btn.addEventListener('click', function () {
           var target = document.getElementById(this.dataset.target);
           navigator.clipboard.writeText(target.value);
-          this.textContent = 'âœ“'; var b = this; setTimeout(function () { b.textContent = 'Copy'; }, 1200);
+          this.innerHTML = '<i class="fas fa-check"></i>'; var b = this; setTimeout(function () { b.innerHTML = 'Copy'; }, 1200);
         });
       });
 

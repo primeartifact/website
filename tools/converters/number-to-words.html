@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
@@ -74,6 +74,7 @@
   <script src="../../js/navbar.js"></script>
 
   <main class="page">
+    
     <div class="container" style="max-width:750px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
@@ -81,11 +82,12 @@
           <a href="#">Converters</a><span class="page-header__breadcrumb-sep">/</span>
           <span>Number to Words</span>
         </div>
-        <h1 class="page-header__title">Number to Words Converter</h1>
+        <h1 class="page-header__title">Number to Words Converter <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
         <p class="page-header__subtitle">Convert any number to words &mdash; Indian (Lakhs, Crores) and International systems.</p>
       </header>
 
       <div class="glass glass--static input-panel animate-in">
+        
         <div class="input-panel__header"><span class="input-panel__title">Converter</span></div>
 
         <label
@@ -128,6 +130,78 @@
         </div>
       </div>
     </div>
+    
+  <!-- FAQ Modal & Overlay -->
+  <div class="faq-modal-overlay" id="faq-modal">
+    <div class="faq-modal">
+      <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
+      <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>What is the maximum number supported?</h3>
+        <p>Our tool can convert very large numbers, up to trillions (15 digits), into accurate English words instantly.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Are decimal numbers supported?</h3>
+        <p>Yes! If you input a decimal number, the tool will convert both the integer portion and the fractional portion into words (e.g., 'point five').</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is this useful for writing checks?</h3>
+        <p>Absolutely. The exact word output makes it very convenient to write large dollar amounts safely and clearly on checks or financial documents.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('faq-modal');
+      const openBtn = document.getElementById('open-faq');
+      const closeBtn = document.getElementById('close-faq');
+      if(openBtn && modal && closeBtn) {
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the maximum number supported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our tool can convert very large numbers, up to trillions (15 digits), into accurate English words instantly."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are decimal numbers supported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! If you input a decimal number, the tool will convert both the integer portion and the fractional portion into words (e.g., 'point five')."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this useful for writing checks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. The exact word output makes it very convenient to write large dollar amounts safely and clearly on checks or financial documents."
+      }
+    }
+  ]
+}
+    </script>
   </main>
 
   <footer class="footer glass glass--static"
@@ -336,7 +410,7 @@
 
       function copyText(id, btn) {
         var t = document.getElementById(id).textContent;
-        if (t && t !== 'Type a number above') { navigator.clipboard.writeText(t); btn.textContent = '<i class="fas fa-check"></i> Copied'; setTimeout(function () { btn.textContent = btn.dataset.orig; }, 1500); }
+        if (t && t !== 'Type a number above') { navigator.clipboard.writeText(t); btn.innerHTML = '<i class="fas fa-check"></i> Copied'; setTimeout(function () { btn.innerHTML = btn.dataset.orig; }, 1500); }
       }
       var b1 = document.getElementById('btn-copy'); b1.dataset.orig = b1.textContent;
       b1.addEventListener('click', function () { copyText('result-indian', this); });

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
@@ -102,6 +102,7 @@
   <script src="../../js/navbar.js"></script>
 
   <main class="page">
+    
     <div class="container" style="max-width:700px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
@@ -109,11 +110,12 @@
           <a href="#">Generators</a><span class="page-header__breadcrumb-sep">/</span>
           <span>QR Code</span>
         </div>
-        <h1 class="page-header__title">QR Code Generator</h1>
+        <h1 class="page-header__title">QR Code Generator <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
         <p class="page-header__subtitle">Generate a QR code for any text, URL, or data. Download as PNG.</p>
       </header>
 
       <div class="glass glass--static input-panel animate-in">
+        
         <div class="input-panel__header"><span class="input-panel__title">Data Input</span></div>
         <textarea class="textarea" id="text-input" placeholder="Enter text or URL..."
           rows="3">https://primeartifact.com</textarea>
@@ -156,6 +158,78 @@
         </div>
       </div>
     </div>
+    
+  <!-- FAQ Modal & Overlay -->
+  <div class="faq-modal-overlay" id="faq-modal">
+    <div class="faq-modal">
+      <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
+      <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>Do the generated QR codes ever expire?</h3>
+        <p>No, the QR codes generated are completely static. They will never expire and will work permanently as long as the linked URL or text remains valid.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is this QR code generator completely free?</h3>
+        <p>Yes! Our tool is 100% free with no sign-ups, no ads, and no hidden subscriptions. Create as many codes as you need.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How can I save the QR code?</h3>
+        <p>You can easily download the generated QR code as a PNG file by clicking the 'Download' button, or copy it directly to your clipboard.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('faq-modal');
+      const openBtn = document.getElementById('open-faq');
+      const closeBtn = document.getElementById('close-faq');
+      if(openBtn && modal && closeBtn) {
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do the generated QR codes ever expire?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, the QR codes generated are completely static. They will never expire and will work permanently as long as the linked URL or text remains valid."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this QR code generator completely free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! Our tool is 100% free with no sign-ups, no ads, and no hidden subscriptions. Create as many codes as you need."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I save the QR code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can easily download the generated QR code as a PNG file by clicking the 'Download' button, or copy it directly to your clipboard."
+      }
+    }
+  ]
+}
+    </script>
   </main>
 
   <footer class="footer glass glass--static"
@@ -261,7 +335,7 @@
 
       function generate() {
         var text = input.value.trim();
-        if (!text) { paToast('Please enter some text or a URL to generate a QR code.', { icon: 'ðŸ“±' }); return; }
+        if (!text) { paToast('Please enter some text or a URL to generate a QR code.', { icon: '📱' }); return; }
         var ecl = eclSelect.value;
         var cellSize = parseInt(sizeSelect.value);
         try {
@@ -288,7 +362,7 @@
             m.querySelectorAll('.custom-select-item').forEach(el => el.classList.remove('active'));
             this.classList.add('active');
             i.value = this.getAttribute('data-value');
-            b.textContent = this.textContent;
+            b.innerHTML = this.textContent;
             m.classList.remove('open'); b.classList.remove('open');
             if (onChange) onChange();
           });
@@ -321,9 +395,9 @@
         c.toBlob(function (blob) {
           navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
         });
-        this.textContent = '<i class="fas fa-check"></i> Copied';
+        this.innerHTML = '<i class="fas fa-check"></i> Copied';
         var b = this;
-        setTimeout(function () { b.textContent = '<i class="fas fa-copy"></i> Copy to Clipboard'; }, 1500);
+        setTimeout(function () { b.innerHTML = '<i class="fas fa-copy"></i> Copy to Clipboard'; }, 1500);
       });
 
       generate();

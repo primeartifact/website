@@ -7,6 +7,26 @@
   <title>Free AI Chat Assistant | No Login, Private | PrimeArtifact</title>
   <meta name="description"
     content="Free, private AI chat assistant. Seamlessly switch between Google Gemini, Meta Llama 4, Mistral, and more. No login required.">
+  <!-- ═══ SEO META ═══════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.com/tools/ai/chat.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.com/tools/ai/chat.html">
+  <meta property="og:title" content="Free AI Chat Assistant | No Login, Private | PrimeArtifact">
+  <meta property="og:description"
+    content="Free, private AI chat assistant. Seamlessly switch between Google Gemini, Meta Llama 4, Mistral, and more. No login required.">
+  <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free AI Chat Assistant | No Login, Private | PrimeArtifact">
+  <meta name="twitter:description"
+    content="Free, private AI chat assistant. Seamlessly switch between Google Gemini, Meta Llama 4, Mistral, and more. No login required.">
+  <meta name="twitter:image" content="https://primeartifact.com/assets/og-image.png">
+
   <link rel="stylesheet" href="../../css/style.css">
   <!-- FontAwesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -35,7 +55,7 @@
       display: flex;
       gap: var(--space-md);
       flex: 1;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 160px);
       /* Adjust for navbar and padding */
       margin: 0 auto;
       width: 100%;
@@ -640,7 +660,12 @@
   <script src="../../js/navbar.js"></script>
 
   <main class="page chat-page">
-    <div class="chat-layout">
+    
+      <header class="page-header animate-in" style="margin-bottom: var(--space-md); padding: 0 var(--space-md); max-width: 1400px; margin-left: auto; margin-right: auto;">
+        <h1 class="page-header__title" style="font-size: 1.5rem; margin-bottom: 0;">Prime AI Assistant <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
+      </header>
+      <div class="chat-layout" style="position:relative;">
+        
       <!-- Sidebar -->
       <aside class="chat-sidebar glass glass--static animate-in">
         <button id="btn-new-chat" class="btn btn--primary" style="width:100%; margin-bottom: var(--space-md);">
@@ -653,6 +678,7 @@
 
       <!-- Main Chat -->
       <div class="chat-main glass glass--static animate-in" style="animation-delay: 0.1s;">
+        
         <!-- Header -->
         <header class="chat-header">
           <div class="chat-actions">
@@ -686,6 +712,78 @@
         </div>
       </div>
     </div>
+    
+  <!-- FAQ Modal & Overlay -->
+  <div class="faq-modal-overlay" id="faq-modal">
+    <div class="faq-modal">
+      <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
+      <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>What AI models are supported?</h3>
+        <p>We provide access to leading large language models including options from OpenAI, Google, and Anthropic. You can select your preferred model from the dropdown menu.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is my chat data private?</h3>
+        <p>Yes, your chat history is stored locally in your browser's local storage. We do not transmit or store your conversations on our servers.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I export my conversations?</h3>
+        <p>Yes, you can easily export your chat logs. Use the export functionality to save your conversations as a JSON or Markdown file for later reference.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('faq-modal');
+      const openBtn = document.getElementById('open-faq');
+      const closeBtn = document.getElementById('close-faq');
+      if(openBtn && modal && closeBtn) {
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What AI models are supported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We provide access to leading large language models including options from OpenAI, Google, and Anthropic. You can select your preferred model from the dropdown menu."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my chat data private?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, your chat history is stored locally in your browser's local storage. We do not transmit or store your conversations on our servers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I export my conversations?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, you can easily export your chat logs. Use the export functionality to save your conversations as a JSON or Markdown file for later reference."
+      }
+    }
+  ]
+}
+    </script>
   </main>
 
   <!-- Interactive Elastic Bullet Journal Grid Logic -->

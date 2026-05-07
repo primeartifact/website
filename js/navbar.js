@@ -56,9 +56,9 @@
       id: 'time-tools',
       title: 'Time Artifacts',
       tools: [
-        // { name: 'Work Hours Calculator', desc: 'Calculate IST leave time', href: base + 'tools/utility/work-hours.html' },
-        { name: 'Time Calculator', desc: 'Add/subtract time intervals', href: base + 'tools/utility/time-calculator.html' },
-        { name: 'Age Calculator', desc: 'Exact age with birthday countdown', href: base + 'tools/utility/age-calculator.html' }
+        // { name: 'Work Hours Calculator', desc: 'Calculate IST leave time', href: base + 'tools/time/work-hours.html' },
+        { name: 'Time Calculator', desc: 'Add/subtract time intervals', href: base + 'tools/time/time-calculator.html' },
+        { name: 'Age Calculator', desc: 'Exact age with birthday countdown', href: base + 'tools/time/age-calculator.html' }
       ]
     },
     {

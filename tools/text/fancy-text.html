@@ -214,16 +214,18 @@
   <script src="../../js/navbar.js"></script>
 
   <main class="page">
+    
     <div class="container">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb"><a href="../../index.html">Home</a><span
             class="page-header__breadcrumb-sep">/</span><a href="#">Text Artifacts</a><span
             class="page-header__breadcrumb-sep">/</span><span>Fancy Text</span></div>
-        <h1 class="page-header__title">Fancy Text Generator</h1>
+        <h1 class="page-header__title">Fancy Text Generator <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
         <p class="page-header__subtitle">Create stylish Unicode text for social media bios, posts, and messages.</p>
       </header>
 
       <div class="glass glass--static input-panel animate-in">
+        
         <div class="input-panel__header">
           <span class="input-panel__title">Your Text</span>
           <div class="input-panel__actions">
@@ -248,6 +250,78 @@
         <!-- &darr; The Ruins &darr; -->
       </div>
     </div>
+    
+  <!-- FAQ Modal & Overlay -->
+  <div class="faq-modal-overlay" id="faq-modal">
+    <div class="faq-modal">
+      <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
+      <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>Will this fancy text work on Instagram or Twitter?</h3>
+        <p>Yes! The text generated uses standard Unicode characters that are supported on almost all social media platforms including Instagram, Twitter, and Facebook.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is this text actually a different font?</h3>
+        <p>No, it does not use font files. Instead, it converts your normal letters into specific mathematical or decorative Unicode symbols that look like different fonts.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Why do some characters look like boxes on my device?</h3>
+        <p>If your operating system or browser is very old, it might not support the latest Unicode standards, resulting in missing characters (boxes).</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('faq-modal');
+      const openBtn = document.getElementById('open-faq');
+      const closeBtn = document.getElementById('close-faq');
+      if(openBtn && modal && closeBtn) {
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Will this fancy text work on Instagram or Twitter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! The text generated uses standard Unicode characters that are supported on almost all social media platforms including Instagram, Twitter, and Facebook."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this text actually a different font?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, it does not use font files. Instead, it converts your normal letters into specific mathematical or decorative Unicode symbols that look like different fonts."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why do some characters look like boxes on my device?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "If your operating system or browser is very old, it might not support the latest Unicode standards, resulting in missing characters (boxes)."
+      }
+    }
+  ]
+}
+    </script>
   </main>
 
   <footer id="main-footer" class="footer glass glass--static"
@@ -379,9 +453,9 @@
           row.innerHTML = '<div><div class="fancy-row__label">' + name + '</div><div class="fancy-row__text">' + converted + '</div></div><button class="fancy-row__copy">Copy</button>';
           row.querySelector('.fancy-row__copy').addEventListener('click', function () {
             navigator.clipboard.writeText(converted);
-            this.textContent = 'âœ“';
+            this.innerHTML = '<i class="fas fa-check"></i>';
             var b = this;
-            setTimeout(function () { b.textContent = 'Copy'; }, 1200);
+            setTimeout(function () { b.innerHTML = 'Copy'; }, 1200);
           });
           grid.appendChild(row);
         });
@@ -405,18 +479,18 @@
       });
       if (btnCopy) btnCopy.addEventListener('click', () => {
         navigator.clipboard.writeText(input.value);
-        var original = btnCopy.textContent; btnCopy.textContent = '<i class="fas fa-check"></i> Copied';
-        setTimeout(() => btnCopy.textContent = original, 1200);
+        var original = btnCopy.innerHTML; btnCopy.innerHTML = '<i class="fas fa-check"></i> Copied';
+        setTimeout(() => btnCopy.innerHTML = original, 1200);
       });
       if (btnClear) btnClear.addEventListener('click', () => { updateWithUndo(input, ''); });
 
       var btnGen = document.getElementById('btn-generate');
       btnGen.addEventListener('click', function () {
-        if (!input.value.trim()) { paToast('Please enter some text to generate.', { icon: 'âœï¸' }); return; }
-        var originalText = btnGen.textContent;
+        if (!input.value.trim()) { paToast('Please enter some text to generate.', { icon: '✍️' }); return; }
+        var originalText = btnGen.innerHTML;
         render();
-        btnGen.textContent = 'âœ“ Generated';
-        setTimeout(function () { btnGen.textContent = originalText; }, 1500);
+        btnGen.innerHTML = '<i class="fas fa-check"></i> Generated';
+        setTimeout(function () { btnGen.innerHTML = originalText; }, 1500);
       });
 
       // Initial render

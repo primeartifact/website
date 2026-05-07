@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
@@ -275,6 +275,7 @@
   <script src="../../js/navbar.js"></script>
 
   <main class="page">
+    
     <div class="container" style="max-width:750px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
@@ -282,12 +283,13 @@
           <a href="#">Utility</a><span class="page-header__breadcrumb-sep">/</span>
           <span>Age Calculator</span>
         </div>
-        <h1 class="page-header__title">Age Calculator</h1>
+        <h1 class="page-header__title">Age Calculator <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
         <p class="page-header__subtitle">Find your exact age and days until your next birthday.</p>
       </header>
 
       <!-- Premium Input Panel -->
       <div class="glass glass--static input-panel animate-in" style="text-align: center; z-index: 20;">
+        
         <span class="input-panel__title" style="display:block; margin-bottom: 8px;">Date of Birth</span>
 
         <div class="date-input-wrapper" id="date-wrapper">
@@ -359,6 +361,78 @@
         </div>
       </div>
     </div>
+    
+  <!-- FAQ Modal & Overlay -->
+  <div class="faq-modal-overlay" id="faq-modal">
+    <div class="faq-modal">
+      <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
+      <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>How accurate is the age calculator?</h3>
+        <p>The calculator is highly accurate. It accounts for leap years and the varying number of days in different months to provide an exact calculation in years, months, and days.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I calculate age for a future date?</h3>
+        <p>Yes, you can set the 'Compare To' date to any date in the future to see exactly how old someone or something will be on that specific date.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Does this tool store my birth date?</h3>
+        <p>No, your privacy is our priority. The dates you enter are processed entirely within your web browser and are never sent to or stored on our servers.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('faq-modal');
+      const openBtn = document.getElementById('open-faq');
+      const closeBtn = document.getElementById('close-faq');
+      if(openBtn && modal && closeBtn) {
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How accurate is the age calculator?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The calculator is highly accurate. It accounts for leap years and the varying number of days in different months to provide an exact calculation in years, months, and days."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I calculate age for a future date?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, you can set the 'Compare To' date to any date in the future to see exactly how old someone or something will be on that specific date."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this tool store my birth date?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, your privacy is our priority. The dates you enter are processed entirely within your web browser and are never sent to or stored on our servers."
+      }
+    }
+  ]
+}
+    </script>
   </main>
 
   <footer id="main-footer" class="footer glass glass--static"

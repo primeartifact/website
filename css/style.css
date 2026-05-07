@@ -879,7 +879,7 @@ img {
   transform: translateY(-8px);
   transition: all var(--transition-fast);
   z-index: 100;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(24px);
   box-shadow: var(--dropdown-shadow, 0 8px 32px rgba(0, 0, 0, 0.3));
 }
 
@@ -1443,7 +1443,8 @@ input[type="number"] {
   }
 
   .navbar__dropdown--open .navbar__dropdown-menu {
-    max-height: 2000px;
+    max-height: 65vh;
+    overflow-y: auto;
     opacity: 1;
     visibility: visible;
     transform: none;
@@ -1612,4 +1613,146 @@ input[type="number"] {
     display: none;
     /* Hide 3D object on small mobile to save space/performance */
   }
+}
+/* Minus sign */
+  transform: rotate(180deg);
+}
+.faq-accordion .faq-content {
+  padding: 0 1.2rem 1.2rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* FAQ Modal Styles */
+.faq-query-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-tertiary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  z-index: 10;
+}
+.faq-query-btn:hover {
+  background: var(--glass-bg);
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(138, 180, 248, 0.2);
+}
+
+.faq-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+.faq-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.faq-modal {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(24px);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  padding: 2rem;
+  transform: translateY(20px) scale(0.95);
+  transition: transform 0.3s ease;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.faq-modal-overlay.active .faq-modal {
+  transform: translateY(0) scale(1);
+}
+.faq-modal::-webkit-scrollbar { width: 6px; }
+.faq-modal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+.faq-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.2rem;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.faq-modal-close:hover {
+  color: var(--text-primary);
+}
+
+.faq-modal h2 {
+  margin-top: 0;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.faq-modal .faq-item {
+  margin-bottom: 1.2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(var(--glass-border), 0.2);
+}
+.faq-modal .faq-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.faq-modal h3 {
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+.faq-modal p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.faq-inline-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 0.65rem;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+  vertical-align: super;
+  margin-left: 4px;
+}
+.faq-inline-btn:hover {
+  color: var(--accent);
+  background: var(--glass-bg-hover);
 }

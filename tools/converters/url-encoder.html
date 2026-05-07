@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
@@ -74,6 +74,7 @@
   <script src="../../js/navbar.js"></script>
 
   <main class="page">
+    
     <div class="container" style="max-width:800px;">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
@@ -81,17 +82,18 @@
           <a href="#">Converters</a><span class="page-header__breadcrumb-sep">/</span>
           <span>URL Encoder</span>
         </div>
-        <h1 class="page-header__title">URL Encoder / Decoder</h1>
+        <h1 class="page-header__title">URL Encoder / Decoder <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
         <p class="page-header__subtitle">Encode or decode text for safe use in URLs.</p>
       </header>
 
       <div class="glass glass--static input-panel animate-in">
+        
         <div class="input-panel__header"><span class="input-panel__title">Input</span></div>
         <textarea class="textarea" id="input" placeholder="Enter text or URL to encode/decode..." rows="4"></textarea>
 
         <div style="margin:var(--space-md) 0;display:flex;gap:var(--space-sm);flex-wrap:wrap;">
           <button class="btn btn--accent" id="btn-encode">Encode &rarr;</button>
-          <button class="btn btn--accent" id="btn-decode">â† Decode</button>
+          <button class="btn btn--accent" id="btn-decode">&larr; Decode</button>
           <button class="btn" id="btn-encode-comp">Encode Component</button>
           <button class="btn" id="btn-decode-comp">Decode Component</button>
           <button class="btn" id="btn-swap"><i class="fas fa-exchange-alt"></i> Swap</button>
@@ -109,6 +111,78 @@
         </div>
       </div>
     </div>
+    
+  <!-- FAQ Modal & Overlay -->
+  <div class="faq-modal-overlay" id="faq-modal">
+    <div class="faq-modal">
+      <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
+      <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>What is URL encoding?</h3>
+        <p>URL encoding converts special characters into a format that can be safely transmitted over the Internet. It ensures that URLs do not break when containing spaces or symbols.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Does this tool also decode URLs?</h3>
+        <p>Yes, it works both ways. You can paste an encoded URL and use the Decode function to make it human-readable again.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is it safe to encode sensitive URLs here?</h3>
+        <p>Absolutely. All encoding and decoding happens locally in your browser. We do not track or store the text you process.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('faq-modal');
+      const openBtn = document.getElementById('open-faq');
+      const closeBtn = document.getElementById('close-faq');
+      if(openBtn && modal && closeBtn) {
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is URL encoding?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "URL encoding converts special characters into a format that can be safely transmitted over the Internet. It ensures that URLs do not break when containing spaces or symbols."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this tool also decode URLs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, it works both ways. You can paste an encoded URL and use the Decode function to make it human-readable again."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to encode sensitive URLs here?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. All encoding and decoding happens locally in your browser. We do not track or store the text you process."
+      }
+    }
+  ]
+}
+    </script>
   </main>
 
   <footer class="footer glass glass--static"
@@ -136,7 +210,7 @@
         }
       }
 
-      function checkEmpty() { if (!inp.value.trim()) { paToast('Please enter some text to process.', { icon: 'ðŸ” - ' }); return true; } return false; }
+      function checkEmpty() { if (!inp.value.trim()) { paToast('Please enter some text to process.', { icon: '🔍' }); return true; } return false; }
 
       document.getElementById('btn-encode').addEventListener('click', function () { if (checkEmpty()) return; try { out.value = encodeURI(inp.value); } catch (e) { out.value = 'Error: ' + e.message; } });
       document.getElementById('btn-decode').addEventListener('click', function () { if (checkEmpty()) return; try { out.value = decodeURI(inp.value); } catch (e) { out.value = 'Error: ' + e.message; } });
@@ -152,9 +226,9 @@
       document.getElementById('btn-copy').addEventListener('click', function () {
         if (out.value) {
           navigator.clipboard.writeText(out.value);
-          this.textContent = '<i class="fas fa-check"></i> Copied';
+          this.innerHTML = '<i class="fas fa-check"></i> Copied';
           var b = this;
-          setTimeout(function () { b.textContent = '<i class="fas fa-copy"></i> Copy'; }, 1500);
+          setTimeout(function () { b.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 1500);
         }
       });
 

@@ -11,7 +11,6 @@
     var path = window.location.pathname;
     
     // Root or index
-    // Root or index
     if (path === '/' || path.endsWith('/index.html') || path.endsWith('/index') || path === '') return '';
     
     // Tools directory (usually 2 levels deep: /tools/category/tool)

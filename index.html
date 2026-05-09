@@ -278,14 +278,13 @@
             var added = false;
             
             recent.forEach(function(href) {
-              // Try exact match, then try matching without extension, then with .html
-              var selector = 'a.tool-card[href="' + href + '"]';
+              // Try matching without extension, then with .html (for legacy support)
+              var cleanHref = href.replace('.html', '');
+              var selector = 'a.tool-card[href="' + cleanHref + '"]';
               var original = document.querySelector(selector);
               
               if (!original) {
-                var cleanHref = href.replace('.html', '');
-                original = document.querySelector('a.tool-card[href="' + cleanHref + '"]') || 
-                           document.querySelector('a.tool-card[href="' + cleanHref + '.html' + '"]');
+                original = document.querySelector('a.tool-card[href="' + cleanHref + '.html' + '"]');
               }
 
               if (original) {
@@ -307,7 +306,7 @@
       <section id="ai-tools">
         <div class="section-title animate-in" style="color: var(--accent); border-bottom-color: var(--accent-border);">AI Artifacts</div>
         <div class="tools-grid">
-          <a href="tools/ai/chat.html" class="glass tool-card animate-in" style="border-color: rgba(74, 111, 165, 0.4); background: linear-gradient(135deg, rgba(74, 111, 165, 0.08), rgba(0,0,0,0));">
+          <a href="tools/ai/chat" class="glass tool-card animate-in" style="border-color: rgba(74, 111, 165, 0.4); background: linear-gradient(135deg, rgba(74, 111, 165, 0.08), rgba(0,0,0,0));">
             <span class="tool-card__icon">🤖</span>
             <div class="tool-card__name">PrimeArtifact AI Assistant</div>
             <div class="tool-card__desc">Powerful, private AI assistant powered by high-performance infrastructure. No login required.</div>
@@ -318,25 +317,25 @@
       <section id="text-tools">
         <div class="section-title animate-in">Text Artifacts</div>
         <div class="tools-grid">
-          <a href="tools/text/word-counter.html" class="glass tool-card animate-in">
+          <a href="tools/text/word-counter" class="glass tool-card animate-in">
             <span class="tool-card__icon">123</span>
             <div class="tool-card__name">Word & Character Counter</div>
             <div class="tool-card__desc">Count words, characters, sentences, and paragraphs in real-time. Estimate reading
               time.</div>
           </a>
-          <a href="tools/text/case-converter.html" class="glass tool-card animate-in">
+          <a href="tools/text/case-converter" class="glass tool-card animate-in">
             <span class="tool-card__icon">Aa</span>
             <div class="tool-card__name">Text Case Converter</div>
             <div class="tool-card__desc">Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case, and
               more.</div>
           </a>
-          <a href="tools/text/fancy-text.html" class="glass tool-card animate-in">
+          <a href="tools/text/fancy-text" class="glass tool-card animate-in">
             <span class="tool-card__icon">𝓕</span>
             <div class="tool-card__name">Fancy Text Generator</div>
             <div class="tool-card__desc">Generate stylish Unicode text for Instagram bios, WhatsApp status, and more.
             </div>
           </a>
-          <a href="tools/text/lorem-ipsum.html" class="glass tool-card animate-in">
+          <a href="tools/text/lorem-ipsum" class="glass tool-card animate-in">
             <span class="tool-card__icon">¶</span>
             <div class="tool-card__name">Lorem Ipsum Generator</div>
             <div class="tool-card__desc">Generate placeholder text — paragraphs, sentences, or words for your designs.
@@ -348,17 +347,17 @@
       <section id="time-tools">
         <div class="section-title animate-in">Time Artifacts</div>
         <div class="tools-grid">
-          <!-- <a href="tools/time/work-hours.html" class="glass tool-card animate-in">
+          <!-- <a href="tools/time/work-hours" class="glass tool-card animate-in">
             <span class="tool-card__icon">🏢</span>
             <div class="tool-card__name">Work Hours Calculator</div>
             <div class="tool-card__desc">Calculate when you can leave office based on your check-in time and lunch break.</div>
           </a> -->
-          <a href="tools/time/time-calculator.html" class="glass tool-card animate-in">
+          <a href="tools/time/time-calculator" class="glass tool-card animate-in">
             <span class="tool-card__icon">⏱️</span>
             <div class="tool-card__name">Time Calculator</div>
             <div class="tool-card__desc">Calculate the sum of hours and minutes easily. Add time together.</div>
           </a>
-          <a href="tools/time/age-calculator.html" class="glass tool-card animate-in">
+          <a href="tools/time/age-calculator" class="glass tool-card animate-in">
             <span class="tool-card__icon">🎂</span>
             <div class="tool-card__name">Age Calculator</div>
             <div class="tool-card__desc">Calculate your exact age in years, months, days. See next birthday countdown.
@@ -370,13 +369,13 @@
       <section id="generators">
         <div class="section-title animate-in">Generators</div>
         <div class="tools-grid">
-          <a href="tools/generators/password.html" class="glass tool-card animate-in">
+          <a href="tools/generators/password" class="glass tool-card animate-in">
             <span class="tool-card__icon">🔐</span>
             <div class="tool-card__name">Password Generator</div>
             <div class="tool-card__desc">Generate strong, secure passwords with custom length and character options.
             </div>
           </a>
-          <a href="tools/generators/qr-code.html" class="glass tool-card animate-in">
+          <a href="tools/generators/qr-code" class="glass tool-card animate-in">
             <span class="tool-card__icon">▣</span>
             <div class="tool-card__name">QR Code Generator</div>
             <div class="tool-card__desc">Create QR codes for any text, URL, or data. Download as PNG.</div>
@@ -387,18 +386,18 @@
       <section id="converters">
         <div class="section-title animate-in">Converters</div>
         <div class="tools-grid">
-          <a href="tools/converters/color-picker.html" class="glass tool-card animate-in">
+          <a href="tools/converters/color-picker" class="glass tool-card animate-in">
             <span class="tool-card__icon">🎨</span>
             <div class="tool-card__name">Color Picker & Converter</div>
             <div class="tool-card__desc">Pick colors and convert between HEX, RGB, HSL, and RGBA formats.</div>
           </a>
-          <a href="tools/converters/number-to-words.html" class="glass tool-card animate-in">
+          <a href="tools/converters/number-to-words" class="glass tool-card animate-in">
             <span class="tool-card__icon">#→</span>
             <div class="tool-card__name">Number to Words</div>
             <div class="tool-card__desc">Convert numbers to words in Indian (Lakhs, Crores) and International systems.
             </div>
           </a>
-          <a href="tools/converters/url-encoder.html" class="glass tool-card animate-in">
+          <a href="tools/converters/url-encoder" class="glass tool-card animate-in">
             <span class="tool-card__icon">🔗</span>
             <div class="tool-card__name">URL Encoder / Decoder</div>
             <div class="tool-card__desc">Encode or decode URLs for safe use in web addresses.</div>
@@ -409,12 +408,12 @@
       <section id="utility-artifacts">
         <div class="section-title animate-in">Utility Artifacts</div>
         <div class="tools-grid">
-          <a href="tools/utility/notepad.html" class="glass tool-card animate-in">
+          <a href="tools/utility/notepad" class="glass tool-card animate-in">
             <span class="tool-card__icon">📝</span>
             <div class="tool-card__name">Online Notepad</div>
             <div class="tool-card__desc">Quick scratchpad that auto-saves to your browser. Private, no cloud.</div>
           </a>
-          <a href="tools/utility/clipboard.html" class="glass tool-card animate-in">
+          <a href="tools/utility/clipboard" class="glass tool-card animate-in">
             <span class="tool-card__icon">📋</span>
             <div class="tool-card__name">Secure Clipboard</div>
             <div class="tool-card__desc">End-to-End encrypted text sync across devices. Secure and 100% private.</div>
@@ -424,7 +423,7 @@
 
       <section class="glass cta-section animate-in">
         <h2>More tools coming soon</h2>
-        <p>We're continuously adding new tools. Have a suggestion? <a href="pages/contact.html"
+        <p>We're continuously adding new tools. Have a suggestion? <a href="pages/contact"
             style="color:var(--accent);text-decoration:underline;">Let us know</a> what you'd like to see next.</p>
       </section>
     </div>
@@ -433,11 +432,11 @@
   <footer class="footer">
     <div class="container">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">
-        <p>© 2026 <a href="index.html">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.</p>
+        <p>© 2026 <a href="/">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.</p>
         <div style="display:flex;gap:var(--space-md);font-size:0.82rem;">
-          <a href="pages/about.html" style="color:var(--text-tertiary);text-decoration:none;">About</a>
-          <a href="pages/privacy.html" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>
-          <a href="pages/contact.html" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>
+          <a href="pages/about" style="color:var(--text-tertiary);text-decoration:none;">About</a>
+          <a href="pages/privacy" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>
+          <a href="pages/contact" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>
         </div>
       </div>
     </div>

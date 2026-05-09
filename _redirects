@@ -2,48 +2,17 @@
 # ║  PrimeArtifact — Cloudflare Pages Redirects                   ║
 # ╚══════════════════════════════════════════════════════════════╝
 
-# ── Canonical .html redirects ─────────────────────────────────
-# Cloudflare Pages serves .html files without the extension by default,
-# causing duplicate content. These 301s consolidate ranking to .html URLs.
-
-# Pages
-/pages/about  /pages/about.html  301
-/pages/contact  /pages/contact.html  301
-/pages/privacy  /pages/privacy.html  301
-
-# AI Tools
-/tools/ai/chat  /tools/ai/chat.html  301
-
-# Text Tools
-/tools/text/word-counter  /tools/text/word-counter.html  301
-/tools/text/case-converter  /tools/text/case-converter.html  301
-/tools/text/fancy-text  /tools/text/fancy-text.html  301
-/tools/text/lorem-ipsum  /tools/text/lorem-ipsum.html  301
-
-# Time Tools
-/tools/time/time-calculator  /tools/time/time-calculator.html  301
-/tools/time/age-calculator  /tools/time/age-calculator.html  301
-
-# Generators
-/tools/generators/password  /tools/generators/password.html  301
-/tools/generators/qr-code  /tools/generators/qr-code.html  301
-
-# Converters
-/tools/converters/color-picker  /tools/converters/color-picker.html  301
-/tools/converters/number-to-words  /tools/converters/number-to-words.html  301
-/tools/converters/url-encoder  /tools/converters/url-encoder.html  301
-
-# Utility Tools
-/tools/utility/notepad  /tools/utility/notepad.html  301
-/tools/utility/clipboard  /tools/utility/clipboard.html  301
+# ── Canonical extensionless redirects ───────────────────────────
+# Cloudflare Pages serves .html files without the extension by default.
+# These rules ensure we point everything to the clean, extensionless version.
 
 # ── Legacy flat-path redirects (old URL structure) ────────────
 /index  /  301
-/tools/word-counter  /tools/text/word-counter.html  301
-/tools/password  /tools/generators/password.html  301
-/tools/qr-code  /tools/generators/qr-code.html  301
-/tools/color-picker  /tools/converters/color-picker.html  301
-/tools/age-calculator  /tools/time/age-calculator.html  301
+/tools/word-counter  /tools/text/word-counter  301
+/tools/password  /tools/generators/password  301
+/tools/qr-code  /tools/generators/qr-code  301
+/tools/color-picker  /tools/converters/color-picker  301
+/tools/age-calculator  /tools/time/age-calculator  301
 
 # ── Legacy effect pages redirect to home ──────────────────────
 /effect-*.html  /  301

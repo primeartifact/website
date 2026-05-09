@@ -11,9 +11,10 @@
     var path = window.location.pathname;
     
     // Root or index
-    if (path === '/' || path.endsWith('/index.html') || path === '') return '';
+    // Root or index
+    if (path === '/' || path.endsWith('/index.html') || path.endsWith('/index') || path === '') return '';
     
-    // Tools directory (usually 2 levels deep: /tools/category/tool.html)
+    // Tools directory (usually 2 levels deep: /tools/category/tool)
     if (path.includes('/tools/')) {
       var segments = path.split('/').filter(Boolean);
       var toolIndex = segments.indexOf('tools');
@@ -24,7 +25,7 @@
       return './';
     }
     
-    // Pages directory (usually 1 level deep: /pages/about.html)
+    // Pages directory (usually 1 level deep: /pages/about)
     if (path.includes('/pages/')) return '../';
     
     // Fallback for flat structures or clean URLs
@@ -39,51 +40,51 @@
       id: 'ai-tools',
       title: 'AI Artifacts',
       tools: [
-        { name: 'PrimeArtifact AI', desc: 'Powerful AI assistant', href: base + 'tools/ai/chat.html' }
+        { name: 'PrimeArtifact AI', desc: 'Powerful AI assistant', href: base + 'tools/ai/chat' }
       ]
     },
     {
       id: 'text-tools',
       title: 'Text Artifacts',
       tools: [
-        { name: 'Word & Character Counter', desc: 'Count words, characters, and reading time', href: base + 'tools/text/word-counter.html' },
-        { name: 'Text Case Converter', desc: 'UPPERCASE, lowercase, Title Case, and more', href: base + 'tools/text/case-converter.html' },
-        { name: 'Fancy Text Generator', desc: 'Stylish Unicode text for social media', href: base + 'tools/text/fancy-text.html' },
-        { name: 'Lorem Ipsum Generator', desc: 'Placeholder text for designs', href: base + 'tools/text/lorem-ipsum.html' }
+        { name: 'Word & Character Counter', desc: 'Count words, characters, and reading time', href: base + 'tools/text/word-counter' },
+        { name: 'Text Case Converter', desc: 'UPPERCASE, lowercase, Title Case, and more', href: base + 'tools/text/case-converter' },
+        { name: 'Fancy Text Generator', desc: 'Stylish Unicode text for social media', href: base + 'tools/text/fancy-text' },
+        { name: 'Lorem Ipsum Generator', desc: 'Placeholder text for designs', href: base + 'tools/text/lorem-ipsum' }
       ]
     },
     {
       id: 'time-tools',
       title: 'Time Artifacts',
       tools: [
-        // { name: 'Work Hours Calculator', desc: 'Calculate IST leave time', href: base + 'tools/time/work-hours.html' },
-        { name: 'Time Calculator', desc: 'Add/subtract time intervals', href: base + 'tools/time/time-calculator.html' },
-        { name: 'Age Calculator', desc: 'Exact age with birthday countdown', href: base + 'tools/time/age-calculator.html' }
+        // { name: 'Work Hours Calculator', desc: 'Calculate IST leave time', href: base + 'tools/time/work-hours' },
+        { name: 'Time Calculator', desc: 'Add/subtract time intervals', href: base + 'tools/time/time-calculator' },
+        { name: 'Age Calculator', desc: 'Exact age with birthday countdown', href: base + 'tools/time/age-calculator' }
       ]
     },
     {
       id: 'generators',
       title: 'Generators',
       tools: [
-        { name: 'Password Generator', desc: 'Strong, secure passwords instantly', href: base + 'tools/generators/password.html' },
-        { name: 'QR Code Generator', desc: 'Create QR codes for any text or URL', href: base + 'tools/generators/qr-code.html' }
+        { name: 'Password Generator', desc: 'Strong, secure passwords instantly', href: base + 'tools/generators/password' },
+        { name: 'QR Code Generator', desc: 'Create QR codes for any text or URL', href: base + 'tools/generators/qr-code' }
       ]
     },
     {
       id: 'converters',
       title: 'Converters',
       tools: [
-        { name: 'Color Picker & Converter', desc: 'HEX, RGB, HSL color conversion', href: base + 'tools/converters/color-picker.html' },
-        { name: 'Number to Words', desc: 'Indian & International number systems', href: base + 'tools/converters/number-to-words.html' },
-        { name: 'URL Encoder / Decoder', desc: 'Encode or decode URLs safely', href: base + 'tools/converters/url-encoder.html' }
+        { name: 'Color Picker & Converter', desc: 'HEX, RGB, HSL color conversion', href: base + 'tools/converters/color-picker' },
+        { name: 'Number to Words', desc: 'Indian & International number systems', href: base + 'tools/converters/number-to-words' },
+        { name: 'URL Encoder / Decoder', desc: 'Encode or decode URLs safely', href: base + 'tools/converters/url-encoder' }
       ]
     },
     {
       id: 'everyday-tools',
       title: 'Utility Artifacts',
       tools: [
-        { name: 'Online Notepad', desc: 'Auto-saves to your browser privately', href: base + 'tools/utility/notepad.html' },
-        { name: 'Secure Clipboard', desc: 'E2E Encrypted device sync', href: base + 'tools/utility/clipboard.html' }
+        { name: 'Online Notepad', desc: 'Auto-saves to your browser privately', href: base + 'tools/utility/notepad' },
+        { name: 'Secure Clipboard', desc: 'E2E Encrypted device sync', href: base + 'tools/utility/clipboard' }
       ]
     }
   ];
@@ -122,16 +123,16 @@
     var active = getActivePage();
     var html = '';
 
-    html += '<a href="' + base + 'index.html" class="navbar__brand">';
+    html += '<a href="' + base + '" class="navbar__brand">';
     html += '<img src="' + base + 'assets/logo.png" class="navbar__brand-icon" alt="PrimeArtifact Logo">';
     html += '<span>PrimeArtifact</span>';
     html += '</a>';
 
     html += '<ul class="navbar__nav" id="main-nav">';
-    html += '<li><a href="' + base + 'index.html" class="navbar__link' + (active === 'home' ? ' navbar__link--active' : '') + '">Home</a></li>';
+    html += '<li><a href="' + base + '" class="navbar__link' + (active === 'home' ? ' navbar__link--active' : '') + '">Home</a></li>';
     
     // AI Chat as a primary link
-    html += '<li><a href="' + base + 'tools/ai/chat.html" class="navbar__link' + (active === 'ai' ? ' navbar__link--active' : '') + '">AI Chat</a></li>';
+    html += '<li><a href="' + base + 'tools/ai/chat" class="navbar__link' + (active === 'ai' ? ' navbar__link--active' : '') + '">AI Chat</a></li>';
 
     // Tools dropdown
     html += '<li class="navbar__dropdown" id="tools-dropdown">';
@@ -142,8 +143,8 @@
     html += buildDropdownMenu();
     html += '</li>';
 
-    html += '<li><a href="' + base + 'pages/about.html" class="navbar__link' + (active === 'about' ? ' navbar__link--active' : '') + '">About</a></li>';
-    html += '<li><a href="' + base + 'pages/contact.html" class="navbar__link' + (active === 'contact' ? ' navbar__link--active' : '') + '">Contact</a></li>';
+    html += '<li><a href="' + base + 'pages/about" class="navbar__link' + (active === 'about' ? ' navbar__link--active' : '') + '">About</a></li>';
+    html += '<li><a href="' + base + 'pages/contact" class="navbar__link' + (active === 'contact' ? ' navbar__link--active' : '') + '">Contact</a></li>';
     html += '</ul>';
 
     html += '<div class="navbar__actions">';
@@ -274,13 +275,12 @@
   if (currentPath.includes('/tools/')) {
     var rawMatch = currentPath.match(/tools\/[a-z-]+\/[a-z-]+/);
     if (rawMatch) {
-      var toolPath = rawMatch[0] + (currentPath.endsWith('.html') ? '.html' : '');
-      // Ensure we store it with .html if that's what the homepage uses for matching
-      if (!toolPath.endsWith('.html')) toolPath += '.html';
+      var toolPath = rawMatch[0];
+      // Store it without extension to match the new URL structure
       try {
         var recentObjStr = localStorage.getItem('prime_recent') || '[]';
         var recent = JSON.parse(recentObjStr);
-        recent = recent.filter(function (i) { return i !== toolPath; });
+        recent = recent.filter(function (i) { return i !== toolPath && i !== (toolPath + '.html'); });
         recent.unshift(toolPath);
         if (recent.length > 4) recent.pop();
         localStorage.setItem('prime_recent', JSON.stringify(recent));
@@ -292,11 +292,11 @@
   function buildFooter() {
     return '<div class="container">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">' +
-      '<p>&copy; 2026 <a href="' + base + 'index.html">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.</p>' +
+      '<p>&copy; 2026 <a href="' + base + '">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.</p>' +
       '<div style="display:flex;gap:var(--space-md);font-size:0.82rem;">' +
-      '<a href="' + base + 'pages/about.html" style="color:var(--text-tertiary);text-decoration:none;">About</a>' +
-      '<a href="' + base + 'pages/privacy.html" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>' +
-      '<a href="' + base + 'pages/contact.html" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>' +
+      '<a href="' + base + 'pages/about" style="color:var(--text-tertiary);text-decoration:none;">About</a>' +
+      '<a href="' + base + 'pages/privacy" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>' +
+      '<a href="' + base + 'pages/contact" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>' +
       '</div>' +
       '</div>' +
       '</div>';
@@ -525,10 +525,15 @@
   });
 
   // --- PWA Service Worker Registration ---
+  // Temporarily disabled sw.js to prevent potential redirect loops and missing file errors
+  /*
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register(base + 'sw.js').catch(function (err) { });
     });
   }
+  */
+
+})();
 
 })();

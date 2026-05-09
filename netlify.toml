@@ -45,91 +45,6 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# ── Canonical .html redirects ─────────────────────────────────
-# Prevents duplicate content from extensionless URLs
-
-# Pages
-[[redirects]]
-  from   = "/pages/about"
-  to     = "/pages/about.html"
-  status = 301
-[[redirects]]
-  from   = "/pages/contact"
-  to     = "/pages/contact.html"
-  status = 301
-[[redirects]]
-  from   = "/pages/privacy"
-  to     = "/pages/privacy.html"
-  status = 301
-
-# AI Tools
-[[redirects]]
-  from   = "/tools/ai/chat"
-  to     = "/tools/ai/chat.html"
-  status = 301
-
-# Text Tools
-[[redirects]]
-  from   = "/tools/text/word-counter"
-  to     = "/tools/text/word-counter.html"
-  status = 301
-[[redirects]]
-  from   = "/tools/text/case-converter"
-  to     = "/tools/text/case-converter.html"
-  status = 301
-[[redirects]]
-  from   = "/tools/text/fancy-text"
-  to     = "/tools/text/fancy-text.html"
-  status = 301
-[[redirects]]
-  from   = "/tools/text/lorem-ipsum"
-  to     = "/tools/text/lorem-ipsum.html"
-  status = 301
-
-# Time Tools
-[[redirects]]
-  from   = "/tools/time/time-calculator"
-  to     = "/tools/time/time-calculator.html"
-  status = 301
-[[redirects]]
-  from   = "/tools/time/age-calculator"
-  to     = "/tools/time/age-calculator.html"
-  status = 301
-
-# Generators
-[[redirects]]
-  from   = "/tools/generators/password"
-  to     = "/tools/generators/password.html"
-  status = 301
-[[redirects]]
-  from   = "/tools/generators/qr-code"
-  to     = "/tools/generators/qr-code.html"
-  status = 301
-
-# Converters
-[[redirects]]
-  from   = "/tools/converters/color-picker"
-  to     = "/tools/converters/color-picker.html"
-  status = 301
-[[redirects]]
-  from   = "/tools/converters/number-to-words"
-  to     = "/tools/converters/number-to-words.html"
-  status = 301
-[[redirects]]
-  from   = "/tools/converters/url-encoder"
-  to     = "/tools/converters/url-encoder.html"
-  status = 301
-
-# Utility Tools
-[[redirects]]
-  from   = "/tools/utility/notepad"
-  to     = "/tools/utility/notepad.html"
-  status = 301
-[[redirects]]
-  from   = "/tools/utility/clipboard"
-  to     = "/tools/utility/clipboard.html"
-  status = 301
-
 # ── Legacy flat-path redirects (old URL structure) ────────────
 [[redirects]]
   from   = "/index"
@@ -141,23 +56,23 @@
   status = 301
 [[redirects]]
   from   = "/tools/word-counter"
-  to     = "/tools/text/word-counter.html"
+  to     = "/tools/text/word-counter"
   status = 301
 [[redirects]]
   from   = "/tools/password"
-  to     = "/tools/generators/password.html"
+  to     = "/tools/generators/password"
   status = 301
 [[redirects]]
   from   = "/tools/qr-code"
-  to     = "/tools/generators/qr-code.html"
+  to     = "/tools/generators/qr-code"
   status = 301
 [[redirects]]
   from   = "/tools/color-picker"
-  to     = "/tools/converters/color-picker.html"
+  to     = "/tools/converters/color-picker"
   status = 301
 [[redirects]]
   from   = "/tools/age-calculator"
-  to     = "/tools/time/age-calculator.html"
+  to     = "/tools/time/age-calculator"
   status = 301
 
 # ── 404: redirect all unknown URLs to home ────────────────────

@@ -7,31 +7,36 @@
   'use strict';
 
   // Determine the base path from current page location
+  // Determine the base path (using absolute root for stability)
   function getBasePath() {
-    var path = window.location.pathname;
-    
-    // Root or index
-    if (path === '/' || path.endsWith('/index.html') || path.endsWith('/index') || path === '') return '';
-    
-    // Tools directory (usually 2 levels deep: /tools/category/tool)
-    if (path.includes('/tools/')) {
-      var segments = path.split('/').filter(Boolean);
-      var toolIndex = segments.indexOf('tools');
-      var depth = segments.length - toolIndex - 1;
-      
-      if (depth >= 2) return '../../';
-      if (depth >= 1) return '../';
-      return './';
+    // For local file testing, relative paths are needed, 
+    // but for production/server (Netlify), absolute paths are best.
+    if (window.location.protocol === 'file:') {
+        var path = window.location.pathname;
+        if (path.includes('/tools/')) {
+            var segments = path.split('/').filter(Boolean);
+            var toolIndex = segments.indexOf('tools');
+            var depth = segments.length - toolIndex - 1;
+            if (depth >= 2) return '../../';
+            if (depth >= 1) return '../';
+            return './';
+        }
+        if (path.includes('/pages/')) return '../';
+        return '';
     }
-    
-    // Pages directory (usually 1 level deep: /pages/about)
-    if (path.includes('/pages/')) return '../';
-    
-    // Fallback for flat structures or clean URLs
-    return '';
+    // Default to absolute root for web server
+    return '/';
   }
 
   var base = getBasePath();
+  
+  // Environment detection for clean URLs vs .html extensions
+  var isLocal = window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1' || 
+                window.location.hostname === '[::1]' ||
+                window.location.protocol === 'file:';
+  var ext = isLocal ? '.html' : '';
+
 
   // Tool definitions — single source of truth
   var categories = [
@@ -39,51 +44,50 @@
       id: 'ai-tools',
       title: 'AI Artifacts',
       tools: [
-        { name: 'PrimeArtifact AI', desc: 'Powerful AI assistant', href: base + 'tools/ai/chat' }
+        { name: 'PrimeArtifact AI Assistant', desc: 'Powerful, private AI assistant powered by high-performance infrastructure. No login required.', href: base + 'tools/ai/chat' }
       ]
     },
     {
       id: 'text-tools',
       title: 'Text Artifacts',
       tools: [
-        { name: 'Word & Character Counter', desc: 'Count words, characters, and reading time', href: base + 'tools/text/word-counter' },
-        { name: 'Text Case Converter', desc: 'UPPERCASE, lowercase, Title Case, and more', href: base + 'tools/text/case-converter' },
-        { name: 'Fancy Text Generator', desc: 'Stylish Unicode text for social media', href: base + 'tools/text/fancy-text' },
-        { name: 'Lorem Ipsum Generator', desc: 'Placeholder text for designs', href: base + 'tools/text/lorem-ipsum' }
+        { name: 'Word & Character Counter', desc: 'Count words, characters, sentences, and paragraphs in real-time. Estimate reading time.', href: base + 'tools/text/word-counter' },
+        { name: 'Text Case Converter', desc: 'Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case, and more.', href: base + 'tools/text/case-converter' },
+        { name: 'Fancy Text Generator', desc: 'Generate stylish Unicode text for Instagram bios, WhatsApp status, and more.', href: base + 'tools/text/fancy-text' },
+        { name: 'Lorem Ipsum Generator', desc: 'Generate custom placeholder text for your designs and layouts.', href: base + 'tools/text/lorem-ipsum' }
       ]
     },
     {
       id: 'time-tools',
       title: 'Time Artifacts',
       tools: [
-        // { name: 'Work Hours Calculator', desc: 'Calculate IST leave time', href: base + 'tools/time/work-hours' },
-        { name: 'Time Calculator', desc: 'Add/subtract time intervals', href: base + 'tools/time/time-calculator' },
-        { name: 'Age Calculator', desc: 'Exact age with birthday countdown', href: base + 'tools/time/age-calculator' }
+        { name: 'Time Calculator', desc: 'Add or subtract time intervals, calculate duration between dates, and more.', href: base + 'tools/time/time-calculator' },
+        { name: 'Age Calculator', desc: 'Calculate your exact age in years, months, and days with a birthday countdown.', href: base + 'tools/time/age-calculator' }
       ]
     },
     {
       id: 'generators',
       title: 'Generators',
       tools: [
-        { name: 'Password Generator', desc: 'Strong, secure passwords instantly', href: base + 'tools/generators/password' },
-        { name: 'QR Code Generator', desc: 'Create QR codes for any text or URL', href: base + 'tools/generators/qr-code' }
+        { name: 'Password Generator', desc: 'Generate strong, secure, and customizable passwords instantly.', href: base + 'tools/generators/password' },
+        { name: 'QR Code Generator', desc: 'Create QR codes for any text, URL, or data. Download as PNG.', href: base + 'tools/generators/qr-code' }
       ]
     },
     {
       id: 'converters',
       title: 'Converters',
       tools: [
-        { name: 'Color Picker & Converter', desc: 'HEX, RGB, HSL color conversion', href: base + 'tools/converters/color-picker' },
-        { name: 'Number to Words', desc: 'Indian & International number systems', href: base + 'tools/converters/number-to-words' },
-        { name: 'URL Encoder / Decoder', desc: 'Encode or decode URLs safely', href: base + 'tools/converters/url-encoder' }
+        { name: 'Color Picker & Converter', desc: 'Pick colors and convert between HEX, RGB, HSL, and RGBA formats.', href: base + 'tools/converters/color-picker' },
+        { name: 'Number to Words', desc: 'Convert numbers to words in Indian (Lakhs, Crores) and International systems.', href: base + 'tools/converters/number-to-words' },
+        { name: 'URL Encoder / Decoder', desc: 'Encode or decode URLs for safe use in web addresses.', href: base + 'tools/converters/url-encoder' }
       ]
     },
     {
       id: 'everyday-tools',
       title: 'Utility Artifacts',
       tools: [
-        { name: 'Online Notepad', desc: 'Auto-saves to your browser privately', href: base + 'tools/utility/notepad' },
-        { name: 'Secure Clipboard', desc: 'E2E Encrypted device sync', href: base + 'tools/utility/clipboard' }
+        { name: 'Online Notepad', desc: 'Quick scratchpad that auto-saves to your browser. Private, no cloud.', href: base + 'tools/utility/notepad' },
+        { name: 'Secure Clipboard', desc: 'End-to-End encrypted text sync across devices. Secure and 100% private.', href: base + 'tools/utility/clipboard' }
       ]
     }
   ];
@@ -96,7 +100,7 @@
       html += '<div class="navbar__dropdown-category">';
       html += '<div class="navbar__dropdown-category-title">' + cat.title + '</div>';
       cat.tools.forEach(function (tool) {
-        html += '<a href="' + tool.href + '" class="navbar__dropdown-tool">';
+        html += '<a href="' + tool.href + ext + '" class="navbar__dropdown-tool">';
         html += '<span class="navbar__dropdown-tool-name">' + tool.name + '</span>';
         html += '<span class="navbar__dropdown-tool-desc">' + tool.desc + '</span>';
         html += '</a>';
@@ -128,10 +132,10 @@
     html += '</a>';
 
     html += '<ul class="navbar__nav" id="main-nav">';
-    html += '<li><a href="' + base + '" class="navbar__link' + (active === 'home' ? ' navbar__link--active' : '') + '">Home</a></li>';
+    html += '<li><a href="' + base + (isLocal ? 'index.html' : '') + '" class="navbar__link' + (active === 'home' ? ' navbar__link--active' : '') + '">Home</a></li>';
     
     // AI Chat as a primary link
-    html += '<li><a href="' + base + 'tools/ai/chat" class="navbar__link' + (active === 'ai' ? ' navbar__link--active' : '') + '">AI Chat</a></li>';
+    html += '<li><a href="' + base + 'tools/ai/chat' + ext + '" class="navbar__link' + (active === 'ai' ? ' navbar__link--active' : '') + '">AI Chat</a></li>';
 
     // Tools dropdown
     html += '<li class="navbar__dropdown" id="tools-dropdown">';
@@ -142,8 +146,8 @@
     html += buildDropdownMenu();
     html += '</li>';
 
-    html += '<li><a href="' + base + 'pages/about" class="navbar__link' + (active === 'about' ? ' navbar__link--active' : '') + '">About</a></li>';
-    html += '<li><a href="' + base + 'pages/contact" class="navbar__link' + (active === 'contact' ? ' navbar__link--active' : '') + '">Contact</a></li>';
+    html += '<li><a href="' + base + 'pages/about' + ext + '" class="navbar__link' + (active === 'about' ? ' navbar__link--active' : '') + '">About</a></li>';
+    html += '<li><a href="' + base + 'pages/contact' + ext + '" class="navbar__link' + (active === 'contact' ? ' navbar__link--active' : '') + '">Contact</a></li>';
     html += '</ul>';
 
     html += '<div class="navbar__actions">';
@@ -293,9 +297,9 @@
       '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">' +
       '<p>&copy; 2026 <a href="' + base + '">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.</p>' +
       '<div style="display:flex;gap:var(--space-md);font-size:0.82rem;">' +
-      '<a href="' + base + 'pages/about" style="color:var(--text-tertiary);text-decoration:none;">About</a>' +
-      '<a href="' + base + 'pages/privacy" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>' +
-      '<a href="' + base + 'pages/contact" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>' +
+      '<a href="' + base + 'pages/about' + ext + '" style="color:var(--text-tertiary);text-decoration:none;">About</a>' +
+      '<a href="' + base + 'pages/privacy' + ext + '" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>' +
+      '<a href="' + base + 'pages/contact' + ext + '" style="color:var(--text-tertiary);text-decoration:none;">Contact</a>' +
       '</div>' +
       '</div>' +
       '</div>';
@@ -314,7 +318,7 @@
     var cmdkItemsHTML = '';
     categories.forEach(function(cat) {
       cat.tools.forEach(function(tool) {
-        cmdkItemsHTML += '<a href="' + tool.href + '" class="demo-cmd-item" data-name="' + tool.name.toLowerCase() + '" data-desc="' + tool.desc.toLowerCase() + '">' + tool.name + ' <span class="desc">' + cat.title + ' • ' + tool.desc + '</span></a>';
+        cmdkItemsHTML += '<a href="' + tool.href + ext + '" class="demo-cmd-item" data-name="' + tool.name.toLowerCase() + '" data-desc="' + tool.desc.toLowerCase() + '">' + tool.name + ' <span class="desc">' + cat.title + ' • ' + tool.desc + '</span></a>';
       });
     });
 
@@ -330,7 +334,7 @@
       megaCardsHTML += '<div class="mega-cat-group" id="mega-cat-' + cat.id + '" style="display:' + displayStyle + '; grid-template-columns: 1fr 1fr; gap: 24px; align-content: start; margin-bottom: 32px;">';
       megaCardsHTML += '<div class="mega-cat-separator" style="grid-column: 1 / -1; margin-top: 12px; margin-bottom: -8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-light); color: var(--text-secondary); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: none;">' + cat.title + '</div>';
       cat.tools.forEach(function(tool) {
-        megaCardsHTML += '<a href="' + tool.href + '" class="demo-mega-card"><h3>' + tool.name + '</h3><p>' + tool.desc + '</p></a>';
+        megaCardsHTML += '<a href="' + tool.href + ext + '" class="demo-mega-card"><h3>' + tool.name + '</h3><p>' + tool.desc + '</p></a>';
       });
       megaCardsHTML += '</div>';
     });
@@ -523,14 +527,20 @@
     }, 100);
   });
 
-  // --- PWA Service Worker Registration ---
-  // Temporarily disabled sw.js to prevent potential redirect loops and missing file errors
-  /*
+  // --- Cache Busting & Service Worker Cleanup ---
+  // Unregister any active service workers to clear stale legacy caches
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register(base + 'sw.js').catch(function (err) { });
+    navigator.serviceWorker.getRegistrations().then(function (registrations) {
+      for (var i = 0; i < registrations.length; i++) {
+        registrations[i].unregister().then(function(success) {
+          if (success) {
+            console.log('Legacy cache cleared: Service Worker unregistered.');
+            // Optional: force reload once after unregistering if we really want to be aggressive
+            // window.location.reload(); 
+          }
+        });
+      }
     });
   }
-  */
 
 })();

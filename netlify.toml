@@ -16,28 +16,28 @@
     Permissions-Policy     = "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
-# Cache HTML for 10 minutes (fresh but not stale)
+# Cache HTML to ensure revalidation on every load
 [[headers]]
   for = "/*.html"
   [headers.values]
-    Cache-Control = "public, max-age=600, stale-while-revalidate=3600"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
-# Cache CSS / JS for 1 year (they're fingerprinted via filename when you add a build step later)
+# JS and CSS revalidation (since they are not fingerprinted)
 [[headers]]
   for = "/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
-# Cache assets (fonts, images, icons) for 1 year
+# Cache assets (fonts, images, icons) can stay long-term but reduced to 1 month for safety
 [[headers]]
   for = "/assets/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=2592000"
 
 # Cache favicon forever
 [[headers]]

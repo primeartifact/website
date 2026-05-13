@@ -2,35 +2,31 @@
 # ║  PrimeArtifact — Cloudflare Pages Headers                    ║
 # ╚══════════════════════════════════════════════════════════════╝
 
-# ── Security & Performance Headers (all pages) ────────────────
+# ── Default: Security + No-Cache for ALL pages ─────────────────
+# This covers HTML (clean URLs), CSS, JS — everything by default.
+# Cloudflare Pages uses clean URLs (/tools/ai/chat NOT /tools/ai/chat.html)
+# so pattern /*.html does NOT match actual requests. Use /* instead.
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
-
-# Cache HTML to ensure revalidation
-/*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# Cache CSS and JS with revalidation
-/css/*
-  Cache-Control: public, max-age=0, must-revalidate
-
-/js/*
-  Cache-Control: public, max-age=0, must-revalidate
-
-# Cache assets (fonts, images, icons) for 1 month
+# ── Long-lived assets (fonts, images, icons) — 30 days ─────────
+# These override the default /* rule above.
 /assets/*
   Cache-Control: public, max-age=2592000
 
-# Cache favicon
+# ── Favicon — 30 days ──────────────────────────────────────────
 /favicon.*
   Cache-Control: public, max-age=2592000
 
+# ── API endpoints — never cache ────────────────────────────────
 /api/*
   Cache-Control: no-store, no-cache, must-revalidate
 
-/tools/utility/clipboard.html
+# ── Secure Clipboard — never cache (E2E encrypted content) ─────
+/tools/utility/clipboard
   Cache-Control: no-store, no-cache, must-revalidate

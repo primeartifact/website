@@ -225,14 +225,134 @@
     });
   }
 
+  /* =============================================
+     3. BRANCH NETWORK EFFECT (Diff Checker)
+     ============================================= */
+  function initBranchNetwork() {
+    var canvas = document.getElementById('data-flux-canvas');
+    if (!canvas) return;
+    
+    var ctx = canvas.getContext('2d');
+    var w, h;
+    var mouse = { x: -1000, y: -1000 };
+    var nodes = [];
+    var time = 0;
+    
+    window.addEventListener('mousemove', function(e) { 
+        mouse.x = e.clientX; 
+        mouse.y = e.clientY; 
+    });
+    
+    function resize() { 
+        w = canvas.width = window.innerWidth; 
+        h = canvas.height = window.innerHeight; 
+        nodes = [];
+        // Determine number of nodes based on screen size
+        var numNodes = Math.floor((w * h) / 18000); 
+        for (var i = 0; i < numNodes; i++) {
+            nodes.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vy: (Math.random() * 0.4) + 0.1, 
+                type: Math.random() > 0.85 ? (Math.random() > 0.5 ? 'add' : 'remove') : 'normal',
+                pulse: Math.random() * Math.PI * 2
+            });
+        }
+    }
+    window.addEventListener('resize', resize);
+    
+    function draw() {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        ctx.clearRect(0, 0, w, h); 
+        time += 0.02;
+        
+        for (var i = 0; i < nodes.length; i++) {
+            var n = nodes[i];
+            n.y -= n.vy; // Floating upwards slowly
+            if (n.y < -50) {
+                n.y = h + 50;
+                n.x = Math.random() * w;
+            }
+            n.pulse += 0.04;
+            
+            var dx = n.x - mouse.x;
+            var dy = n.y - mouse.y;
+            var dist = Math.sqrt(dx*dx + dy*dy);
+            
+            // Subtle mouse repulsion
+            if (dist < 150) {
+                n.x += dx * 0.015;
+                n.y += dy * 0.015;
+            }
+            
+            var alpha = dist < 250 ? 0.7 : 0.15;
+            var color;
+            var rawColor;
+            
+            if (n.type === 'add') {
+                rawColor = isDark ? '81, 207, 102' : '43, 138, 62';
+            } else if (n.type === 'remove') {
+                rawColor = isDark ? '255, 107, 107' : '201, 42, 42';
+            } else {
+                rawColor = isDark ? '255, 255, 255' : '74, 111, 165';
+                alpha *= 0.5; // Make normal nodes slightly dimmer
+            }
+            color = `rgba(${rawColor}, ${alpha})`;
+            
+            // Connect to nearby nodes (Git branches/merges)
+            for (var j = i + 1; j < nodes.length; j++) {
+                var n2 = nodes[j];
+                var dDist = Math.sqrt(Math.pow(n.x - n2.x, 2) + Math.pow(n.y - n2.y, 2));
+                
+                if (dDist < 140) {
+                    var lineAlpha = alpha * (1 - dDist/140);
+                    ctx.strokeStyle = `rgba(${rawColor}, ${lineAlpha})`;
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(n.x, n.y);
+                    // Bezier curve to look like Git branches
+                    ctx.bezierCurveTo(n.x, (n.y + n2.y)/2, n2.x, (n.y + n2.y)/2, n2.x, n2.y);
+                    ctx.stroke();
+                }
+            }
+            
+            // Draw Node (hollow circle like a commit)
+            var radius = 3.5 + Math.sin(n.pulse) * 1.5;
+            ctx.fillStyle = isDark ? '#0c0d0f' : '#f4f5f7'; 
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, radius + 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Fill center when mouse is close
+            if (dist < 150) {
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
+        }
+        
+        requestAnimationFrame(draw);
+    }
+    
+    resize(); 
+    draw();
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       init3DArtifact();
       initCardTilt();
+      initBranchNetwork();
     });
   } else {
     init3DArtifact();
     initCardTilt();
+    initBranchNetwork();
   }
 
 })();

@@ -1776,3 +1776,137 @@ input[type="number"] {
   color: var(--accent);
   background: var(--glass-bg-hover);
 }
+
+/* Responsive adjustments for Navbar actions on mobile */
+/* Navbar actions desktop/mobile visibility */
+.mobile-nav-actions { display: none !important; }
+
+@media (max-width: 768px) {
+  .desktop-nav-action { display: none !important; }
+  .mobile-nav-actions { display: flex !important; }
+  .navbar__actions {
+    gap: 4px;
+  }
+  .nav-btn {
+    width: 32px;
+    height: 32px;
+    margin-left: 2px;
+  }
+  .nav-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  .theme-toggle {
+    width: 38px;
+    height: 20px;
+  }
+  .theme-toggle::after {
+    width: 16px;
+    height: 16px;
+    top: 1px;
+    left: 2px;
+  }
+  [data-theme="dark"] .theme-toggle::after {
+    transform: translateX(17px);
+  }
+  .navbar__menu-btn {
+    font-size: 1.1rem;
+    padding: 2px;
+  }
+}
+
+/* Modals Mobile Responsiveness */
+@media (max-width: 768px) {
+  .demo-cmd-k {
+    width: 95%;
+  }
+  
+  .demo-mega {
+    width: 95%;
+    height: 85vh;
+  }
+  
+  .mega-container {
+    flex-direction: column;
+  }
+  
+  .demo-mega-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0 12px 0;
+    flex-shrink: 0;
+  }
+  
+  .demo-mega-sidebar-items-scroll {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 16px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .demo-mega-sidebar-items-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .demo-mega-sidebar-item {
+    margin-bottom: 0;
+    margin-right: 8px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .demo-mega-content {
+    padding: 16px;
+  }
+  
+  .mega-cat-group {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .mega-search-bar {
+    padding: 16px;
+    flex-shrink: 0;
+  }
+  
+  .mega-search-bar input {
+    font-size: 1rem;
+    padding: 12px 40px 12px 16px;
+  }
+  
+  #mega-search-clear {
+    right: 32px;
+  }
+  
+  .demo-mega-sidebar-title {
+    padding: 0 0 12px 0;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+/* Mega Menu Sidebar Enhancements */
+.demo-mega-sidebar-title {
+  padding: 0 16px 15px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.demo-mega-sidebar::-webkit-scrollbar {
+  display: none;
+}
+.demo-mega-sidebar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

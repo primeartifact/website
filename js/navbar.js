@@ -54,7 +54,8 @@
         { name: 'Word & Character Counter', desc: 'Count words, characters, sentences, and paragraphs in real-time. Estimate reading time.', href: base + 'tools/text/word-counter' },
         { name: 'Text Case Converter', desc: 'Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case, and more.', href: base + 'tools/text/case-converter' },
         { name: 'Fancy Text Generator', desc: 'Generate stylish Unicode text for Instagram bios, WhatsApp status, and more.', href: base + 'tools/text/fancy-text' },
-        { name: 'Lorem Ipsum Generator', desc: 'Generate custom placeholder text for your designs and layouts.', href: base + 'tools/text/lorem-ipsum' }
+        { name: 'Lorem Ipsum Generator', desc: 'Generate custom placeholder text for your designs and layouts.', href: base + 'tools/text/lorem-ipsum' },
+        { name: 'Diff Checker', desc: 'Compare two blocks of text and highlight the differences instantly.', href: base + 'tools/text/diff-checker' }
       ]
     },
     {
@@ -132,6 +133,17 @@
     html += '</a>';
 
     html += '<ul class="navbar__nav" id="main-nav">';
+    
+    // Mobile actions row
+    html += '<li class="mobile-nav-actions" style="display:flex; justify-content:center; gap:15px; margin: 10px 0 15px 0; padding-bottom:15px; border-bottom:1px solid var(--border-light);">';
+    html += '<button class="nav-btn nav-search-btn" aria-label="Search Artifacts" title="Search Tools (Cmd+K)">';
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
+    html += '</button>';
+    html += '<button class="nav-btn nav-mega-btn" aria-label="App Hub" title="App Hub">';
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>';
+    html += '</button>';
+    html += '</li>';
+
     html += '<li><a href="' + base + (isLocal ? 'index.html' : '') + '" class="navbar__link' + (active === 'home' ? ' navbar__link--active' : '') + '">Home</a></li>';
     
     // AI Chat as a primary link
@@ -151,10 +163,10 @@
     html += '</ul>';
 
     html += '<div class="navbar__actions">';
-    html += '<button class="nav-btn" id="nav-search-btn" aria-label="Search Artifacts" title="Search Tools (Cmd+K)">';
+    html += '<button class="nav-btn nav-search-btn desktop-nav-action" id="nav-search-btn" aria-label="Search Artifacts" title="Search Tools (Cmd+K)">';
     html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     html += '</button>';
-    html += '<button class="nav-btn" id="nav-mega-btn" aria-label="App Hub" title="App Hub" style="margin-right:15px;">';
+    html += '<button class="nav-btn nav-mega-btn desktop-nav-action" id="nav-mega-btn" aria-label="App Hub" title="App Hub" style="margin-right:15px;">';
     html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>';
     html += '</button>';
     html += '<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">';
@@ -323,7 +335,8 @@
     });
 
     // Build Mega Menu Categories & Cards
-    var megaSidebarHTML = '<div style="padding: 0 16px 15px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-tertiary); font-weight: 700; letter-spacing: 0.05em;">Categories</div>';
+    var megaSidebarHTML = '<div class="demo-mega-sidebar-title">Categories</div>';
+    megaSidebarHTML += '<div class="demo-mega-sidebar-items-scroll">';
     var megaCardsHTML = '';
     
     categories.forEach(function(cat, index) {
@@ -338,6 +351,7 @@
       });
       megaCardsHTML += '</div>';
     });
+    megaSidebarHTML += '</div>';
 
     var wrapper = document.createElement('div');
     wrapper.innerHTML = `
@@ -379,8 +393,8 @@
       var megaSearchInput = document.getElementById('mega-search-input');
       var megaSearchClear = document.getElementById('mega-search-clear');
       
-      var btnSearch = document.getElementById('nav-search-btn');
-      var btnMega = document.getElementById('nav-mega-btn');
+      var btnsSearch = document.querySelectorAll('.nav-search-btn');
+      var btnsMega = document.querySelectorAll('.nav-mega-btn');
       
       function openModal(m, inputToFocus) {
         m.classList.add('active');
@@ -401,8 +415,8 @@
         }
       }
       
-      if(btnSearch) btnSearch.addEventListener('click', function(e) { e.preventDefault(); openModal(modalCmdK, cmdkInput); });
-      if(btnMega) btnMega.addEventListener('click', function(e) { e.preventDefault(); openModal(modalMega, megaSearchInput); });
+      btnsSearch.forEach(function(btn) { btn.addEventListener('click', function(e) { e.preventDefault(); openModal(modalCmdK, cmdkInput); }); });
+      btnsMega.forEach(function(btn) { btn.addEventListener('click', function(e) { e.preventDefault(); openModal(modalMega, megaSearchInput); }); });
 
       // Keyboard Shortcut Cmd+K
       document.addEventListener('keydown', function(e) {

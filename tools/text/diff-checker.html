@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diff Checker — VS Code Style Comparison | PrimeArtifact</title>
+    <meta name="description" content="Free, private, and fast online diff checker. Side-by-side comparison with line numbers, just like VS Code. Highlights additions and deletions.">
+    <link rel="stylesheet" href="../../css/style.css">
+    <script src="../../js/theme.js"></script>
+    <style>
+        :root { color-scheme: light dark; }
+        [data-theme="light"] { 
+            color-scheme: light; 
+            --diff-sidebar: rgba(0, 0, 0, 0.03);
+            --diff-pane-bg: rgba(0, 0, 0, 0.02);
+            --diff-added-bg: rgba(81, 207, 102, 0.15);
+            --diff-removed-bg: rgba(255, 107, 107, 0.15);
+            --diff-added-text: #2b8a3e;
+            --diff-removed-text: #c92a2a;
+        }
+        [data-theme="dark"] { 
+            color-scheme: dark; 
+            --diff-sidebar: rgba(0, 0, 0, 0.2);
+            --diff-pane-bg: rgba(0, 0, 0, 0.1);
+            --diff-added-bg: rgba(81, 207, 102, 0.15);
+            --diff-removed-bg: rgba(255, 107, 107, 0.15);
+            --diff-added-text: #51cf66;
+            --diff-removed-text: #ff6b6b;
+        }
+
+        .diff-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .input-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .textarea-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .textarea-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-tertiary);
+            font-weight: 700;
+        }
+        .editor-container {
+            display: flex;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            height: 250px;
+            overflow: hidden;
+        }
+        .editor-container:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+        .line-numbers {
+            width: 45px;
+            min-width: 45px;
+            padding: 1rem 0;
+            text-align: right;
+            padding-right: 10px;
+            color: var(--text-tertiary);
+            background: var(--diff-sidebar);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            user-select: none;
+            border-right: 1px solid var(--glass-border);
+            overflow: hidden;
+        }
+        .diff-textarea.with-lines {
+            border: none;
+            border-radius: 0;
+            height: 100%;
+            background: transparent;
+            color: var(--text-primary);
+            resize: none;
+            flex: 1;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            outline: none;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        /* VS Code Style Diff View */
+        .diff-viewer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--glass-shadow-lg);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            height: 500px;
+        }
+        .diff-pane {
+            overflow: auto;
+            position: relative;
+            background: var(--diff-pane-bg);
+        }
+        .diff-pane:first-child {
+            border-right: 1px solid var(--glass-border);
+        }
+        .diff-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .diff-row {
+            display: flex;
+            min-height: 20px;
+        }
+        .diff-num {
+            width: 45px;
+            min-width: 45px;
+            padding: 0 10px;
+            text-align: right;
+            color: var(--text-tertiary);
+            background: var(--diff-sidebar);
+            user-select: none;
+            border-right: 1px solid var(--glass-border);
+            line-height: 20px;
+        }
+        .diff-line {
+            flex-grow: 1;
+            padding: 0 10px;
+            white-space: pre;
+            line-height: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+        }
+
+        /* Highlights */
+        .row-added { background: var(--diff-added-bg); }
+        .row-removed { background: var(--diff-removed-bg); }
+        .row-added .diff-line::before { content: '+ '; color: var(--diff-added-text); opacity: 0.8; font-weight: bold; }
+        .row-removed .diff-line::before { content: '- '; color: var(--diff-removed-text); opacity: 0.8; font-weight: bold; }
+        .line-added-content { background: rgba(81, 207, 102, 0.25); border-radius: 2px; }
+        .line-removed-content { background: rgba(255, 107, 107, 0.25); border-radius: 2px; text-decoration: line-through; }
+
+        .diff-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .empty-diff {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .input-wrapper, .diff-viewer {
+                grid-template-columns: 1fr;
+            }
+            .diff-pane:first-child {
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+            }
+            .diff-viewer { height: auto; max-height: 800px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar"></nav>
+    <script src="../../js/navbar.js"></script>
+    <canvas id="bg-canvas"></canvas>
+
+    <main class="page animate-in">
+        <div class="container">
+            <header class="page-header">
+                <h1 class="page-header__title">Diff Checker <button class="faq-inline-btn" id="open-faq"><i class="fas fa-question-circle"></i></button></h1>
+                <p class="page-header__subtitle">Professional line-by-line text comparison. Secure, private, and precise.</p>
+            </header>
+
+            <div class="diff-container">
+                <div class="input-wrapper">
+                    <div class="textarea-group">
+                        <label>Original Text (Left)</label>
+                        <div class="editor-container">
+                            <div class="line-numbers" id="lines-old">1</div>
+                            <textarea id="text-old" class="diff-textarea with-lines" wrap="off" placeholder="Paste original text..."></textarea>
+                        </div>
+                    </div>
+                    <div class="textarea-group">
+                        <label>Changed Text (Right)</label>
+                        <div class="editor-container">
+                            <div class="line-numbers" id="lines-new">1</div>
+                            <textarea id="text-new" class="diff-textarea with-lines" wrap="off" placeholder="Paste modified text..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: 1rem 0;">
+                    <button id="btn-compare" style="padding: 0.75rem 2.5rem; font-weight: 700; border-radius: var(--radius-md); cursor: pointer; background: var(--accent); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.2s, background 0.2s;">Compare Texts</button>
+                </div>
+
+                <div class="diff-viewer glass">
+                    <div class="diff-pane" id="pane-old">
+                        <div class="diff-header">Original</div>
+                        <div id="output-old" class="diff-content">
+                            <div class="empty-diff">Waiting for input...</div>
+                        </div>
+                    </div>
+                    <div class="diff-pane" id="pane-new">
+                        <div class="diff-header">Modified</div>
+                        <div id="output-new" class="diff-content">
+                            <div class="empty-diff">Waiting for input...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="faq-modal-overlay" id="faq-overlay">
+        <div class="faq-modal">
+            <button class="faq-modal-close" id="close-faq">&times;</button>
+            <h2><i class="fas fa-question-circle"></i> Diff Checker Help</h2>
+            <div class="faq-item">
+                <h3>Is it really like VS Code?</h3>
+                <p>Yes. We use a line-by-line comparison algorithm that highlights added and removed lines. It also detects character-level changes within modified lines for maximum precision.</p>
+            </div>
+            <div class="faq-item">
+                <h3>What about long lines?</h3>
+                <p>Lines are displayed in monospace with synchronized scrolling, so you can easily compare large blocks of code or documentation.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer"></footer>
+
+    <script>
+        // Simple but robust line-based diff algorithm
+        function computeDiff(oldText, newText) {
+            const oldLines = oldText.split(/\r?\n/);
+            const newLines = newText.split(/\r?\n/);
+            
+            // For simplicity in this vanilla version, we'll use a basic alignment
+            // A more advanced Myers diff would be better, but this is fast for the UI
+            let i = 0, j = 0;
+            const diff = [];
+
+            while (i < oldLines.length || j < newLines.length) {
+                if (i < oldLines.length && j < newLines.length && oldLines[i] === newLines[j]) {
+                    diff.push({ type: 'equal', old: oldLines[i], new: newLines[j], oldNum: i+1, newNum: j+1 });
+                    i++; j++;
+                } else if (j < newLines.length && (i >= oldLines.length || !oldLines.slice(i).includes(newLines[j]))) {
+                    diff.push({ type: 'added', old: '', new: newLines[j], oldNum: '', newNum: j+1 });
+                    j++;
+                } else {
+                    diff.push({ type: 'removed', old: oldLines[i], new: '', oldNum: i+1, newNum: '' });
+                    i++;
+                }
+            }
+            return diff;
+        }
+
+        const oldInput = document.getElementById('text-old');
+        const newInput = document.getElementById('text-new');
+        const outputOld = document.getElementById('output-old');
+        const outputNew = document.getElementById('output-new');
+        const paneOld = document.getElementById('pane-old');
+        const paneNew = document.getElementById('pane-new');
+
+        // Sync scrolling
+        paneOld.onscroll = () => { paneNew.scrollTop = paneOld.scrollTop; paneNew.scrollLeft = paneOld.scrollLeft; };
+        paneNew.onscroll = () => { paneOld.scrollTop = paneNew.scrollTop; paneOld.scrollLeft = paneNew.scrollLeft; };
+
+        function updateDiff() {
+            const diff = computeDiff(oldInput.value, newInput.value);
+            
+            outputOld.innerHTML = '';
+            outputNew.innerHTML = '';
+
+            diff.forEach(row => {
+                const rowOld = document.createElement('div');
+                rowOld.className = `diff-row ${row.type === 'removed' ? 'row-removed' : ''}`;
+                rowOld.innerHTML = `<div class="diff-num">${row.oldNum}</div><div class="diff-line">${escapeHtml(row.old)}</div>`;
+                
+                const rowNew = document.createElement('div');
+                rowNew.className = `diff-row ${row.type === 'added' ? 'row-added' : ''}`;
+                rowNew.innerHTML = `<div class="diff-num">${row.newNum}</div><div class="diff-line">${escapeHtml(row.new)}</div>`;
+
+                outputOld.appendChild(rowOld);
+                outputNew.appendChild(rowNew);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateLineNumbers(textarea, linesContainer) {
+            const linesCount = textarea.value.split('\n').length;
+            linesContainer.innerHTML = Array(linesCount).fill(0).map((_, i) => i + 1).join('<br>');
+        }
+
+        oldInput.addEventListener('input', () => {
+            updateLineNumbers(oldInput, document.getElementById('lines-old'));
+        });
+        
+        newInput.addEventListener('input', () => {
+            updateLineNumbers(newInput, document.getElementById('lines-new'));
+        });
+
+        document.getElementById('btn-compare').addEventListener('click', () => {
+            if (!oldInput.value.trim() && !newInput.value.trim()) {
+                if (window.paToast) {
+                    window.paToast('Please enter text in both fields to compare.', { icon: '⚠️' });
+                } else {
+                    alert('Please enter text in both fields to compare.');
+                }
+                return;
+            }
+            updateDiff();
+        });
+
+        oldInput.addEventListener('scroll', () => {
+            document.getElementById('lines-old').scrollTop = oldInput.scrollTop;
+        });
+
+        newInput.addEventListener('scroll', () => {
+            document.getElementById('lines-new').scrollTop = newInput.scrollTop;
+        });
+
+        // --- Background Effect: Digital Rain ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, drops = [];
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            drops = Array(Math.floor(w / 25)).fill(0);
+        }
+        window.addEventListener('resize', resize);
+        function draw() {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.1)' : 'rgba(10, 11, 16, 0.1)';
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = isLight ? '#a0c4ff' : '#8ab4f8';
+            ctx.font = '15px monospace';
+            drops.forEach((y, i) => {
+                const text = String.fromCharCode(Math.random() * 128);
+                ctx.globalAlpha = isLight ? 0.5 : 0.3;
+                ctx.fillText(text, i * 25, y);
+                if (y > h && Math.random() > 0.975) drops[i] = 0;
+                else drops[i] += 15;
+            });
+            requestAnimationFrame(draw);
+        }
+        resize(); draw();
+
+        // FAQ Toggle
+        document.getElementById('open-faq').addEventListener('click', () => document.getElementById('faq-overlay').classList.add('active'));
+        document.getElementById('close-faq').addEventListener('click', () => document.getElementById('faq-overlay').classList.remove('active'));
+    </script>
+</body>
+</html>

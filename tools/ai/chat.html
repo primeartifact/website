@@ -1440,31 +1440,60 @@
       }
 
       // ── Markdown Renderer ──────────────────────
-      function renderMarkdown(text) {
+      function renderMarkdown(text) { 
         if (!text) return '';
-        // 1. Extract code blocks first
+        
+        // 1. Extract non-text blocks (Code, Math) to prevent regex conflicts
         const codeBlocks = [];
         text = text.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, lang, code) {
           codeBlocks.push({ lang: lang || 'code', code: code.trimEnd() });
           return '\n%%CB_' + (codeBlocks.length - 1) + '%%\n';
         });
 
-        // 2. Escape HTML in remaining text
+        const inlineCodes = [];
+        text = text.replace(/`([^`\n]+)`/g, function(m, code) {
+          inlineCodes.push(code);
+          return '%%IC_' + (inlineCodes.length - 1) + '%%';
+        });
+
+        const mathBlocks = [];
+        text = text.replace(/\$\$([\s\S]*?)\$\$/g, function(m, math) {
+          mathBlocks.push(math);
+          return '\n%%MB_' + (mathBlocks.length - 1) + '%%\n';
+        });
+
+        const inlineMaths = [];
+        text = text.replace(/\$([^\$\n]+)\$/g, function(m, math) {
+          inlineMaths.push(math);
+          return '%%IM_' + (inlineMaths.length - 1) + '%%';
+        });
+
+        // 2. Escape HTML
         text = escapeHTML(text);
 
-        // 3. Inline elements
+        // Restore sup/sub tags
+        text = text.replace(/&lt;sup&gt;(.*?)&lt;\/sup&gt;/gi, '<sup>$1</sup>');
+        text = text.replace(/&lt;sub&gt;(.*?)&lt;\/sub&gt;/gi, '<sub>$1</sub>');
+
+        // 3. Inline Elements
         text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         text = text.replace(/(?<![*])\*([^*]+?)\*(?![*])/g, '<em>$1</em>');
-        text = text.replace(/`([^`]+?)`/g, '<code class="inline-code">$1</code>');
+        text = text.replace(/~~(.+?)~~/g, '<del>$1</del>'); // Strikethrough
+        text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%; border-radius:8px; margin: 10px 0;">'); // Images
+        text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: underline;">$1</a>'); // Links
+        text = text.replace(/\[\^(\d+)\](?!:)/g, '<sup class="footnote-ref"><a href="#fn$1">[$1]</a></sup>'); // Footnote inline
 
-        // 4. Process lines
+        // 4. Process line by line
         const lines = text.split('\n');
         let html = '';
-        let inUL = false, inOL = false;
+        let inUL = false, inOL = false, inTable = false;
 
         function closeList() {
           if (inUL) { html += '</ul>'; inUL = false; }
           if (inOL) { html += '</ol>'; inOL = false; }
+        }
+        function closeTable() {
+          if (inTable) { html += '</tbody></table></div>'; inTable = false; }
         }
 
         for (let i = 0; i < lines.length; i++) {
@@ -1473,61 +1502,120 @@
           // Code block placeholder
           const cbm = line.match(/%%CB_(\d+)%%/);
           if (cbm) {
-            closeList();
+            closeList(); closeTable();
             const cb = codeBlocks[parseInt(cbm[1])];
             const esc = escapeHTML(cb.code);
             html += '<div class="code-block-wrapper"><div class="code-block-header"><span class="code-lang">' + cb.lang + '</span><button class="code-copy-btn" onclick="window._copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div><pre><code>' + esc + '</code></pre></div>';
             continue;
           }
 
-          // Headings
-          const hm = line.match(/^(#{1,4})\s+(.*)/);
-          if (hm) {
+          // Math block placeholder
+          const mbm = line.match(/%%MB_(\d+)%%/);
+          if (mbm) {
+            closeList(); closeTable();
+            html += '<div class="math-block" style="text-align: center; margin: 15px 0; overflow-x: auto; font-family: \'JetBrains Mono\', monospace; background: rgba(0,0,0,0.1); padding: 15px; border-radius: var(--radius-lg); border: 1px solid var(--glass-border);">' + escapeHTML(mathBlocks[parseInt(mbm[1])]) + '</div>';
+            continue;
+          }
+
+          // Footnote definition
+          const fnm = line.match(/^\[\^(\d+)\]:\s*(.*)/);
+          if (fnm) {
+            closeList(); closeTable();
+            html += '<div id="fn' + fnm[1] + '" class="footnote-def" style="font-size: 0.85em; color: var(--text-tertiary); margin-top: 10px;"><sup>[' + fnm[1] + ']</sup> ' + fnm[2] + '</div>';
+            continue;
+          }
+
+          // Table handling
+          if (line.trim().startsWith('|')) {
             closeList();
-            const lvl = hm[1].length + 1;
-            html += '<h' + lvl + ' class="md-heading">' + hm[2] + '</h' + lvl + '>';
+            if (!inTable) {
+              inTable = true;
+              html += '<div style="overflow-x: auto; margin: 15px 0; border-radius: var(--radius-lg); border: 1px solid var(--glass-border);"><table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9em;"><thead>';
+              const cols = line.split('|').filter((_, idx, arr) => idx !== 0 && idx !== arr.length - 1);
+              html += '<tr style="background: rgba(0,0,0,0.2);">' + cols.map(c => '<th style="padding: 12px; border-bottom: 1px solid var(--glass-border);">' + c.trim() + '</th>').join('') + '</tr>';
+              html += '</thead><tbody>';
+              if (i + 1 < lines.length && lines[i+1].trim().startsWith('|') && lines[i+1].includes('-')) {
+                i++; // Skip alignment row
+              }
+              continue;
+            } else {
+              const cols = line.split('|').filter((_, idx, arr) => idx !== 0 && idx !== arr.length - 1);
+              html += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">' + cols.map(c => '<td style="padding: 10px 12px;">' + c.trim() + '</td>').join('') + '</tr>';
+              continue;
+            }
+          } else {
+            closeTable();
+          }
+
+          // Headings
+          const hm = line.match(/^(#{1,6})\s+(.*)/);
+          if (hm) {
+            closeList(); closeTable();
+            const lvl = hm[1].length;
+            html += '<h' + lvl + ' class="md-heading" style="margin-top: 1.5em; margin-bottom: 0.5em; font-weight: 600;">' + hm[2] + '</h' + lvl + '>';
             continue;
           }
 
           // HR
           if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
-            closeList();
-            html += '<hr class="md-hr">';
+            closeList(); closeTable();
+            html += '<hr class="md-hr" style="border: 0; border-top: 1px solid var(--glass-border); margin: 2em 0;">';
             continue;
           }
 
           // Blockquote
           if (/^&gt;\s?/.test(line)) {
-            closeList();
-            html += '<blockquote class="md-bq">' + line.replace(/^&gt;\s?/, '') + '</blockquote>';
+            closeList(); closeTable();
+            html += '<blockquote class="md-bq" style="border-left: 4px solid var(--accent); padding-left: 1em; margin: 1em 0; color: var(--text-secondary);">' + line.replace(/^&gt;\s?/, '') + '</blockquote>';
             continue;
           }
 
-          // Unordered list
-          if (/^[\-\*]\s/.test(line)) {
+          // Checkboxes & Unordered Lists
+          const ulm = line.match(/^[\-\*]\s(.*)/);
+          if (ulm) {
+            closeTable();
             if (inOL) { html += '</ol>'; inOL = false; }
-            if (!inUL) { html += '<ul class="md-list">'; inUL = true; }
-            html += '<li>' + line.replace(/^[\-\*]\s*/, '') + '</li>';
+            if (!inUL) { html += '<ul class="md-list" style="margin: 0.5em 0; padding-left: 1.5em;">'; inUL = true; }
+            let content = ulm[1];
+            if (content.startsWith('[ ] ')) {
+              content = '<input type="checkbox" disabled style="margin-right: 8px;">' + content.substring(4);
+            } else if (content.startsWith('[x] ') || content.startsWith('[X] ')) {
+              content = '<input type="checkbox" disabled checked style="margin-right: 8px;">' + content.substring(4);
+            }
+            html += '<li style="margin-bottom: 0.25em;">' + content + '</li>';
             continue;
           }
 
-          // Ordered list
-          if (/^\d+\.\s/.test(line)) {
+          // Ordered Lists
+          const olm = line.match(/^\d+\.\s(.*)/);
+          if (olm) {
+            closeTable();
             if (inUL) { html += '</ul>'; inUL = false; }
-            if (!inOL) { html += '<ol class="md-list">'; inOL = true; }
-            html += '<li>' + line.replace(/^\d+\.\s*/, '') + '</li>';
+            if (!inOL) { html += '<ol class="md-list" style="margin: 0.5em 0; padding-left: 1.5em;">'; inOL = true; }
+            html += '<li style="margin-bottom: 0.25em;">' + olm[1] + '</li>';
             continue;
           }
 
-          // Empty line or text
-          closeList();
+          // Paragraphs and breaks
+          closeList(); closeTable();
           if (line.trim() === '') {
-            if (i > 0 && lines[i-1].trim() !== '') html += '<br>';
+            if (i > 0 && lines[i-1].trim() !== '' && !lines[i-1].match(/%%CB_\d+%%/) && !lines[i-1].match(/%%MB_\d+%%/)) {
+              html += '<br>';
+            }
           } else {
-            html += '<p class="md-p">' + line + '</p>';
+            html += '<p class="md-p" style="margin-bottom: 0.75em; line-height: 1.6;">' + line + '</p>';
           }
         }
-        closeList();
+        closeList(); closeTable();
+
+        // 5. Restore inline extractions
+        html = html.replace(/%%IC_(\d+)%%/g, function(m, idx) {
+          return '<code class="inline-code" style="background: rgba(0,0,0,0.2); padding: 0.2em 0.4em; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: var(--accent);">' + escapeHTML(inlineCodes[parseInt(idx)]) + '</code>';
+        });
+        html = html.replace(/%%IM_(\d+)%%/g, function(m, idx) {
+          return '<span class="math-inline" style="font-family: \'JetBrains Mono\', monospace; color: var(--text-secondary); background: rgba(0,0,0,0.1); padding: 0 4px; border-radius: 4px;">' + escapeHTML(inlineMaths[parseInt(idx)]) + '</span>';
+        });
+
         return html;
       }
 

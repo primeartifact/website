@@ -25,16 +25,21 @@ export async function onRequestGet(context) {
   }
 
   try {
-    // 1. Fetch the YouTube video page HTML
-    const ytResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+    let ytResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
         headers: {
-            // User agent helps avoid basic bot detection
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9',
         }
     });
     
+    // If YouTube blocks Cloudflare's datacenter IP (e.g., 403 Forbidden or 429), use a proxy fallback
     if (!ytResponse.ok) {
-        return new Response(JSON.stringify({ error: 'Failed to fetch YouTube page' }), { status: 500, headers: corsHeaders });
+        console.warn(`Direct fetch failed (${ytResponse.status}). Attempting proxy fallback...`);
+        ytResponse = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent('https://www.youtube.com/watch?v=' + videoId)}`);
+        
+        if (!ytResponse.ok) {
+            return new Response(JSON.stringify({ error: `Failed to fetch YouTube page even with proxy. Status: ${ytResponse.status}` }), { status: 500, headers: corsHeaders });
+        }
     }
 
     const html = await ytResponse.text();
@@ -59,11 +64,18 @@ export async function onRequestGet(context) {
     }
 
     // Default to the first track (usually auto-generated or the default language)
-    // Could be expanded to allow user to pick language, but first is good enough for now
     const trackUrl = captionTracks[0].baseUrl;
 
     // 4. Fetch the XML transcript
-    const xmlResponse = await fetch(trackUrl);
+    let xmlResponse = await fetch(trackUrl);
+    if (!xmlResponse.ok) {
+        console.warn(`Direct XML fetch failed (${xmlResponse.status}). Attempting proxy fallback...`);
+        xmlResponse = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(trackUrl)}`);
+        if (!xmlResponse.ok) {
+            return new Response(JSON.stringify({ error: `Failed to fetch transcript XML. Status: ${xmlResponse.status}` }), { status: 500, headers: corsHeaders });
+        }
+    }
+    
     const xmlText = await xmlResponse.text();
 
     // 5. Parse the XML to get just the text

@@ -55,6 +55,7 @@
         { name: 'Text Case Converter', desc: 'Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case, and more.', href: base + 'tools/text/case-converter' },
         { name: 'Fancy Text Generator', desc: 'Generate stylish Unicode text for Instagram bios, WhatsApp status, and more.', href: base + 'tools/text/fancy-text' },
         { name: 'Lorem Ipsum Generator', desc: 'Generate custom placeholder text for your designs and layouts.', href: base + 'tools/text/lorem-ipsum' },
+        { name: 'Markdown Viewer', desc: 'Render and preview .md files instantly in your browser. Export to HTML, Markdown, or plain text.', href: base + 'tools/text/md-viewer' },
         { name: 'Diff Checker', desc: 'Compare two blocks of text and highlight the differences instantly.', href: base + 'tools/text/diff-checker' }
       ]
     },
@@ -549,12 +550,20 @@
         registrations[i].unregister().then(function(success) {
           if (success) {
             console.log('Legacy cache cleared: Service Worker unregistered.');
-            // Optional: force reload once after unregistering if we really want to be aggressive
-            // window.location.reload(); 
           }
         });
       }
     });
   }
+
+  // ── Inject global FAQ handler ────────────────────────────────────────
+  // Dynamically loads faq.js so every page with a .faq-modal-overlay
+  // gets click-outside and Escape-to-close without any per-page changes.
+  (function injectFaq() {
+    var s = document.createElement('script');
+    s.src = getBasePath() + 'js/faq.js';
+    s.defer = true;
+    document.head.appendChild(s);
+  })();
 
 })();

@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Viewer &mdash; Render & Preview .md Files | PrimeArtifact</title>
+  <meta name="description"
+    content="Instantly render and preview Markdown files in your browser. Paste text, upload a .md file, and see beautiful HTML output with syntax highlighting. Free, private, no upload.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- highlight.js for code syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+    id="hljs-theme">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- Toast Notifications -->
+  <script src="../../js/toast.js"></script>
+
+  <style>
+    body {
+      position: relative;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────── */
+    .md-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+      height: calc(100vh - 260px);
+      min-height: 520px;
+    }
+
+    @media (max-width: 900px) {
+      .md-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .md-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: unset;
+        gap: var(--space-sm);
+      }
+
+      .pane-wrap {
+        min-height: 320px;
+      }
+
+      .md-editor {
+        min-height: 260px;
+        font-size: 0.85rem;
+      }
+
+      .md-preview {
+        min-height: 260px;
+      }
+
+      .ln-gutter {
+        font-size: 0.85rem;
+      }
+
+      .md-toolbar {
+        gap: 6px;
+        row-gap: 6px;
+      }
+
+      /* Left tools fill one row, right tools wrap to second row */
+      .md-toolbar-right {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .md-stats {
+        display: none;
+      }
+
+      /* Download dropdown opens upward on mobile to avoid clipping */
+      .download-menu {
+        top: auto;
+        bottom: calc(100% + 6px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .btn {
+        font-size: 0.78rem;
+        padding: 6px 10px;
+      }
+
+      .panel-label {
+        font-size: 0.68rem;
+      }
+
+      .page-header__title {
+        font-size: 1.4rem;
+      }
+
+      .md-toolbar-right {
+        gap: 4px;
+      }
+
+      .download-menu {
+        min-width: 180px;
+      }
+    }
+
+    /* ── Toolbar ─────────────────────────────────────────────── */
+    .md-toolbar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 50;
+    }
+
+    .md-toolbar-right {
+      margin-left: auto;
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    .panel-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Panes ───────────────────────────────────────────────── */
+    .pane-wrap {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* ── Editor wrapper (handles border + focus ring) ────────────── */
+    .editor-wrap {
+      flex: 1;
+      display: flex;
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 0 10px 10px 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+      min-height: 0;
+    }
+
+    .editor-wrap:focus-within {
+      border-color: var(--accent);
+    }
+
+    /* ── Line number gutter ──────────────────────────────────────── */
+    .ln-gutter {
+      width: 36px;
+      min-width: 36px;
+      padding: var(--space-lg) 6px var(--space-lg) 0;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      /* must match .md-editor font-size exactly */
+      line-height: 1.7;
+      /* must match .md-editor line-height exactly */
+      color: var(--text-tertiary);
+      opacity: 0.45;
+      user-select: none;
+      overflow: hidden;
+      border-right: 1px solid var(--border-light);
+      white-space: pre;
+    }
+
+    .md-editor {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      padding: var(--space-lg);
+      background: transparent;
+      color: var(--text-primary);
+      border: none;
+      border-radius: 0;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+      overflow-y: auto;
+    }
+
+    /* ── Drag-and-drop overlay ───────────────────────────────────── */
+    .drag-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(74, 111, 165, 0.12);
+      border: 2px dashed var(--accent);
+      border-radius: 0 10px 10px 10px;
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .drag-overlay.active {
+      display: flex;
+    }
+
+    .drag-overlay .drag-icon {
+      font-size: 2.5rem;
+    }
+
+    /* ── Print styles ────────────────────────────────────────────── */
+    @media print {
+
+      .navbar,
+      .md-toolbar,
+      .page-header,
+      footer,
+      #bg-canvas,
+      .pane-wrap:first-child,
+      .panel-label {
+        display: none !important;
+      }
+
+      .md-layout {
+        display: block !important;
+        height: auto !important;
+      }
+
+      .pane-wrap:last-child {
+        display: block !important;
+      }
+
+      .md-preview {
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        height: auto !important;
+      }
+    }
+
+    .md-preview {
+      flex: 1;
+      padding: var(--space-xl);
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 0 10px 10px 10px;
+      overflow-y: auto;
+      overflow-x: auto;
+      line-height: 1.75;
+      color: var(--text-primary);
+    }
+
+    /* ── Markdown Rendered Styles ────────────────────────────── */
+    .md-preview h1,
+    .md-preview h2,
+    .md-preview h3,
+    .md-preview h4,
+    .md-preview h5,
+    .md-preview h6 {
+      color: var(--text-primary);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 1.5em 0 0.5em;
+      line-height: 1.3;
+    }
+
+    .md-preview h1 {
+      font-size: 2rem;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 0.3em;
+    }
+
+    .md-preview h2 {
+      font-size: 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.2em;
+    }
+
+    .md-preview h3 {
+      font-size: 1.2rem;
+    }
+
+    .md-preview p {
+      margin: 0.8em 0;
+    }
+
+    .md-preview a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .md-preview strong {
+      font-weight: 700;
+    }
+
+    .md-preview em {
+      font-style: italic;
+    }
+
+    .md-preview blockquote {
+      border-left: 4px solid var(--accent);
+      padding: var(--space-sm) var(--space-md);
+      margin: var(--space-md) 0;
+      background: rgba(74, 111, 165, 0.06);
+      border-radius: 0 8px 8px 0;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .md-preview code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: rgba(0, 0, 0, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .md-preview code {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .md-preview pre {
+      border-radius: 10px;
+      margin: var(--space-md) 0;
+      overflow-x: auto;
+    }
+
+    .md-preview pre code {
+      font-size: 0.87rem;
+      padding: 0;
+      background: none;
+    }
+
+    .md-preview ul,
+    .md-preview ol {
+      padding-left: 1.5em;
+      margin: 0.8em 0;
+    }
+
+    .md-preview li {
+      margin: 0.3em 0;
+    }
+
+    .md-preview table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .md-preview th,
+    .md-preview td {
+      border: 1px solid var(--border-light);
+      padding: 8px 14px;
+      text-align: left;
+    }
+
+    .md-preview th {
+      background: rgba(74, 111, 165, 0.1);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .md-preview tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    .md-preview img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: var(--space-sm) 0;
+    }
+
+    .md-preview hr {
+      border: none;
+      border-top: 2px solid var(--border-light);
+      margin: var(--space-xl) 0;
+    }
+
+    /* GFM Checkboxes */
+    .md-preview input[type="checkbox"] {
+      margin-right: 6px;
+      accent-color: var(--accent);
+    }
+
+    /* ── Render Button ─────────────────────────────────────────────── */
+    .btn--render {
+      background: linear-gradient(135deg, var(--accent) 0%, #6a8fc8 100%);
+      color: #fff;
+      border: none;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 12px rgba(74, 111, 165, 0.25);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn--render:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(74, 111, 165, 0.35);
+    }
+
+    .btn--render.pulse {
+      animation: render-pulse 0.4s ease;
+    }
+
+    @keyframes render-pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      40% {
+        transform: scale(0.93);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* ── Word Count Badge ───────────────────────────────────── */
+    .md-stats {
+      display: flex;
+      gap: var(--space-lg);
+      font-size: 0.78rem;
+      color: var(--text-tertiary);
+      padding: var(--space-xs) 0;
+    }
+
+    .md-stats span strong {
+      color: var(--text-secondary);
+    }
+
+    /* ── Empty State ─────────────────────────────────────────── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      opacity: 0.4;
+      gap: var(--space-sm);
+      pointer-events: none;
+    }
+
+    .empty-state .icon {
+      font-size: 3rem;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
+      color: var(--text-tertiary);
+    }
+
+    /* ── Download button disabled state ───────────────────────────── */
+    #btn-dl-toggle:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .download-dropdown {
+      position: relative;
+    }
+
+    .download-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      min-width: 220px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+      z-index: 200;
+      overflow: hidden;
+      padding: 4px;
+    }
+
+    .download-menu.open {
+      display: block;
+    }
+
+    .download-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 14px;
+      background: none;
+      border: none;
+      border-radius: 7px;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+    }
+
+    .download-option:hover {
+      background: var(--bg-hover);
+    }
+
+    .download-option .di {
+      width: 16px;
+      text-align: center;
+      color: var(--accent);
+      font-size: 0.85rem;
+    }
+
+    .download-option .dl-label {
+      flex: 1;
+    }
+
+    .download-option .dl-ext {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+    }
+
+    .download-sep {
+      height: 1px;
+      background: var(--border-light);
+      margin: 3px 8px;
+    }
+  </style>
+
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.com/tools/text/md-viewer">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.com/tools/text/md-viewer">
+  <meta property="og:title" content="Markdown Viewer — Render & Preview .md Files | PrimeArtifact">
+  <meta property="og:description"
+    content="Instantly render and preview Markdown files in your browser. Free, private, no upload.">
+  <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
+  <link rel="icon" type="image/png" href="../../assets/favicon.png">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+  <link rel="manifest" href="../../manifest.json">
+</head>
+
+<body>
+  <canvas id="bg-canvas"
+    style="position:absolute;top:0;left:0;width:100vw;height:100%;z-index:-1;pointer-events:none;"></canvas>
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page" style="padding-bottom: 0;">
+    <div class="container" style="max-width:1300px;">
+
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../">Home</a>
+          <span class="page-header__breadcrumb-sep">/</span>
+          <a href="#">Text</a>
+          <span class="page-header__breadcrumb-sep">/</span>
+          <span>Markdown Viewer</span>
+        </div>
+        <h1 class="page-header__title">Markdown Viewer <button class="faq-inline-btn" id="open-faq"><i
+              class="fas fa-question-circle"></i></button></h1>
+        <p class="page-header__subtitle">Paste or upload any .md file and see it rendered instantly. Private — nothing
+          leaves your browser.</p>
+      </header>
+
+      <!-- Toolbar -->
+      <div class="md-toolbar animate-in">
+        <label class="btn btn--outline" style="cursor:pointer;" for="file-upload">
+          <i class="fas fa-upload"></i> Upload .md File
+        </label>
+        <input type="file" id="file-upload" accept=".md,.markdown,.txt" style="display:none;">
+
+        <button class="btn btn--outline" id="btn-sample"><i class="fas fa-file-alt"></i> Load Sample</button>
+        <button class="btn btn--render" id="btn-render"><i class="fas fa-play"></i> Render</button>
+        <button class="btn btn--outline" id="btn-clear" style="color: var(--text-tertiary);"><i
+            class="fas fa-trash-alt"></i> Clear</button>
+
+        <div class="md-stats">
+          <span><strong id="stat-words">0</strong> words</span>
+          <span><strong id="stat-chars">0</strong> chars</span>
+        </div>
+
+        <div class="md-toolbar-right">
+          <button class="btn btn--outline" id="btn-copy-html"><i class="fas fa-code"></i> Copy HTML</button>
+          <div class="download-dropdown" id="dl-dropdown">
+            <button class="btn btn--accent" id="btn-dl-toggle" disabled>
+              <i class="fas fa-download"></i> Download <i class="fas fa-caret-down"
+                style="margin-left:4px;font-size:0.7em;"></i>
+            </button>
+            <div class="download-menu" id="dl-menu">
+              <button class="download-option" id="dl-html">
+                <span class="di"><i class="fas fa-code"></i></span>
+                <span class="dl-label">Save as HTML</span>
+                <span class="dl-ext">.html</span>
+              </button>
+              <button class="download-option" id="dl-md">
+                <span class="di"><i class="fab fa-markdown"></i></span>
+                <span class="dl-label">Save as Markdown</span>
+                <span class="dl-ext">.md</span>
+              </button>
+              <button class="download-option" id="dl-txt">
+                <span class="di"><i class="fas fa-align-left"></i></span>
+                <span class="dl-label">Save as Plain Text</span>
+                <span class="dl-ext">.txt</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Editor / Preview Split -->
+      <div class="md-layout animate-in" style="animation-delay:0.1s;">
+        <!-- Editor Pane -->
+        <div class="pane-wrap">
+          <div class="panel-label"><i class="fas fa-pen-to-square" style="color:var(--accent)"></i> Editor</div>
+          <div class="editor-wrap" id="editor-wrap">
+            <div class="ln-gutter" id="ln-gutter">1</div>
+            <textarea class="md-editor" id="md-editor" spellcheck="false" placeholder="# Start typing Markdown here...
+
+Or upload a .md file using the button above.
+
+## Features
+- **Live preview** as you type
+- GFM tables, checkboxes, and fenced code blocks
+- Syntax highlighted code
+- Export to standalone HTML"></textarea>
+            <div class="drag-overlay" id="drag-overlay">
+              <div class="drag-icon">📂</div>
+              <span>Drop your .md file here</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Pane -->
+        <div class="pane-wrap">
+          <div class="panel-label"><i class="fas fa-eye" style="color:var(--accent)"></i> Preview</div>
+          <div class="md-preview" id="md-preview">
+            <div class="empty-state" id="empty-state">
+              <div class="icon">📄</div>
+              <p>Your rendered Markdown will appear here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="faq-modal-overlay" id="faq-modal">
+    <div class="faq-modal">
+      <button class="faq-modal-close" id="close-faq">&times;</button>
+      <h2><i class="fas fa-question-circle"></i> Markdown Viewer — Help &amp; FAQ</h2>
+
+      <div class="faq-item">
+        <h3>What is Markdown?</h3>
+        <p>Markdown is a lightweight markup language for formatting plain text. You write simple symbols like
+          <code>**bold**</code>, <code># Heading</code>, or <code>- list item</code> and they render as beautiful
+          formatted HTML. It's widely used in README files, documentation, and note-taking apps.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is my content uploaded anywhere?</h3>
+        <p>No. Everything runs 100% inside your browser. Your Markdown text never leaves your device — it's rendered
+          locally using JavaScript. No server, no storage, no tracking.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What download formats are available?</h3>
+        <p>Click the <strong>Download</strong> button to save your document as: <strong>HTML</strong> (self-contained,
+          styled page), <strong>PDF</strong> (direct download, no print dialog), <strong>Markdown</strong> (.md raw
+          source), or <strong>Plain Text</strong> (stripped of all formatting).</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Can I drag and drop a file?</h3>
+        <p>Yes. Drag any <code>.md</code>, <code>.markdown</code>, or <code>.txt</code> file directly onto the editor
+          area on the left and it will load instantly.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What does the Render button do?</h3>
+        <p>The preview updates automatically as you type (live mode). The <strong>Render</strong> button lets you
+          manually trigger a render at any time — useful if you've pasted in a large document and want to force an
+          immediate update.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer glass glass--static"
+    style="position:relative;z-index:10;border-radius:0;border-left:none;border-right:none;border-bottom:none;margin-top:var(--space-xl);">
+    <div class="container">
+      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No
+        nonsense.</p>
+    </div>
+  </footer>
+
+  <script>
+    // ── Configure marked.js ───────────────────────────────────────────
+    const renderer = new marked.Renderer();
+    
+    // Auto-convert bare URLs that point to images into <img> tags
+    const originalLink = renderer.link.bind(renderer);
+    renderer.link = function(href, title, text) {
+      let linkHref = typeof href === 'object' && href !== null ? href.href : href;
+      let linkText = typeof href === 'object' && href !== null ? href.text : text;
+      
+      if (linkHref && linkText === linkHref && linkHref.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) {
+        return `<img src="${linkHref}" alt="Auto-linked image" style="max-width:100%; border-radius:8px; margin:var(--space-sm) 0;">`;
+      }
+      return originalLink.apply(this, arguments);
+    };
+
+    // Auto-convert raw base64 data URIs into <img> tags
+    const originalText = renderer.text.bind(renderer);
+    renderer.text = function(textArg) {
+      let textStr = typeof textArg === 'object' && textArg !== null ? textArg.text : textArg;
+      
+      if (textStr && typeof textStr === 'string' && textStr.trim().startsWith('data:image/') && textStr.includes(';base64,')) {
+        return `<img src="${textStr.trim()}" alt="Base64 Image" style="max-width:100%; border-radius:8px; margin:var(--space-sm) 0;">`;
+      }
+      return originalText.apply(this, arguments);
+    };
+
+    marked.setOptions({
+      renderer: renderer,
+      gfm: true,
+      breaks: true,
+      highlight: function (code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try { return hljs.highlight(code, { language: lang }).value; } catch (e) { }
+        }
+        return hljs.highlightAuto(code).value;
+      }
+    });
+
+    const editor = document.getElementById('md-editor');
+    const preview = document.getElementById('md-preview');
+    const emptyState = document.getElementById('empty-state');
+
+    // ── Render Logic ──────────────────────────────────────────────────
+    let isRendered = false;
+    const dlToggleBtn = document.getElementById('btn-dl-toggle');
+
+    function setRendered(state) {
+      isRendered = state;
+      dlToggleBtn.disabled = !state;
+    }
+
+    function render() {
+      const raw = editor.value;
+
+      if (!raw.trim()) {
+        preview.innerHTML = '';
+        preview.appendChild(emptyState);
+        updateStats('');
+        setRendered(false);
+        return;
+      }
+
+      if (emptyState.parentNode === preview) preview.removeChild(emptyState);
+
+      preview.innerHTML = marked.parse(raw);
+      hljs.highlightAll();
+      updateStats(raw);
+      setRendered(true);
+    }
+
+    function updateStats(text) {
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const chars = text.length;
+      document.getElementById('stat-words').textContent = words.toLocaleString();
+      document.getElementById('stat-chars').textContent = chars.toLocaleString();
+    }
+
+    // ── Line Numbers ──────────────────────────────────────────────────
+    const gutter = document.getElementById('ln-gutter');
+    function updateLineNumbers() {
+      const count = editor.value.split('\n').length;
+      gutter.textContent = Array.from({ length: count }, (_, i) => i + 1).join('\n');
+    }
+    editor.addEventListener('scroll', () => { gutter.scrollTop = editor.scrollTop; });
+    updateLineNumbers();
+
+    // Line numbers update live; render only fires on Render button click
+    editor.addEventListener('input', () => {
+      updateLineNumbers();
+    });
+
+    // ── File Upload (button) ──────────────────────────────────────────
+    document.getElementById('file-upload').addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        editor.value = e.target.result;
+        render();
+        updateLineNumbers();
+      };
+      reader.readAsText(file);
+      this.value = '';
+    });
+
+    // ── Drag-and-drop onto editor ─────────────────────────────────────
+    const editorWrap = document.getElementById('editor-wrap');
+    const dragOverlay = document.getElementById('drag-overlay');
+    let dragCounter = 0;
+
+    editorWrap.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      dragCounter++;
+      dragOverlay.classList.add('active');
+    });
+    editorWrap.addEventListener('dragleave', () => {
+      dragCounter--;
+      if (dragCounter <= 0) { dragCounter = 0; dragOverlay.classList.remove('active'); }
+    });
+    editorWrap.addEventListener('dragover', (e) => e.preventDefault());
+    editorWrap.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragCounter = 0;
+      dragOverlay.classList.remove('active');
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+      if (!file.name.match(/\.(md|markdown|txt)$/i)) {
+        paToast('Please drop a .md, .markdown, or .txt file.', { icon: '⚠️' });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        editor.value = ev.target.result;
+        render();
+        updateLineNumbers();
+      };
+      reader.readAsText(file);
+    });
+
+
+
+    // ── Load Sample ───────────────────────────────────────────────────
+    const SAMPLE = `# PrimeArtifact Markdown Viewer
+
+Welcome to the **Markdown Viewer**! This tool renders any Markdown text into beautiful HTML — live, in your browser.
+
+---
+
+## Features
+
+- ✅ **GFM Support** — GitHub Flavored Markdown tables, task lists, and strikethrough
+- ✅ **Live Preview** — renders as you type with no lag
+- ✅ **Syntax Highlighting** — beautiful code blocks for 100+ languages
+- ✅ **Export to HTML** — download a standalone, self-contained HTML file
+- ✅ **100% Private** — nothing is ever uploaded or stored
+
+---
+
+## Code Blocks
+
+\`\`\`javascript
+// ES2024 — clean async fetch with error handling
+const getUser = async (id) => {
+  const res = await fetch(\`/api/users/\${id}\`);
+  if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+  return res.json();
+};
+\`\`\`
+
+\`\`\`css
+/* Glassmorphism Card */
+.card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+}
+\`\`\`
+
+---
+
+## Tables
+
+| Tool | Category | Status |
+|------|----------|--------|
+| Word Counter | Text | ✅ Live |
+| Password Generator | Security | ✅ Live |
+| QR Code Generator | Utility | ✅ Live |
+| Markdown Viewer | Text | ✅ New! |
+
+---
+
+## Task List
+
+- [x] Build the Markdown Viewer
+- [x] Add syntax highlighting
+- [x] Support file uploads
+- [ ] Add more tools
+
+> "The best tool is the one you actually use."
+
+---
+
+*Built with ❤️ by PrimeArtifact — free, private, and ad-free.*`;
+
+    document.getElementById('btn-sample').addEventListener('click', () => {
+      editor.value = SAMPLE;
+      render();
+      updateLineNumbers();
+    });
+
+    // ── Render button ───────────────────────────────────────────────
+    const renderBtn = document.getElementById('btn-render');
+    renderBtn.addEventListener('click', () => {
+      if (!editor.value.trim()) {
+        paToast('Nothing to render — write or upload some Markdown first.', { icon: '💡' });
+        return;
+      }
+      render();
+      renderBtn.classList.remove('pulse');
+      void renderBtn.offsetWidth; // reflow to restart animation
+      renderBtn.classList.add('pulse');
+    });
+
+    // ── Clear ─────────────────────────────────────────────────────────
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      if (!editor.value.trim()) {
+        paToast('Nothing to clear — the editor is already empty.', { icon: '💡' });
+        return;
+      }
+      editor.value = '';
+      render();
+      updateLineNumbers();
+      setRendered(false);
+      editor.focus();
+    });
+
+    // ── Copy HTML ─────────────────────────────────────────────────────
+    document.getElementById('btn-copy-html').addEventListener('click', function () {
+      if (!editor.value.trim()) {
+        paToast('Nothing to copy — write or upload some Markdown first.', { icon: '💡' });
+        return;
+      }
+      navigator.clipboard.writeText(preview.innerHTML);
+      const orig = this.innerHTML;
+      this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+      setTimeout(() => this.innerHTML = orig, 2000);
+    });
+
+    // ── Download Dropdown ─────────────────────────────────────────────
+    const dlToggle = document.getElementById('btn-dl-toggle');
+    const dlMenu = document.getElementById('dl-menu');
+
+    dlToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isRendered) {
+        paToast('Render the preview first before downloading.', { icon: '⚠️' });
+        return;
+      }
+      dlMenu.classList.toggle('open');
+    });
+    // Close when clicking anywhere outside the dropdown
+    document.addEventListener('click', (e) => {
+      if (!dlToggle.contains(e.target) && !dlMenu.contains(e.target)) {
+        dlMenu.classList.remove('open');
+      }
+    });
+
+    function getTitle() {
+      return editor.value.match(/^#\s+(.+)/m)?.[1] || 'document';
+    }
+    function slug(t) { return t.toLowerCase().replace(/[^a-z0-9]+/g, '-'); }
+    function guardEmpty(action) {
+      if (!editor.value.trim()) {
+        paToast('Nothing to download — write or upload some Markdown first.', { icon: '💡' });
+        return;
+      }
+      dlMenu.classList.remove('open');
+      action();
+    }
+    function triggerDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Save as HTML
+    document.getElementById('dl-html').addEventListener('click', () => guardEmpty(() => {
+      const title = getTitle();
+      const body = preview.innerHTML;
+      const html = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${title}</title><style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:860px;margin:40px auto;padding:0 24px;line-height:1.75;color:#24292f}
+h1,h2,h3,h4,h5,h6{font-weight:700;letter-spacing:-0.02em}
+h1{font-size:2rem;border-bottom:2px solid #eaecef;padding-bottom:.3em}
+h2{font-size:1.5rem;border-bottom:1px solid #eaecef;padding-bottom:.2em}
+pre{background:#0d1117;color:#e6edf3;padding:18px 24px;border-radius:10px;overflow-x:auto}
+code{font-family:'SFMono-Regular',Consolas,monospace;font-size:.88em;background:rgba(0,0,0,.08);padding:2px 6px;border-radius:4px}
+pre code{background:none;padding:0;font-size:.87rem}
+blockquote{border-left:4px solid #4a6fa5;padding:8px 16px;margin:16px 0;color:#57606a;font-style:italic;background:#f6f8fa;border-radius:0 8px 8px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0}
+th,td{border:1px solid #d0d7de;padding:8px 14px}
+th{background:#f6f8fa;font-weight:700}
+img{max-width:100%;border-radius:8px}
+a{color:#4a6fa5}
+hr{border:none;border-top:2px solid #eaecef;margin:32px 0}
+</style></head><body>${body}</body></html>`;
+      triggerDownload(new Blob([html], { type: 'text/html' }), slug(title) + '.html');
+    }));
+
+    // Save as Markdown
+    document.getElementById('dl-md').addEventListener('click', () => guardEmpty(() => {
+      triggerDownload(new Blob([editor.value], { type: 'text/markdown' }), slug(getTitle()) + '.md');
+    }));
+
+    // Save as Plain Text
+    document.getElementById('dl-txt').addEventListener('click', () => guardEmpty(() => {
+      triggerDownload(new Blob([preview.innerText], { type: 'text/plain' }), slug(getTitle()) + '.txt');
+    }));
+
+    // ── Tab key in editor ─────────────────────────────────────────────
+    editor.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+        editor.selectionStart = editor.selectionEnd = start + 2;
+        render();
+      }
+    });
+
+    // ── Interactive Particle Background ───────────────────────────────
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let mouse = { x: -999, y: -999 };
+    document.addEventListener('mousemove', (e) => { mouse.x = e.clientX + window.scrollX; mouse.y = e.clientY + window.scrollY; });
+    document.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
+
+    const PARTICLE_COUNT = window.innerWidth < 600 ? 40 : 80;
+    const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
+
+    class Particle {
+      constructor() { this.reset(true); }
+      reset(initial) {
+        this.x = Math.random() * canvas.width;
+        this.y = initial ? Math.random() * canvas.height : -10;
+        this.r = Math.random() * 2 + 0.5;
+        this.vx = (Math.random() - 0.5) * 0.25;
+        this.vy = Math.random() * 0.3 + 0.1;
+        this.alpha = Math.random() * 0.45 + 0.1;
+        this.hue = Math.random() * 60 + 200; // blue-purple range
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue}, 70%, 70%, ${this.alpha})`;
+        ctx.fill();
+      }
+      update() {
+        // Mouse repulsion
+        const dx = this.x - mouse.x, dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          const force = (100 - dist) / 100;
+          this.vx += (dx / dist) * force * 0.6;
+          this.vy += (dy / dist) * force * 0.6;
+        }
+        // Damping
+        this.vx *= 0.96;
+        this.vy *= 0.96;
+        this.vy = Math.max(this.vy, 0.08); // always drift down slightly
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.y > canvas.height + 10 || this.x < -20 || this.x > canvas.width + 20) {
+          this.reset(false);
+        }
+      }
+    }
+
+    function initCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
+    }
+    window.addEventListener('resize', () => { initCanvas(); });
+    initCanvas();
+
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
+
+    function animateBg() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Subtle vignette gradient
+      const grad = ctx.createRadialGradient(
+        canvas.width / 2, canvas.height * 0.3, 0,
+        canvas.width / 2, canvas.height * 0.3, canvas.width * 0.7
+      );
+      if (isDark()) {
+        grad.addColorStop(0, 'rgba(74,111,165,0.04)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+      } else {
+        grad.addColorStop(0, 'rgba(74,111,165,0.06)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Particles
+      particles.forEach(p => { p.update(); p.draw(); });
+
+      requestAnimationFrame(animateBg);
+    }
+    animateBg();
+
+  </script>
+</body>
+
+</html>

@@ -7,6 +7,7 @@
     <meta name="description" content="Free, private, and fast online diff checker. Side-by-side comparison with line numbers, just like VS Code. Highlights additions and deletions.">
     <link rel="stylesheet" href="../../css/style.css">
     <script src="../../js/theme.js"></script>
+    <script src="../../js/toast.js"></script>
     <style>
         :root { color-scheme: light dark; }
         [data-theme="light"] { 
@@ -113,6 +114,9 @@
             position: relative;
             background: var(--diff-pane-bg);
         }
+        .diff-content {
+            min-width: max-content;
+        }
         .diff-pane:first-child {
             border-right: 1px solid var(--glass-border);
         }
@@ -141,8 +145,7 @@
             padding: 0 10px;
             white-space: pre;
             line-height: 20px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            min-width: 0;
             color: var(--text-primary);
         }
 
@@ -228,8 +231,9 @@
                     </div>
                 </div>
 
-                <div style="text-align: center; margin: 1rem 0;">
+                <div style="text-align: center; margin: 1rem 0; display: flex; gap: 0.75rem; justify-content: center;">
                     <button id="btn-compare" style="padding: 0.75rem 2.5rem; font-weight: 700; border-radius: var(--radius-md); cursor: pointer; background: var(--accent); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.2s, background 0.2s;">Compare Texts</button>
+                    <button id="btn-clear" style="padding: 0.75rem 1.5rem; font-weight: 700; border-radius: var(--radius-md); cursor: pointer; background: transparent; color: var(--text-tertiary); border: 1px solid var(--glass-border); transition: all 0.2s;"><i class="fas fa-trash-alt"></i> Clear</button>
                 </div>
 
                 <div class="diff-viewer glass">
@@ -253,14 +257,31 @@
     <div class="faq-modal-overlay" id="faq-overlay">
         <div class="faq-modal">
             <button class="faq-modal-close" id="close-faq">&times;</button>
-            <h2><i class="fas fa-question-circle"></i> Diff Checker Help</h2>
+            <h2><i class="fas fa-question-circle"></i> Diff Checker — Help &amp; FAQ</h2>
+
             <div class="faq-item">
-                <h3>Is it really like VS Code?</h3>
-                <p>Yes. We use a line-by-line comparison algorithm that highlights added and removed lines. It also detects character-level changes within modified lines for maximum precision.</p>
+                <h3>How does the comparison work?</h3>
+                <p>We use a line-by-line diff algorithm. Every line in the original text is compared against the modified text. Lines that exist only in the original are marked <strong style="color:var(--diff-removed-text)">removed (red)</strong>, lines that exist only in the modified version are marked <strong style="color:var(--diff-added-text)">added (green)</strong>, and unchanged lines are shown as-is.</p>
             </div>
+
             <div class="faq-item">
-                <h3>What about long lines?</h3>
-                <p>Lines are displayed in monospace with synchronized scrolling, so you can easily compare large blocks of code or documentation.</p>
+                <h3>Is my text sent to a server?</h3>
+                <p>No. Everything runs 100% in your browser using JavaScript. Your text is never uploaded, stored, or transmitted anywhere. This tool is completely private.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>What about very long lines?</h3>
+                <p>Long lines are handled with horizontal scrolling in each diff pane. Both panes scroll in sync, so when you scroll right in one pane the other follows. You can also scroll both panes vertically in sync.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Can I compare code?</h3>
+                <p>Yes, any plain text works — code, prose, JSON, CSV, config files, anything. For best results with code, make sure indentation is consistent between the two versions.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>What does the Clear button do?</h3>
+                <p>Clicking <strong>Clear</strong> wipes both text input fields and resets the diff result back to the empty state. This is faster than manually selecting and deleting text from both boxes.</p>
             </div>
         </div>
     </div>
@@ -345,14 +366,23 @@
 
         document.getElementById('btn-compare').addEventListener('click', () => {
             if (!oldInput.value.trim() && !newInput.value.trim()) {
-                if (window.paToast) {
-                    window.paToast('Please enter text in both fields to compare.', { icon: '⚠️' });
-                } else {
-                    alert('Please enter text in both fields to compare.');
-                }
+                paToast('Please enter text in both fields to compare.', { icon: '⚠️' });
                 return;
             }
             updateDiff();
+        });
+
+        document.getElementById('btn-clear').addEventListener('click', () => {
+            if (!oldInput.value.trim() && !newInput.value.trim()) {
+                paToast('Nothing to clear — both fields are already empty.', { icon: '💡' });
+                return;
+            }
+            oldInput.value = '';
+            newInput.value = '';
+            updateLineNumbers(oldInput, document.getElementById('lines-old'));
+            updateLineNumbers(newInput, document.getElementById('lines-new'));
+            outputOld.innerHTML = '<div class="empty-diff">Waiting for input...</div>';
+            outputNew.innerHTML = '<div class="empty-diff">Waiting for input...</div>';
         });
 
         oldInput.addEventListener('scroll', () => {
@@ -364,7 +394,7 @@
         });
 
         // --- Background Effect: Digital Rain ---
-        const canvas = document.getElementById('bg-canvas');
+        const canvas = document.getElementById('data-flux-canvas');
         const ctx = canvas.getContext('2d');
         let w, h, drops = [];
         function resize() {

@@ -53,6 +53,12 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+
+    .countdown {
+      font-size: 0.85rem;
+      color: var(--text-tertiary);
+      margin-top: var(--space-xl, 2rem);
+    }
   </style>
 
   <!-- PWA Manifest -->
@@ -76,6 +82,7 @@
           <a href="/" class="btn btn--accent">← Back to Home</a>
           <a href="/pages/contact" class="btn">Report a broken link</a>
         </div>
+        <p class="countdown" id="countdown">Redirecting to home in <strong>5</strong>s…</p>
       </div>
     </div>
   </main>
@@ -85,6 +92,16 @@
       <p>© 2026 <a href="/">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.</p>
     </div>
   </footer>
+
+  <script>
+    var s = 5;
+    var el = document.querySelector('#countdown strong');
+    var iv = setInterval(function () {
+      s--;
+      if (el) el.textContent = s;
+      if (s <= 0) { clearInterval(iv); window.location.replace('/'); }
+    }, 1000);
+  </script>
 </body>
 
 </html>

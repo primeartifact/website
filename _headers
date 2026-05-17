@@ -7,7 +7,7 @@
 # Cloudflare Pages uses clean URLs (/tools/ai/chat NOT /tools/ai/chat.html)
 # so pattern /*.html does NOT match actual requests. Use /* instead.
 /*
-  Content-Security-Policy: frame-ancestors 'self' https://*.notion.so https://*.notion.site https://notion.so https://*.gumroad.com https://*.whop.com http://localhost:*
+  Content-Security-Policy: frame-ancestors 'self' https://*.notion.so https://*.notion.site https://notion.so https://notion.site https://*.gumroad.com https://*.whop.com http://localhost:* notion://*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()

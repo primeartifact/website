@@ -6,6 +6,17 @@ Live site → [primeartifact.com](https://primeartifact.com)
 
 ---
 
+> [!CAUTION]
+> ## 🚨 CRITICAL ARCHITECTURAL WARNINGS (DO NOT TOUCH OR SITE WILL CRASH)
+> This repository is specifically engineered for high-performance static hosting on Cloudflare Pages / Netlify and seamless embedding inside Notion OS Templates. **Modifying the following configurations will cause site-wide crashes:**
+> 
+> 1. **DO NOT ADD `200` REWRITES TO `_redirects`**: Cloudflare Pages automatically serves extensionless clean URLs out of the box. Adding explicit `/path /path.html 200` rules causes an inescapable infinite redirect loop (`ERR_TOO_MANY_REDIRECTS`) across all tools and Notion iframes. **Only use `301` redirects for shorthand aliases or legacy routes.**
+> 2. **DO NOT MODIFY `frame-ancestors` IN `_headers`**: Your Content Security Policy (CSP) explicitly allows iframe embedding for `notion://*`, `https://*.notion.so`, `https://notion.site`, Gumroad, and Whop. Removing this header will instantly disable all live tool widgets in your Notion Developer OS template.
+> 3. **MAINTAIN ABSOLUTE PATHS ON `404.html`**: All asset links on the error page MUST use absolute root paths (`/css/style.css`, `/js/navbar.js`). Using relative paths (`css/...`) will completely break page styling when accessed from deeply nested broken URLs.
+> 4. **SINGLE-LINE GAME HUDS ONLY**: In game files (e.g., `ball-breakout.html`), the HUD card must strictly adhere to `white-space: nowrap` and flex formatting. Do not introduce `overflow-x: auto` scrollbars or wrapped controls.
+
+---
+
 ## What it is
 
 PrimeArtifact is a collection of browser-based tools that run entirely on the client. No backend, no database, no user accounts. Everything happens in your browser and nothing is sent to any server (except the contact form, which uses Web3Forms).

@@ -320,7 +320,7 @@
             <span class="stat-lbl">Draws</span>
             <span class="stat-val" id="score-draws">0</span>
           </div>
-          <button class="btn btn--md" style="border-radius: var(--radius-md);" id="btn-reset-stats" title="Reset All Statistics"><i class="fas fa-trash-can"></i></button>
+          <button class="btn btn--md" style="border-radius: var(--radius-md); transition: all 0.2s ease;" id="btn-reset-stats" title="Reset All Statistics"><i class="fas fa-trash-can"></i></button>
           <button class="btn btn--md btn--accent" style="border-radius: var(--radius-md);" id="btn-restart" title="Restart Duel"><i class="fas fa-arrows-rotate"></i> Reset Arena</button>
         </div>
       </div>
@@ -633,11 +633,35 @@
 
       btnRestart.addEventListener('click', () => { initAudio(); playTone(300, 'sine', 0.05); resetArena(); });
 
+      let resetConfirmTimeout;
       btnResetStats.addEventListener('click', () => {
-        if (confirm('Are you sure you want to purge all statistics?')) {
-          initAudio(); playTone(150, 'sawtooth', 0.1);
+        initAudio();
+        if (btnResetStats.classList.contains('confirm-mode')) {
+          clearTimeout(resetConfirmTimeout);
+          btnResetStats.classList.remove('confirm-mode');
+          btnResetStats.innerHTML = '<i class="fas fa-trash-can"></i>';
+          btnResetStats.style.color = '';
+          btnResetStats.style.borderColor = '';
+          btnResetStats.style.boxShadow = '';
+
+          playTone(150, 'sawtooth', 0.1);
           stats = { x: 0, o: 0, draws: 0 };
           saveStats();
+        } else {
+          playTone(400, 'sine', 0.05);
+          btnResetStats.classList.add('confirm-mode');
+          btnResetStats.innerHTML = '<i class="fas fa-check"></i>';
+          btnResetStats.style.color = '#e63946';
+          btnResetStats.style.borderColor = 'rgba(230, 57, 70, 0.5)';
+          btnResetStats.style.boxShadow = '0 0 16px rgba(230, 57, 70, 0.3)';
+
+          resetConfirmTimeout = setTimeout(() => {
+            btnResetStats.classList.remove('confirm-mode');
+            btnResetStats.innerHTML = '<i class="fas fa-trash-can"></i>';
+            btnResetStats.style.color = '';
+            btnResetStats.style.borderColor = '';
+            btnResetStats.style.boxShadow = '';
+          }, 3000);
         }
       });
 

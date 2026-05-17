@@ -10,7 +10,7 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options        = "DENY"
+    Content-Security-Policy = "frame-ancestors 'self' https://*.notion.so https://*.notion.site https://notion.so https://*.gumroad.com https://*.whop.com http://localhost:*"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy        = "strict-origin-when-cross-origin"
     Permissions-Policy     = "camera=(), microphone=(), geolocation=()"

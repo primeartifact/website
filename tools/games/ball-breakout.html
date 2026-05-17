@@ -13,28 +13,35 @@
   <style>
     .game-hud {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: var(--space-sm);
+      gap: 10px;
       margin-bottom: var(--space-md);
-      padding: var(--space-sm) var(--space-md);
+      padding: 10px 16px;
       border-radius: var(--radius-md);
+    }
+
+    @media (max-width: 900px) {
+      .game-hud {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
     }
 
     .hud-stats {
       display: flex;
       align-items: center;
-      gap: var(--space-lg);
+      gap: 14px;
       font-family: var(--font-mono);
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .hud-stat-box {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .hud-label {
@@ -46,40 +53,54 @@
 
     .hud-val {
       color: var(--accent);
-      font-size: 1.2rem;
+      font-size: 1.15rem;
     }
 
     .hud-lives {
       display: flex;
-      gap: 4px;
+      gap: 3px;
       color: #ff4d4d;
+      width: 56px;
+      min-width: 56px;
+    }
+
+    #hud-score {
+      min-width: 50px;
+      display: inline-block;
     }
 
     .hud-controls {
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .hud-controls .btn {
+      padding: 5px 10px;
+      font-size: 0.8rem;
     }
 
     /* Redesigned Premium Powerup Panels with Live Countdowns */
     .powerup-indicators {
       display: flex;
-      gap: var(--space-sm);
+      gap: 8px;
       align-items: center;
     }
 
     .powerup-card {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       background: var(--glass-bg-subtle);
       border: 1px solid var(--border-light);
-      padding: 6px 12px;
+      padding: 5px 10px;
       border-radius: var(--radius-sm);
       opacity: 0.35;
       transition: all var(--transition-fast);
-      min-width: 140px;
+      min-width: 115px;
       position: relative;
+      white-space: nowrap;
     }
 
     .powerup-card.active {
@@ -108,6 +129,7 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
       line-height: 1.1;
+      white-space: nowrap;
     }
 
     .powerup-bar-container {
@@ -742,7 +764,14 @@
         hudLevel.textContent = currentLevel;
 
         hudLives.innerHTML = '';
-        for (let i = 0; i < lives; i++) hudLives.innerHTML += '<i class="fas fa-heart"></i>';
+        const maxLives = 3;
+        for (let i = 0; i < maxLives; i++) {
+          if (i < lives) {
+            hudLives.innerHTML += '<i class="fas fa-heart"></i>';
+          } else {
+            hudLives.innerHTML += '<i class="far fa-heart" style="opacity: 0.3;"></i>';
+          }
+        }
 
         // Powerups HUD Countdowns
         if (paddle.expandTimer > 0) {

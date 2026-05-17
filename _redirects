@@ -16,3 +16,43 @@
 
 # ── Legacy effect pages redirect to home ──────────────────────
 /effect-*.html  /  301
+
+# ── Explicit Cloudflare Pages Clean URL Rewrites (200) ────────
+/pages/about  /pages/about.html  200
+/pages/contact  /pages/contact.html  200
+/pages/privacy  /pages/privacy.html  200
+
+/tools/ai/chat  /tools/ai/chat.html  200
+
+/tools/text/word-counter  /tools/text/word-counter.html  200
+/tools/text/case-converter  /tools/text/case-converter.html  200
+/tools/text/fancy-text  /tools/text/fancy-text.html  200
+/tools/text/lorem-ipsum  /tools/text/lorem-ipsum.html  200
+/tools/text/diff-checker  /tools/text/diff-checker.html  200
+/tools/text/md-viewer  /tools/text/md-viewer.html  200
+
+/tools/time/time-calculator  /tools/time/time-calculator.html  200
+/tools/time/age-calculator  /tools/time/age-calculator.html  200
+/tools/time/work-hours  /tools/time/work-hours.html  200
+
+/tools/generators/password  /tools/generators/password.html  200
+/tools/generators/qr-code  /tools/generators/qr-code.html  200
+
+/tools/converters/color-picker  /tools/converters/color-picker.html  200
+/tools/converters/number-to-words  /tools/converters/number-to-words.html  200
+/tools/converters/url-encoder  /tools/converters/url-encoder.html  200
+
+/tools/utility/notepad  /tools/utility/notepad.html  200
+/tools/utility/clipboard  /tools/utility/clipboard.html  200
+
+/tools/games/tic-tac-toe  /tools/games/tic-tac-toe.html  200
+/tools/games/ball-breakout  /tools/games/ball-breakout.html  200
+/tools/games/cyber-snake  /tools/games/cyber-snake.html  200
+
+# ── Shorthand Aliases for Notion Template Embeds (200) ──────────
+/tools/generators/qrcode  /tools/generators/qr-code.html  200
+/tools/converters/color  /tools/converters/color-picker.html  200
+/tools/converters/url  /tools/converters/url-encoder.html  200
+/tools/utility/diff  /tools/text/diff-checker.html  200
+/tools/utility/markdown  /tools/text/md-viewer.html  200
+/tools/utility/work-tracker  /tools/time/work-hours.html  200

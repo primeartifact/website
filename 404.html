@@ -8,9 +8,9 @@
   <meta name="description"
     content="The page you're looking for doesn't exist. Head back to PrimeArtifact's Free online artifacts.">
   <meta name="robots" content="noindex, follow">
-  <link rel="icon" type="image/png" href="assets/favicon.png">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/theme.js"></script>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
   <style>
     .notfound {
       display: flex;
@@ -19,7 +19,7 @@
       justify-content: center;
       min-height: 70vh;
       text-align: center;
-      padding: var(--space-2xl) var(--space-md);
+      padding: var(--space-2xl, 3rem) var(--space-md, 1rem);
     }
 
     .notfound__code {
@@ -28,7 +28,7 @@
       letter-spacing: -0.06em;
       color: var(--text-primary);
       line-height: 1;
-      margin-bottom: var(--space-md);
+      margin-bottom: var(--space-md, 1rem);
       opacity: 0.12;
     }
 
@@ -36,7 +36,7 @@
       font-size: 1.6rem;
       font-weight: 700;
       color: var(--text-primary);
-      margin-bottom: var(--space-sm);
+      margin-bottom: var(--space-sm, 0.5rem);
     }
 
     .notfound__sub {
@@ -44,30 +44,24 @@
       color: var(--text-secondary);
       max-width: 420px;
       line-height: 1.65;
-      margin-bottom: var(--space-xl);
+      margin-bottom: var(--space-xl, 2rem);
     }
 
     .notfound__actions {
       display: flex;
-      gap: var(--space-sm);
+      gap: var(--space-sm, 1rem);
       flex-wrap: wrap;
       justify-content: center;
-    }
-
-    .countdown {
-      font-size: 0.82rem;
-      color: var(--text-tertiary);
-      margin-top: var(--space-lg);
     }
   </style>
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="/manifest.json">
 </head>
 
 <body>
   <nav class="navbar"></nav>
-  <script src="js/navbar.js"></script>
+  <script src="/js/navbar.js"></script>
 
   <main class="page">
     <div class="container">
@@ -82,7 +76,6 @@
           <a href="/" class="btn btn--accent">← Back to Home</a>
           <a href="/pages/contact" class="btn">Report a broken link</a>
         </div>
-        <p class="countdown" id="countdown">Redirecting to home in <strong>5</strong>s…</p>
       </div>
     </div>
   </main>
@@ -92,16 +85,6 @@
       <p>© 2026 <a href="/">PrimeArtifact</a> — Free online artifacts. No login. No tracking. No nonsense.</p>
     </div>
   </footer>
-
-  <script>
-    var s = 5;
-    var el = document.querySelector('#countdown strong');
-    var iv = setInterval(function () {
-      s--;
-      if (el) el.textContent = s;
-      if (s <= 0) { clearInterval(iv); window.location.replace('/'); }
-    }, 1000);
-  </script>
 </body>
 
 </html>

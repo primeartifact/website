@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber Snake &mdash; High-Speed Synthwave Arena | PrimeArtifact</title>
+  <meta name="description"
+    content="Play Cyber Snake, a modern high-speed synthwave snake arcade game. Navigate glowing light trails, collect energy nodes, avoid cyber barriers, and unlock hyper-speed boosts.">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/interactive.js"></script> <!-- Draggable/3D Hover script -->
+  <style>
+    .game-hud {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+    }
+
+    .hud-stats {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .hud-stat-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-label {
+      color: var(--text-tertiary);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hud-val {
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+
+    /* Redesigned Premium Cyber Panel for Hyper-Thrust */
+    .powerup-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--glass-bg);
+      border: 1px solid currentColor;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      opacity: 1;
+      transition: all var(--transition-fast);
+      min-width: 180px;
+      position: relative;
+      box-shadow: 0 0 12px rgba(6, 214, 160, 0.2);
+    }
+
+    .powerup-card.boosting {
+      box-shadow: 0 0 20px rgba(0, 180, 216, 0.6);
+      border-color: #00b4d8;
+    }
+
+    .powerup-icon {
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .powerup-details {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .powerup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .powerup-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+    }
+
+    .powerup-status {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      margin: 0;
+      color: var(--accent);
+    }
+
+    .powerup-bar-container {
+      height: 6px;
+      width: 100%;
+      background: var(--border-medium);
+      border-radius: 3px;
+      margin-top: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .powerup-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #00b4d8, #06d6a0);
+      transition: width 0.05s linear;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Fixed resolution game arena for perfect fullscreen scaling */
+    .game-arena-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .game-arena {
+      width: 100%;
+      max-width: 960px;
+      height: 640px;
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--glass-shadow-lg);
+      background: var(--bg-primary);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .game-arena:fullscreen, .game-arena:-webkit-full-screen {
+      max-width: none;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      border-radius: 0;
+      background: #05070e;
+    }
+
+    canvas#snake-canvas {
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .game-modal {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 7, 14, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-xl);
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+    }
+
+    .game-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .game-modal h2 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: var(--space-sm);
+      background: linear-gradient(135deg, #06d6a0, #8ab4f8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .game-modal p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      max-width: 440px;
+      margin-bottom: var(--space-lg);
+      line-height: 1.5;
+    }
+
+    .modal-score-display {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: var(--space-lg);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    /* Game Manual & Controls below playground */
+    .game-manual {
+      padding: var(--space-lg) var(--space-xl);
+      margin-bottom: var(--space-xl);
+      border-radius: var(--radius-lg);
+    }
+
+    .manual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+    }
+
+    .manual-card {
+      background: var(--glass-bg-subtle);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+    }
+
+    .manual-card h3 {
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .key-tag {
+      display: inline-block;
+      background: var(--border-medium);
+      color: var(--text-primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+    }
+
+    .powerup-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .powerup-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .powerup-list span.cube {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .manual-grid { grid-template-columns: 1fr; }
+      .game-hud { flex-direction: column; align-items: stretch; }
+      .hud-stats { justify-content: space-between; }
+      .game-arena { height: 460px; }
+      .powerup-card { width: 100%; }
+    }
+  </style>
+
+  <!-- ═══ SEO META ═════════════════════════════════════════════════════════ -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://primeartifact.com/tools/games/cyber-snake">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://primeartifact.com/tools/games/cyber-snake">
+  <meta property="og:title" content="Cyber Snake &mdash; High-Speed Synthwave Arena | PrimeArtifact">
+  <meta property="og:description"
+    content="Play Cyber Snake, a modern high-speed synthwave snake arcade game. Navigate glowing light trails, collect energy nodes, avoid cyber barriers, and unlock hyper-speed boosts.">
+  <meta property="og:image" content="https://primeartifact.com/assets/og-image.png">
+  <meta property="og:site_name" content="PrimeArtifact">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cyber Snake &mdash; High-Speed Synthwave Arena | PrimeArtifact">
+  <meta name="twitter:description"
+    content="Play Cyber Snake, a modern high-speed synthwave snake arcade game. Navigate glowing light trails, collect energy nodes, avoid cyber barriers, and unlock hyper-speed boosts.">
+  <meta property="twitter:image" content="https://primeartifact.com/assets/og-image.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../../assets/favicon.png">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../../manifest.json">
+</head>
+
+<body>
+
+  <nav class="navbar"></nav>
+  <script src="../../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container container--wide">
+      <header class="page-header animate-in">
+        <div class="page-header__breadcrumb">
+          <a href="../../">Home</a><span class="page-header__breadcrumb-sep">/</span><a href="../../#game-artifacts">Quick Games</a><span class="page-header__breadcrumb-sep">/</span><span>Cyber Snake</span>
+        </div>
+        <h1 class="page-header__title">Cyber Snake</h1>
+        <p class="page-header__subtitle">High-velocity cybernetic grid arena. Consume glowing energy matrices and deploy hyper-speed thrust to expand your neural link.</p>
+      </header>
+
+      <!-- Game HUD Bar -->
+      <div class="glass glass--static game-hud animate-in">
+        <div class="hud-stats">
+          <div class="hud-stat-box">
+            <span class="hud-label">Score:</span>
+            <span class="hud-val" id="hud-score">0</span>
+          </div>
+          <div class="hud-stat-box">
+            <span class="hud-label">High:</span>
+            <span class="hud-val" id="hud-high">0</span>
+          </div>
+        </div>
+
+        <div class="powerup-card" id="card-thrust" style="color: #06d6a0;" title="Hold Spacebar / Touch for Hyper-Speed">
+          <div class="powerup-icon"><i class="fas fa-bolt"></i></div>
+          <div class="powerup-details">
+            <div class="powerup-header">
+              <span class="powerup-name">Hyper-Thrust</span>
+              <span class="powerup-status" id="boost-status">100%</span>
+            </div>
+            <div class="powerup-bar-container"><div class="powerup-bar-fill" id="boost-fill"></div></div>
+          </div>
+        </div>
+
+        <div class="hud-controls">
+          <button class="btn btn--sm" id="btn-fullscreen" title="Toggle Fullscreen"><i class="fas fa-expand"></i> Fullscreen</button>
+          <button class="btn btn--sm" id="btn-mute" title="Toggle Sound"><i class="fas fa-volume-up"></i> Sound</button>
+          <button class="btn btn--sm btn--accent" id="btn-pause"><i class="fas fa-pause"></i> Pause</button>
+        </div>
+      </div>
+
+      <!-- Game Arena Canvas -->
+      <div class="game-arena-wrapper animate-in">
+        <div class="game-arena glass glass--static" id="game-arena">
+          <!-- Start Modal -->
+          <div class="game-modal active" id="modal-start">
+            <h2>CYBER SNAKE</h2>
+            <p>Enter the synthwave sector. Consume glowing energy capsules while avoiding grid barriers and boundary walls.</p>
+            <button class="btn btn--lg btn--accent" id="btn-start-game"><i class="fas fa-play"></i> Engage Matrix (Enter)</button>
+          </div>
+
+          <!-- Game Over Modal -->
+          <div class="game-modal" id="modal-gameover">
+            <h2>NEURAL COLLAPSE</h2>
+            <p>Impact with boundary or structural barrier detected. Neural link severed.</p>
+            <div class="modal-score-display" id="final-score">0</div>
+            <div class="btn-group">
+              <button class="btn btn--sm btn--accent" id="btn-restart"><i class="fas fa-rotate-left"></i> Re-Connect (Enter)</button>
+            </div>
+          </div>
+
+          <canvas id="snake-canvas" width="960" height="640"></canvas>
+        </div>
+      </div>
+
+      <!-- Game Manual & Controls Section -->
+      <section class="glass glass--static game-manual animate-in">
+        <h2 class="section-title" style="margin-bottom: 0;"><i class="fas fa-book-open" style="color: var(--accent);"></i> Game Manual & Controls</h2>
+        <div class="manual-grid">
+          <div class="manual-card">
+            <h3><i class="fas fa-gamepad"></i> Tactical Controls</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 12px;">Steer your neural link smoothly across the synthwave grid.</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div><span class="key-tag">WASD</span> or <span class="key-tag">Arrows</span> &mdash; Steer Snake Direction</div>
+              <div><span class="key-tag">Spacebar</span> (Hold) or <span class="key-tag">Touch</span> &mdash; Deploy Hyper-Thrust Speed</div>
+              <div><span class="key-tag">Enter</span> / <span class="key-tag">Spacebar</span> &mdash; Confirm Modals (Start / Retry)</div>
+              <div><span class="key-tag">P</span> &mdash; Pause / Resume Game</div>
+              <div><span class="key-tag">M</span> &mdash; Toggle Audio Synth</div>
+            </div>
+          </div>
+
+          <div class="manual-card">
+            <h3><i class="fas fa-bolt"></i> Hyper-Thrust Mechanics</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 12px;">Holding Spacebar or holding touch accelerates your snake to hyper-speed:</p>
+            <ul class="powerup-list">
+              <li><span class="cube" style="background: #06d6a0;"></span> <strong>Double Multiplier:</strong> Points earned while boosting are instantly doubled!</li>
+              <li><span class="cube" style="background: #9d4edd;"></span> <strong>Cyber Barriers:</strong> As your length expands, glowing purple grid barriers will spawn to elevate the challenge.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer glass glass--static"
+    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
+    <div class="container">
+      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
+      </p>
+    </div>
+  </footer>
+
+  <!-- High-Performance Theme-Aware Cyber Snake Core Engine -->
+  <script>
+    (function () {
+      const arena = document.getElementById('game-arena');
+      const canvas = document.getElementById('snake-canvas');
+      const ctx = canvas.getContext('2d', { alpha: false });
+
+      const hudScore = document.getElementById('hud-score');
+      const hudHigh = document.getElementById('hud-high');
+      const finalScore = document.getElementById('final-score');
+      
+      const cardThrust = document.getElementById('card-thrust');
+      const boostFill = document.getElementById('boost-fill');
+      const boostStatus = document.getElementById('boost-status');
+
+      const modalStart = document.getElementById('modal-start');
+      const modalGameover = document.getElementById('modal-gameover');
+
+      const btnStart = document.getElementById('btn-start-game');
+      const btnRestart = document.getElementById('btn-restart');
+      const btnMute = document.getElementById('btn-mute');
+      const btnPause = document.getElementById('btn-pause');
+      const btnFullscreen = document.getElementById('btn-fullscreen');
+
+      // Fixed logical grid resolution (960x640 at 24px per cell = 40x26 grid cells)
+      const WIDTH = 960;
+      const HEIGHT = 640;
+      const GRID_SIZE = 24;
+      const cols = WIDTH / GRID_SIZE;
+      const rows = HEIGHT / GRID_SIZE;
+
+      let score = 0;
+      let highScore = parseInt(localStorage.getItem('prime_snake_high') || 0, 10);
+      hudHigh.textContent = highScore.toLocaleString();
+
+      let gameState = 'START'; // START, PLAYING, PAUSED, GAMEOVER
+      let isMuted = false;
+
+      // Audio Synthesizer
+      let audioCtx = null;
+      function initAudio() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      function playSound(type) {
+        if (isMuted || !audioCtx) return;
+        try {
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          if (type === 'eat') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(now + 0.1);
+          } 
+          else if (type === 'lose') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.linearRampToValueAtTime(100, now + 0.5);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(now + 0.5);
+          } 
+          else if (type === 'turn') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.linearRampToValueAtTime(300, now + 0.04);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(now + 0.04);
+          }
+        } catch (e) {}
+      }
+
+      // Fullscreen handling
+      btnFullscreen.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          if (arena.requestFullscreen) arena.requestFullscreen();
+          else if (arena.webkitRequestFullscreen) arena.webkitRequestFullscreen();
+          else if (arena.msRequestFullscreen) arena.msRequestFullscreen();
+          btnFullscreen.innerHTML = '<i class="fas fa-compress"></i> Exit';
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+          else if (document.msExitFullscreen) document.msExitFullscreen();
+          btnFullscreen.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+        }
+      });
+
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+          btnFullscreen.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+        } else {
+          btnFullscreen.innerHTML = '<i class="fas fa-compress"></i> Exit';
+        }
+      });
+
+      // Game Entities
+      let snake = [];
+      let nextDirs = [];
+      let currentDir = { x: 1, y: 0 };
+      let food = { x: 0, y: 0, color: '#06d6a0', pulse: 0 };
+      let barriers = [];
+      let particles = [];
+
+      let isBoosting = false;
+      let boostEnergy = 100;
+      let moveTimer = 0;
+
+      function spawnFood() {
+        const colors = ['#06d6a0', '#00b4d8', '#ffd166', '#f77f00', '#ff4d4d'];
+        while (true) {
+          const fx = Math.floor(Math.random() * (cols - 2)) + 1;
+          const fy = Math.floor(Math.random() * (rows - 2)) + 1;
+
+          if (snake.some(seg => seg.x === fx && seg.y === fy)) continue;
+          if (barriers.some(b => b.x === fx && b.y === fy)) continue;
+
+          food = {
+            x: fx, y: fy,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            pulse: 0
+          };
+          break;
+        }
+      }
+
+      function spawnBarrier() {
+        if (barriers.length >= Math.floor(cols * rows * 0.04)) return;
+        while (true) {
+          const bx = Math.floor(Math.random() * (cols - 4)) + 2;
+          const by = Math.floor(Math.random() * (rows - 4)) + 2;
+
+          if (snake.some(seg => Math.hypot(seg.x - bx, seg.y - by) < 3)) continue;
+          if (food.x === bx && food.y === by) continue;
+          if (barriers.some(b => b.x === bx && b.y === by)) continue;
+
+          barriers.push({ x: bx, y: by });
+          break;
+        }
+      }
+
+      function createSparks(x, y, color, count = 10) {
+        for (let i = 0; i < count; i++) {
+          const speed = 1 + Math.random() * 4;
+          const angle = Math.random() * Math.PI * 2;
+          particles.push({
+            x: x * GRID_SIZE + GRID_SIZE / 2,
+            y: y * GRID_SIZE + GRID_SIZE / 2,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            radius: 1 + Math.random() * 2,
+            color: color,
+            alpha: 1.0,
+            life: 20 + Math.random() * 12
+          });
+        }
+      }
+
+      function initGame() {
+        const startX = Math.floor(cols / 2);
+        const startY = Math.floor(rows / 2);
+
+        snake = [
+          { x: startX, y: startY },
+          { x: startX - 1, y: startY },
+          { x: startX - 2, y: startY }
+        ];
+
+        currentDir = { x: 1, y: 0 };
+        nextDirs = [];
+        barriers = [];
+        particles = [];
+        score = 0;
+        boostEnergy = 100;
+        isBoosting = false;
+
+        hudScore.textContent = '0';
+        boostFill.style.width = '100%';
+        boostStatus.textContent = '100%';
+        cardThrust.classList.remove('boosting');
+
+        spawnFood();
+      }
+
+      function updateHUD() {
+        hudScore.textContent = score.toLocaleString();
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem('prime_snake_high', highScore);
+          hudHigh.textContent = highScore.toLocaleString();
+        }
+      }
+
+      let lastTime = performance.now();
+
+      function update(now) {
+        const dt = (now - lastTime) / 1000;
+        lastTime = now;
+
+        if (gameState !== 'PLAYING') return;
+
+        if (isBoosting && boostEnergy > 0) {
+          boostEnergy -= dt * 45;
+          cardThrust.classList.add('boosting');
+          if (boostEnergy <= 0) { boostEnergy = 0; isBoosting = false; cardThrust.classList.remove('boosting'); }
+        } else {
+          cardThrust.classList.remove('boosting');
+          if (boostEnergy < 100) {
+            boostEnergy += dt * 25;
+            if (boostEnergy > 100) boostEnergy = 100;
+          }
+        }
+
+        boostFill.style.width = boostEnergy + '%';
+        boostStatus.textContent = Math.round(boostEnergy) + '%';
+
+        food.pulse = (food.pulse + dt * 4) % (Math.PI * 2);
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life--;
+          p.alpha = Math.max(0, p.life / 20);
+          if (p.life <= 0) particles.splice(i, 1);
+        }
+
+        const interval = isBoosting ? 0.04 : 0.085;
+        moveTimer += dt;
+
+        if (moveTimer >= interval) {
+          moveTimer = 0;
+
+          if (nextDirs.length > 0) {
+            currentDir = nextDirs.shift();
+          }
+
+          const head = snake[0];
+          const newHead = { x: head.x + currentDir.x, y: head.y + currentDir.y };
+
+          if (newHead.x < 0 || newHead.x >= cols || newHead.y < 0 || newHead.y >= rows) {
+            playSound('lose');
+            gameState = 'GAMEOVER';
+            finalScore.textContent = score.toLocaleString();
+            modalGameover.classList.add('active');
+            return;
+          }
+
+          if (barriers.some(b => b.x === newHead.x && b.y === newHead.y)) {
+            playSound('lose');
+            gameState = 'GAMEOVER';
+            finalScore.textContent = score.toLocaleString();
+            modalGameover.classList.add('active');
+            return;
+          }
+
+          if (snake.some(seg => seg.x === newHead.x && seg.y === newHead.y)) {
+            playSound('lose');
+            gameState = 'GAMEOVER';
+            finalScore.textContent = score.toLocaleString();
+            modalGameover.classList.add('active');
+            return;
+          }
+
+          snake.unshift(newHead);
+
+          if (isBoosting) {
+            createSparks(newHead.x, newHead.y, '#06d6a0', 2);
+          }
+
+          if (newHead.x === food.x && newHead.y === food.y) {
+            playSound('eat');
+            createSparks(food.x, food.y, food.color, 10);
+
+            const multiplier = isBoosting ? 20 : 10;
+            score += multiplier;
+            updateHUD();
+
+            if (snake.length % 6 === 0) spawnBarrier();
+
+            spawnFood();
+          } else {
+            snake.pop();
+          }
+        }
+      }
+
+      function render() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const bgColor = isDark ? '#05070e' : '#f1f3f5';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.05)';
+
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+        ctx.strokeStyle = gridColor;
+        ctx.lineWidth = 1;
+        for (let x = 0; x < WIDTH; x += GRID_SIZE) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke(); }
+        for (let y = 0; y < HEIGHT; y += GRID_SIZE) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke(); }
+
+        // Render Barriers without shadowBlur for max FPS performance
+        barriers.forEach(b => {
+          ctx.fillStyle = '#9d4edd';
+          ctx.fillRect((b.x * GRID_SIZE + 1) | 0, (b.y * GRID_SIZE + 1) | 0, GRID_SIZE - 2, GRID_SIZE - 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.fillRect((b.x * GRID_SIZE + 1) | 0, (b.y * GRID_SIZE + 1) | 0, GRID_SIZE - 2, 3);
+          ctx.strokeStyle = isDark ? 'rgba(0, 0, 0, 0.5)' : '#fff';
+          ctx.strokeRect((b.x * GRID_SIZE + 1) | 0, (b.y * GRID_SIZE + 1) | 0, GRID_SIZE - 2, GRID_SIZE - 2);
+        });
+
+        // Render Food with fake layered radial glow (0 shadowBlur)
+        const fRadius = GRID_SIZE * 0.4 + Math.sin(food.pulse) * 2;
+        
+        ctx.beginPath();
+        ctx.arc(food.x * GRID_SIZE + GRID_SIZE / 2, food.y * GRID_SIZE + GRID_SIZE / 2, fRadius + 6, 0, Math.PI * 2);
+        ctx.fillStyle = isDark ? 'rgba(6, 214, 160, 0.2)' : 'rgba(6, 214, 160, 0.3)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(food.x * GRID_SIZE + GRID_SIZE / 2, food.y * GRID_SIZE + GRID_SIZE / 2, fRadius, 0, Math.PI * 2);
+        ctx.fillStyle = food.color;
+        ctx.fill();
+
+        // Render Particles
+        ctx.globalCompositeOperation = isDark ? 'lighter' : 'source-over';
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1.0;
+        ctx.globalCompositeOperation = 'source-over';
+
+        // Render Snake with layered roundRect glow on head
+        snake.forEach((seg, index) => {
+          const isHead = index === 0;
+          const ratio = index / snake.length;
+
+          if (isHead) {
+            ctx.fillStyle = isDark ? 'rgba(6, 214, 160, 0.25)' : 'rgba(6, 214, 160, 0.3)';
+            ctx.beginPath();
+            ctx.roundRect((seg.x * GRID_SIZE - 3) | 0, (seg.y * GRID_SIZE - 3) | 0, (GRID_SIZE + 6) | 0, (GRID_SIZE + 6) | 0, 8);
+            ctx.fill();
+          }
+
+          ctx.fillStyle = isHead ? '#06d6a0' : (isBoosting ? '#00b4d8' : `rgba(6, 214, 160, ${1 - ratio * 0.7})`);
+
+          ctx.beginPath();
+          const margin = isHead ? 1 : 2;
+          ctx.roundRect((seg.x * GRID_SIZE + margin) | 0, (seg.y * GRID_SIZE + margin) | 0, GRID_SIZE - margin * 2, GRID_SIZE - margin * 2, isHead ? 6 : 4);
+          ctx.fill();
+
+          if (isHead) {
+            ctx.fillStyle = isDark ? '#05070e' : '#fff';
+            const eyeSize = 4;
+            const center = GRID_SIZE / 2;
+            if (currentDir.x !== 0) {
+              const eyeX = seg.x * GRID_SIZE + center + currentDir.x * 4;
+              ctx.fillRect((eyeX - 2) | 0, (seg.y * GRID_SIZE + center - 6) | 0, eyeSize, eyeSize);
+              ctx.fillRect((eyeX - 2) | 0, (seg.y * GRID_SIZE + center + 2) | 0, eyeSize, eyeSize);
+            } else {
+              const eyeY = seg.y * GRID_SIZE + center + currentDir.y * 4;
+              ctx.fillRect((seg.x * GRID_SIZE + center - 6) | 0, (eyeY - 2) | 0, eyeSize, eyeSize);
+              ctx.fillRect((seg.x * GRID_SIZE + center + 2) | 0, (eyeY - 2) | 0, eyeSize, eyeSize);
+            }
+          }
+        });
+      }
+
+      function gameLoop(now) {
+        update(now);
+        render();
+        requestAnimationFrame(gameLoop);
+      }
+
+      // Input Listeners
+      window.addEventListener('keydown', (e) => {
+        // Modal Confirmations via Enter or Space
+        if (e.code === 'Enter' || e.code === 'Space') {
+          if (gameState === 'START') {
+            e.preventDefault();
+            btnStart.click();
+            return;
+          } else if (gameState === 'GAMEOVER') {
+            e.preventDefault();
+            btnRestart.click();
+            return;
+          }
+        }
+
+        if (gameState !== 'PLAYING') return;
+
+        let next = null;
+        const last = nextDirs.length > 0 ? nextDirs[nextDirs.length - 1] : currentDir;
+
+        if ((e.code === 'KeyW' || e.code === 'ArrowUp') && last.y !== 1) next = { x: 0, y: -1 };
+        else if ((e.code === 'KeyS' || e.code === 'ArrowDown') && last.y !== -1) next = { x: 0, y: 1 };
+        else if ((e.code === 'KeyA' || e.code === 'ArrowLeft') && last.x !== 1) next = { x: -1, y: 0 };
+        else if ((e.code === 'KeyD' || e.code === 'ArrowRight') && last.x !== -1) next = { x: 1, y: 0 };
+
+        if (next) {
+          e.preventDefault();
+          playSound('turn');
+          if (nextDirs.length < 2) nextDirs.push(next);
+        }
+
+        if (e.code === 'Space') {
+          e.preventDefault();
+          if (boostEnergy > 0) isBoosting = true;
+        } else if (e.code === 'KeyM') {
+          btnMute.click();
+        } else if (e.code === 'KeyP') {
+          btnPause.click();
+        }
+      });
+
+      window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') isBoosting = false;
+      });
+
+      canvas.addEventListener('mousedown', () => { if (gameState === 'PLAYING' && boostEnergy > 0) isBoosting = true; });
+      window.addEventListener('mouseup', () => isBoosting = false);
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      });
+      canvas.addEventListener('touchend', () => isBoosting = false);
+
+      let touchStartX = 0, touchStartY = 0;
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (gameState !== 'PLAYING') return;
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+
+        if (Math.hypot(dx, dy) > 30) {
+          let next = null;
+          const last = nextDirs.length > 0 ? nextDirs[nextDirs.length - 1] : currentDir;
+
+          if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 0 && last.x !== -1) next = { x: 1, y: 0 };
+            else if (dx < 0 && last.x !== 1) next = { x: -1, y: 0 };
+          } else {
+            if (dy > 0 && last.y !== -1) next = { x: 0, y: 1 };
+            else if (dy < 0 && last.y !== 1) next = { x: 0, y: -1 };
+          }
+
+          if (next) {
+            playSound('turn');
+            if (nextDirs.length < 2) nextDirs.push(next);
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+          }
+        }
+      });
+
+      btnStart.addEventListener('click', () => {
+        initAudio();
+        modalStart.classList.remove('active');
+        initGame();
+        gameState = 'PLAYING';
+        lastTime = performance.now();
+      });
+
+      btnRestart.addEventListener('click', () => {
+        modalGameover.classList.remove('active');
+        initGame();
+        gameState = 'PLAYING';
+        lastTime = performance.now();
+      });
+
+      btnMute.addEventListener('click', () => {
+        isMuted = !isMuted;
+        if (isMuted) {
+          btnMute.innerHTML = '<i class="fas fa-volume-mute"></i> Muted';
+          btnMute.classList.add('btn--active');
+        } else {
+          btnMute.innerHTML = '<i class="fas point-volume-up"></i> Sound';
+          btnMute.classList.remove('btn--active');
+        }
+      });
+
+      btnPause.addEventListener('click', () => {
+        if (gameState === 'PLAYING') {
+          gameState = 'PAUSED';
+          btnPause.innerHTML = '<i class="fas fa-play"></i> Resume';
+        } else if (gameState === 'PAUSED') {
+          gameState = 'PLAYING';
+          lastTime = performance.now();
+          btnPause.innerHTML = '<i class="fas fa-pause"></i> Pause';
+        }
+      });
+
+      initGame();
+      requestAnimationFrame(gameLoop);
+    })();
+  </script>
+</body>
+
+</html>

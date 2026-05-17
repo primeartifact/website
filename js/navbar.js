@@ -91,6 +91,15 @@
         { name: 'Online Notepad', desc: 'Quick scratchpad that auto-saves to your browser. Private, no cloud.', href: base + 'tools/utility/notepad' },
         { name: 'Secure Clipboard', desc: 'End-to-End encrypted text sync across devices. Secure and 100% private.', href: base + 'tools/utility/clipboard' }
       ]
+    },
+    {
+      id: 'game-artifacts',
+      title: 'Quick Games',
+      tools: [
+        { name: 'Tic-Tac-Toe (Neon Matrix)', desc: 'Premium cyber redesign of the classic 3x3 strategic duel. Featuring liquid glass tiles, procedural audio feedback, pass & play, and an unbeatable Minimax AI matrix.', href: base + 'tools/games/tic-tac-toe' },
+        { name: 'Ball Breakout', desc: 'Fast-paced cyber brick breaker. Shatter glowing glass blocks, collect multi-ball powerups, and trigger satisfying particle explosions.', href: base + 'tools/games/ball-breakout' },
+        { name: 'Cyber Snake', desc: 'Modern high-speed synthwave snake arena. Navigate glowing light trails, collect energy nodes, and unlock hyper-speed boosts.', href: base + 'tools/games/cyber-snake' }
+      ]
     }
   ];
 

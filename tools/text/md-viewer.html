@@ -272,6 +272,8 @@
       overflow-x: auto;
       line-height: 1.75;
       color: var(--text-primary);
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
 
     /* ── Markdown Rendered Styles ────────────────────────────── */
@@ -348,6 +350,8 @@
       border-radius: 10px;
       margin: var(--space-md) 0;
       overflow-x: auto;
+      overflow-wrap: normal;
+      word-break: normal;
     }
 
     .md-preview pre code {
@@ -796,14 +800,78 @@ Or upload a .md file using the button above.
       document.getElementById('stat-chars').textContent = chars.toLocaleString();
     }
 
-    // ── Line Numbers ──────────────────────────────────────────────────
+    // ── Line Numbers (with wrap detection) ────────────────────────────
     const gutter = document.getElementById('ln-gutter');
+    const mirror = document.createElement('div');
+    mirror.style.position = 'absolute';
+    mirror.style.top = '-9999px';
+    mirror.style.left = '-9999px';
+    mirror.style.visibility = 'hidden';
+    mirror.style.pointerEvents = 'none';
+    mirror.style.zIndex = '-100';
+    mirror.style.boxSizing = 'content-box';
+    mirror.style.margin = '0';
+    mirror.style.padding = '0';
+    mirror.style.border = '0';
+    document.body.appendChild(mirror);
+
     function updateLineNumbers() {
-      const count = editor.value.split('\n').length;
-      gutter.textContent = Array.from({ length: count }, (_, i) => i + 1).join('\n');
+      const style = window.getComputedStyle(editor);
+      const width = editor.clientWidth - parseFloat(style.paddingLeft || 0) - parseFloat(style.paddingRight || 0);
+
+      mirror.style.fontFamily = style.fontFamily;
+      mirror.style.fontSize = style.fontSize;
+      mirror.style.lineHeight = style.lineHeight;
+      mirror.style.letterSpacing = style.letterSpacing;
+      mirror.style.tabSize = style.tabSize;
+      mirror.style.whiteSpace = 'pre-wrap';
+      mirror.style.overflowWrap = 'anywhere';
+      mirror.style.wordBreak = 'break-word';
+      mirror.style.width = width + 'px';
+
+      mirror.innerHTML = '<div style="margin:0;padding:0;border:0;">A</div>';
+      const singleLineHeight = mirror.children[0]?.getBoundingClientRect().height;
+
+      if (width <= 0 || !singleLineHeight || singleLineHeight <= 0) {
+        const count = editor.value.split('\n').length;
+        gutter.textContent = Array.from({ length: count }, (_, i) => i + 1).join('\n');
+        return;
+      }
+
+      const lines = editor.value.split('\n');
+      mirror.innerHTML = '';
+      lines.forEach(line => {
+        const div = document.createElement('div');
+        div.style.margin = '0';
+        div.style.padding = '0';
+        div.style.border = '0';
+        div.textContent = line || ' ';
+        mirror.appendChild(div);
+      });
+
+      let gutterText = [];
+      for (let i = 0; i < mirror.children.length; i++) {
+        const child = mirror.children[i];
+        const height = child.getBoundingClientRect().height;
+        const count = Math.round(height / singleLineHeight) || 1;
+        gutterText.push(i + 1);
+        for (let c = 1; c < count; c++) {
+          gutterText.push(' ');
+        }
+      }
+
+      gutter.textContent = gutterText.join('\n');
     }
+
     editor.addEventListener('scroll', () => { gutter.scrollTop = editor.scrollTop; });
     updateLineNumbers();
+
+    // Use ResizeObserver to ensure line numbers recalculate whenever editor changes size (window resize, panel shifts, etc.)
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => updateLineNumbers()).observe(editor);
+    } else {
+      window.addEventListener('resize', updateLineNumbers);
+    }
 
     // Line numbers update live; render only fires on Render button click
     editor.addEventListener('input', () => {

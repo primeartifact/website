@@ -830,9 +830,10 @@
           </div>
         </div>
       </div>
-    </div>
-    
-  <!-- FAQ Modal & Overlay -->
+
+
+
+<!-- FAQ Modal & Overlay -->
   <div class="faq-modal-overlay" id="faq-modal">
     <div class="faq-modal">
       <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
@@ -851,26 +852,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('faq-modal');
-      const openBtn = document.getElementById('open-faq');
-      const closeBtn = document.getElementById('close-faq');
-      if(openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && modal.classList.contains('active')) {
-            modal.classList.remove('active');
-          }
-        });
-      }
-    });
-  </script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",

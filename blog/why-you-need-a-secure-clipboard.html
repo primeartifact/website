@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why You Should Never Share Passwords via Email or Chat — PrimeArtifact</title>
+  <meta name="description" content="Learn why sending passwords in plain text is dangerous, and how a zero-knowledge secure clipboard protects your sensitive data.">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/theme.js"></script>
+  <style>
+    .article-header { text-align: center; margin-bottom: var(--space-xl); }
+    .article-category { color: var(--accent); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; margin-bottom: var(--space-sm); display: block; }
+    .article-title { font-size: 2.5rem; color: var(--text-primary); margin-bottom: var(--space-md); line-height: 1.2; }
+    .article-meta { color: var(--text-tertiary); font-size: 0.9rem; }
+    .prose { max-width: 700px; margin: 0 auto; font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary); }
+    .prose h2 { font-size: 1.5rem; color: var(--text-primary); margin: var(--space-xl) 0 var(--space-md); scroll-margin-top: 100px; }
+    .prose p, .prose ul { margin-bottom: var(--space-lg); }
+    .prose li { margin-bottom: var(--space-sm); margin-left: var(--space-lg); }
+    .prose a:not(.btn) { color: var(--accent); text-decoration: underline; }
+    .cta-box { background: var(--glass-bg); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: var(--space-lg); margin: var(--space-xl) 0; text-align: center; }
+    
+    /* Table of Contents */
+    .toc-box { background: transparent; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-xl); }
+    .toc-box__title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-tertiary); margin-bottom: var(--space-md); }
+    .toc-box__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .toc-box a { color: var(--accent); text-decoration: none; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+    
+    /* Icon CTA */
+    .cta-var-d { display: flex; align-items: flex-start; gap: var(--space-md); background: var(--glass-bg); border: 1px dashed var(--border-light); border-radius: var(--radius-md); padding: var(--space-lg); margin-bottom: var(--space-xl); transition: all 0.3s ease; }
+    .cta-var-d:hover { border-style: solid; border-color: var(--accent); }
+    .cta-var-d__icon { font-size: 2rem; }
+    .cta-var-d__content { flex-grow: 1; }
+    .cta-var-d h3 { margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text-primary); }
+    .cta-var-d p { margin: 0 0 15px 0; font-size: 0.9rem; }
+    
+    /* TL;DR Box */
+    .tldr-box { background: linear-gradient(145deg, rgba(74, 111, 165, 0.05), transparent); border: 1px solid var(--accent-border); border-radius: var(--radius-lg); padding: var(--space-lg) var(--space-xl); margin-bottom: var(--space-xl); }
+    .tldr-box__title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-md); display: flex; align-items: center; gap: 8px; }
+    .tldr-box ul { margin: 0; padding-left: 20px; }
+    .tldr-box li { margin-bottom: 8px; font-size: 0.95rem; }
+    
+    @media (max-width: 768px) {
+      .article-title { font-size: 2rem; }
+      .toc-box__grid { grid-template-columns: 1fr; }
+      .cta-var-d { flex-direction: column; align-items: center; text-align: center; }
+      .tldr-box { padding: var(--space-md); }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Why You Should Never Share Passwords via Email or Chat",
+    "datePublished": "2026-05-24",
+    "author": {
+      "@type": "Organization",
+      "name": "PrimeArtifact"
+    }
+  }
+  </script>
+</head>
+<body>
+  <nav class="navbar"></nav>
+  <script src="../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-header__breadcrumb animate-in">
+        <a href="../">Home</a> <span class="page-header__breadcrumb-sep">/</span> <a href="./">Blog</a> <span class="page-header__breadcrumb-sep">/</span> <span>Security Tools</span>
+      </div>
+
+      <article class="prose animate-in">
+        <header class="article-header">
+          <span class="article-category">Security</span>
+          <h1 class="article-title">Why You Should Never Share Passwords via Email or Chat</h1>
+          <div class="article-meta">Published on May 24, 2026 • 5 min read</div>
+        </header>
+
+        <!-- Jump-to-Tool Icon CTA -->
+        <div class="cta-var-d">
+          <div class="cta-var-d__icon">📋</div>
+          <div class="cta-var-d__content">
+            <h3>PrimeArtifact Secure Clipboard</h3>
+            <p>Share text securely with zero-knowledge encryption and burn-after-read delivery.</p>
+            <a href="../tools/utility/clipboard.html" class="btn btn--accent">Open Secure Clipboard →</a>
+          </div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc-box">
+          <div class="toc-box__title">In this article</div>
+          <div class="toc-box__grid">
+            <a href="#chat-history"><span>→</span> The danger of chat history</a>
+            <a href="#what-is-it"><span>→</span> What is a secure clipboard?</a>
+            <a href="#zero-knowledge"><span>→</span> Zero-knowledge encryption</a>
+            <a href="#burn-after-read"><span>→</span> Burn-after-read explained</a>
+          </div>
+        </div>
+
+        <p>You need to send an API key to a colleague, or maybe a database password to a freelancer. So, you paste it into Slack, Microsoft Teams, or an email and hit send. It's fast, it's convenient, and it's incredibly dangerous.</p>
+
+        <p>In this guide, we'll explain why sending secrets in plain text over standard communication channels is a massive security vulnerability, and how you can use a "Secure Clipboard" to eliminate this risk entirely.</p>
+
+        <h2 id="chat-history">The Danger of Chat History</h2>
+        <p>When you send a password via Slack, Discord, or email, you aren't just sending a message—you are creating a permanent record of that password in a database that you do not control.</p>
+        <p>Even if you delete the message on your end, it might still exist on the recipient's machine, in the platform's backups, or in transit logs. If that platform ever suffers a data breach, or if your colleague's laptop is compromised months later, hackers can easily search their message history for the word "password" and instantly gain access to your systems.</p>
+
+        <h2 id="what-is-it">What is a Secure Clipboard?</h2>
+        <p>A Secure Clipboard is a tool designed to solve the "safe sharing" problem. Instead of pasting your secret directly into a chat, you paste it into the Secure Clipboard application. The app encrypts the text and gives you a temporary, secure link to share.</p>
+        <p>When the recipient clicks the link, the text is decrypted locally on their machine. This adds a critical layer of separation between your communication channel (Slack/Email) and your actual secrets.</p>
+
+        <h2 id="zero-knowledge">How Zero-Knowledge Encryption Works</h2>
+        <p>Not all secure clipboards are created equal. You should always look for one that uses <strong>Zero-Knowledge Encryption</strong> (often referred to as End-to-End Encryption, or E2EE).</p>
+        <p>With a zero-knowledge architecture, your text is encrypted <em>inside your browser</em> before it is ever sent to the server. The decryption key is generated locally and appended to the final URL as a "hash fragment" (the part after the <code>#</code> in a web address).</p>
+        <p>Because browsers do not send URL hashes to servers, the server hosting the clipboard mathematically cannot read your data. It only sees scrambled cipher text. Even if the clipboard's database is breached, the attackers get absolutely nothing of value.</p>
+
+        <h2 id="burn-after-read">Burn After Read: The Ultimate Failsafe</h2>
+        <p>The most important feature of a good secure clipboard is the "Burn After Read" policy.</p>
+        <p>When this feature is enabled, the secure link self-destructs the exact moment it is opened by the recipient. The ciphertext is permanently deleted from the database. This guarantees two things:</p>
+        <ol>
+          <li><strong>Perfect Forward Secrecy:</strong> Even if someone finds the link in your chat history a week later, it will be dead and useless.</li>
+          <li><strong>Tamper Evidence:</strong> If your intended recipient clicks the link and gets a "This clip has been destroyed" message, you instantly know the link was intercepted by a third party, and you can change the compromised password immediately.</li>
+        </ol>
+
+        <!-- Summary / TL;DR -->
+        <div class="tldr-box">
+          <div class="tldr-box__title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            Summary / TL;DR
+          </div>
+          <ul>
+            <li>Sharing passwords in Slack, Teams, or email leaves a permanent record that hackers can find during a breach.</li>
+            <li>A secure clipboard uses end-to-end encryption, meaning the server hosting the link cannot read your data.</li>
+            <li>The "burn-after-read" feature guarantees the link self-destructs the exact moment your recipient opens it.</li>
+          </ul>
+        </div>
+
+        <div class="cta-box">
+          <h3 style="color:var(--text-primary);margin-bottom:var(--space-sm);">Need to share a secret right now?</h3>
+          <p style="font-size:0.95rem;">Create a zero-knowledge secure text share with burn-after-read delivery instantly.</p>
+          <a href="../tools/utility/clipboard.html" class="btn btn--accent" style="display:inline-block;margin-top:var(--space-sm);text-decoration:none;">Open Secure Clipboard</a>
+        </div>
+
+        <h2 style="font-size: 1.25rem; border-top: 1px solid var(--border-light); padding-top: var(--space-xl); margin-top: var(--space-xl);">Read Next / Related Artifacts</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md); margin-top: var(--space-md);">
+          <a href="../tools/generators/password" class="glass" style="padding: var(--space-md); text-decoration: none; border-radius: var(--radius-md);">
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Password Generator</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Create cryptographically secure passwords.</div>
+          </a>
+          <a href="./how-to-create-strong-password" class="glass" style="padding: var(--space-md); text-decoration: none; border-radius: var(--radius-md);">
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Strong Password Guide</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Learn how to build passwords you can remember.</div>
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer"></footer>
+</body>
+</html>

@@ -110,9 +110,8 @@
           <button class="btn" id="btn-clear"><i class="fas fa-times"></i> Clear</button>
         </div>
       </div>
-    </div>
-    
-  <!-- FAQ Modal & Overlay -->
+
+<!-- FAQ Modal & Overlay -->
   <div class="faq-modal-overlay" id="faq-modal">
     <div class="faq-modal">
       <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
@@ -131,26 +130,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('faq-modal');
-      const openBtn = document.getElementById('open-faq');
-      const closeBtn = document.getElementById('close-faq');
-      if(openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && modal.classList.contains('active')) {
-            modal.classList.remove('active');
-          }
-        });
-      }
-    });
-  </script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -183,15 +162,25 @@
   ]
 }
     </script>
-  </main>
+  
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px; max-width: 1300px; margin-left: auto; margin-right: auto; padding-left: var(--space-xl); padding-right: var(--space-xl);">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          Why URL Encoding is Necessary
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
 
-  <footer class="footer glass glass--static"
-    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
-      </p>
-    </div>
-  </footer>
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">How Percent-Encoding Works</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              URL Encoding (or percent-encoding) takes unsafe characters and replaces them with a <code>%</code> followed by their two-digit hexadecimal equivalent. For example, a blank space becomes <code>%20</code>, and an exclamation mark becomes <code>%21</code>. This guarantees the web server receives the exact intended string without breaking the HTTP request.
+            </p>
+          </div>
+        </div>
+      </div>
+</main>
+
+  <footer class="footer"></footer>
 
   <!-- URL Encoder Logic -->
   <script>

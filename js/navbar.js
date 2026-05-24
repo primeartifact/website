@@ -31,10 +31,9 @@
   var base = getBasePath();
   
   // Environment detection for clean URLs vs .html extensions
-  var isLocal = window.location.hostname === 'localhost' || 
-                window.location.hostname === '127.0.0.1' || 
-                window.location.hostname === '[::1]' ||
-                window.location.protocol === 'file:';
+  // Use clean extensionless URLs on all HTTP/HTTPS servers (including localhost/dev servers).
+  // Only use .html when viewing directly from local disk via file:// protocol.
+  var isLocal = window.location.protocol === 'file:';
   var ext = isLocal ? '.html' : '';
 
 
@@ -113,7 +112,7 @@
       cat.tools.forEach(function (tool) {
         html += '<a href="' + tool.href + ext + '" class="navbar__dropdown-tool">';
         html += '<span class="navbar__dropdown-tool-name">' + tool.name + '</span>';
-        html += '<span class="navbar__dropdown-tool-desc">' + tool.desc + '</span>';
+
         html += '</a>';
       });
       html += '</div>';
@@ -127,6 +126,7 @@
     var path = window.location.pathname;
     if (path.includes('/about')) return 'about';
     if (path.includes('/contact')) return 'contact';
+    if (path.includes('/blog/')) return 'blog';
     if (path.includes('/ai/')) return 'ai';
     if (path.includes('/tools/')) return 'tools';
     return 'home';
@@ -168,6 +168,7 @@
     html += buildDropdownMenu();
     html += '</li>';
 
+    html += '<li><a href="' + base + 'blog/" class="navbar__link' + (active === 'blog' ? ' navbar__link--active' : '') + '">Blog</a></li>';
     html += '<li><a href="' + base + 'pages/about' + ext + '" class="navbar__link' + (active === 'about' ? ' navbar__link--active' : '') + '">About</a></li>';
     html += '<li><a href="' + base + 'pages/contact' + ext + '" class="navbar__link' + (active === 'contact' ? ' navbar__link--active' : '') + '">Contact</a></li>';
     html += '</ul>';
@@ -183,7 +184,10 @@
     html += '<span class="theme-toggle__icon theme-toggle__icon--sun">☀</span>';
     html += '<span class="theme-toggle__icon theme-toggle__icon--moon">☾</span>';
     html += '</button>';
-    html += '<button class="navbar__menu-btn" id="menu-toggle" aria-label="Menu" aria-expanded="false">☰</button>';
+    html += '<button class="navbar__menu-btn" id="menu-toggle" aria-label="Menu" aria-expanded="false">';
+    html += '<span class="hamburger-line"></span>';
+    html += '<span class="hamburger-line"></span>';
+    html += '</button>';
     html += '</div>';
 
     return html;
@@ -247,7 +251,6 @@
       var isOpen = nav.classList.contains('navbar__nav--open');
       nav.classList.toggle('navbar__nav--open');
       menuBtn.setAttribute('aria-expanded', !isOpen);
-      menuBtn.innerHTML = !isOpen ? '✕' : '☰';
       document.body.style.overflow = !isOpen ? 'hidden' : '';
     });
 
@@ -256,7 +259,6 @@
       link.addEventListener('click', function () {
         nav.classList.remove('navbar__nav--open');
         menuBtn.setAttribute('aria-expanded', 'false');
-        menuBtn.innerHTML = '☰';
         document.body.style.overflow = '';
       });
     });
@@ -266,7 +268,6 @@
       if (nav.classList.contains('navbar__nav--open') && !nav.contains(e.target) && !menuBtn.contains(e.target)) {
         nav.classList.remove('navbar__nav--open');
         menuBtn.setAttribute('aria-expanded', 'false');
-        menuBtn.innerHTML = '☰';
         document.body.style.overflow = '';
       }
     });
@@ -293,6 +294,8 @@
   var faLink = document.createElement('link');
   faLink.rel = 'stylesheet';
   faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+  faLink.integrity = 'sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==';
+  faLink.crossOrigin = 'anonymous';
   document.head.appendChild(faLink);
 
   // --- Track Recent Artifacts ---

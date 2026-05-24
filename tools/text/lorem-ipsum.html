@@ -247,12 +247,31 @@
 
       </div>
 
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px;">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          The History of Lorem Ipsum
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">Origins in Cicero</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. It comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero.
+            </p>
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">Why use Placeholder Text?</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              Using placeholder text is essential in UI/UX design because it prevents the viewer from being distracted by readable content, allowing them to focus entirely on the visual layout and typographic hierarchy of the page.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div class="pyramid-stage">
         <!-- &darr; The Ruins &darr; -->
       </div>
     </div>
-    
-  <!-- FAQ Modal & Overlay -->
+
+<!-- FAQ Modal & Overlay -->
   <div class="faq-modal-overlay" id="faq-modal">
     <div class="faq-modal">
       <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
@@ -271,26 +290,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('faq-modal');
-      const openBtn = document.getElementById('open-faq');
-      const closeBtn = document.getElementById('close-faq');
-      if(openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && modal.classList.contains('active')) {
-            modal.classList.remove('active');
-          }
-        });
-      }
-    });
-  </script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -325,13 +324,7 @@
     </script>
   </main>
 
-  <footer id="main-footer" class="footer glass glass--static"
-    style="border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
-      </p>
-    </div>
-  </footer>
+  <footer class="footer"></footer>
 
   <script>
     (function () {
@@ -419,7 +412,7 @@
 
     // 3D Card Engine Script
     const container = document.getElementById('bg-container');
-    const footerEl = document.getElementById('main-footer');
+    const footerEl = document.querySelector('.footer');
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     const cardSize = 30;
     let cols; let pilePxHeights = []; let fallingLeaves = []; let staticCardsData = []; let floorY = 0;

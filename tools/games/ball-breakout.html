@@ -483,16 +483,26 @@
           </div>
         </div>
       </section>
-    </div>
-  </main>
 
-  <footer class="footer glass glass--static"
-    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
-      </p>
-    </div>
-  </footer>
+
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px; max-width: 1300px; margin-left: auto; margin-right: auto; padding-left: var(--space-xl); padding-right: var(--space-xl);">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          Game Mechanics & Canvas API
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
+
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">The HTML5 Canvas API</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              Ball Breakout is built entirely using the native HTML5 <code>&lt;canvas&gt;</code> API. Instead of manipulating DOM elements (like HTML divs) which can cause severe performance lag, the game uses JavaScript to draw and clear pixels on a single canvas element 60 times per second, creating buttery smooth animation.
+            </p>
+          </div>
+        </div>
+      </div>
+</main>
+
+  <footer class="footer"></footer>
 
   <!-- High-Performance Theme-Aware Ball Breakout Core Engine -->
   <script>

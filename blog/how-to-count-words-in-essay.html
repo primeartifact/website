@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Count Words in an Essay (Step-by-Step) — PrimeArtifact</title>
+  <meta name="description" content="Learn how to accurately count words in your essays, why it matters, and how to use online word counters effectively.">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/theme.js"></script>
+  <style>
+    .article-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+    .article-category {
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.85rem;
+      margin-bottom: var(--space-sm);
+      display: block;
+    }
+    .article-title {
+      font-size: 2.5rem;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      line-height: 1.2;
+    }
+    .article-meta {
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+    }
+    .prose {
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+    .prose h2 {
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin: var(--space-xl) 0 var(--space-md);
+      scroll-margin-top: 100px;
+    }
+    .prose p {
+      margin-bottom: var(--space-lg);
+    }
+    .prose a:not(.btn) {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+    .cta-box {
+      background: var(--glass-bg);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin: var(--space-xl) 0;
+      text-align: center;
+    }
+    
+    /* Table of Contents */
+    .toc-box { background: transparent; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-xl); }
+    .toc-box__title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-tertiary); margin-bottom: var(--space-md); }
+    .toc-box__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .toc-box a { color: var(--accent); text-decoration: none; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+    
+    /* Icon CTA */
+    .cta-var-d { display: flex; align-items: flex-start; gap: var(--space-md); background: var(--glass-bg); border: 1px dashed var(--border-light); border-radius: var(--radius-md); padding: var(--space-lg); margin-bottom: var(--space-xl); transition: all 0.3s ease; }
+    .cta-var-d:hover { border-style: solid; border-color: var(--accent); }
+    .cta-var-d__icon { font-size: 2rem; }
+    .cta-var-d__content { flex-grow: 1; }
+    .cta-var-d h3 { margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text-primary); }
+    .cta-var-d p { margin: 0 0 15px 0; font-size: 0.9rem; }
+    
+    /* TL;DR Box */
+    .tldr-box { background: linear-gradient(145deg, rgba(74, 111, 165, 0.05), transparent); border: 1px solid var(--accent-border); border-radius: var(--radius-lg); padding: var(--space-lg) var(--space-xl); margin-bottom: var(--space-xl); }
+    .tldr-box__title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-md); display: flex; align-items: center; gap: 8px; }
+    .tldr-box ul { margin: 0; padding-left: 20px; }
+    .tldr-box li { margin-bottom: 8px; font-size: 0.95rem; }
+    
+    @media (max-width: 768px) {
+      .article-title { font-size: 2rem; }
+      .toc-box__grid { grid-template-columns: 1fr; }
+      .cta-var-d { flex-direction: column; align-items: center; text-align: center; }
+      .tldr-box { padding: var(--space-md); }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "How to Count Words in an Essay (Step-by-Step)",
+    "datePublished": "2026-05-21",
+    "author": {
+      "@type": "Organization",
+      "name": "PrimeArtifact"
+    }
+  }
+  </script>
+</head>
+<body>
+  <nav class="navbar"></nav>
+  <script src="../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-header__breadcrumb animate-in">
+        <a href="../">Home</a>
+        <span class="page-header__breadcrumb-sep">/</span>
+        <a href="./">Blog</a>
+        <span class="page-header__breadcrumb-sep">/</span>
+        <span>Word Count Guide</span>
+      </div>
+
+      <article class="prose animate-in" style="animation-delay: 0.1s;">
+        <header class="article-header">
+          <span class="article-category">Writing & Productivity</span>
+          <h1 class="article-title">How to Count Words in an Essay (Step-by-Step)</h1>
+          <div class="article-meta">Published on May 21, 2026 • 5 min read</div>
+        </header>
+
+        <!-- Jump-to-Tool Icon CTA -->
+        <div class="cta-var-d">
+          <div class="cta-var-d__icon">📝</div>
+          <div class="cta-var-d__content">
+            <h3>PrimeArtifact Word Counter</h3>
+            <p>Instantly count words, characters, sentences, and reading time.</p>
+            <a href="../tools/text/word-counter.html" class="btn btn--accent">Count My Words Now →</a>
+          </div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc-box">
+          <div class="toc-box__title">In this article</div>
+          <div class="toc-box__grid">
+            <a href="#why-matters"><span>→</span> Why does word count matter?</a>
+            <a href="#how-to-check"><span>→</span> How to check your word count</a>
+            <a href="#characters-sentences"><span>→</span> Characters and sentences</a>
+          </div>
+        </div>
+
+        <p>Whether you're an academic submitting a thesis or a freelance writer working on an article, word count is one of the most critical metrics you'll track. In this guide, we'll explain why word counts matter and how to accurately track them.</p>
+
+        <h2 id="why-matters">Why Does Word Count Matter?</h2>
+        <p>Teachers and editors assign word counts for a reason: it forces conciseness. A 500-word limit on an essay means you must get straight to the point without fluff. On the web, longer content (1,500+ words) often ranks better in search engines because it covers topics comprehensively.</p>
+
+        <h2 id="how-to-check">How to Check Your Word Count</h2>
+        <p>If you're using Microsoft Word or Google Docs, the built-in word counters are usually sufficient for basic text. But they often include things you might want to exclude, like headers, footnotes, or references.</p>
+        <p>For a more precise breakdown, copying your text into a dedicated online tool gives you deeper insights.</p>
+
+
+
+        <h2 id="characters-sentences">What About Characters and Sentences?</h2>
+        <p>Sometimes, platforms limit you by character count rather than word count (think Twitter or SMS marketing). Understanding the difference between "Characters with spaces" and "Characters without spaces" is crucial for these limits.</p>
+
+        <p>Tracking sentences and paragraphs helps you understand the rhythm and readability of your writing. Short sentences are punchy. Long paragraphs can be intimidating. Use our <a href="../tools/text/word-counter">Word & Character Counter</a> to analyze your text structure today.</p>
+
+        <!-- Summary / TL;DR -->
+        <div class="tldr-box">
+          <div class="tldr-box__title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            Summary / TL;DR
+          </div>
+          <ul>
+            <li>Word counts enforce conciseness and ensure comprehensive topic coverage.</li>
+            <li>Built-in document editors often miscount text by including headers and footnotes.</li>
+            <li>Dedicated tools offer more precise tracking including characters and sentence rhythm.</li>
+          </ul>
+        </div>
+
+        <div class="cta-box">
+          <h3 style="color:var(--text-primary);margin-bottom:var(--space-sm);">Need to count words accurately?</h3>
+          <p style="font-size:0.95rem;">Our Word & Character Counter analyzes your text instantly, right in your browser.</p>
+          <a href="../tools/text/word-counter.html" class="btn btn--accent" style="display:inline-block;margin-top:var(--space-sm);text-decoration:none;">Open Word Counter</a>
+        </div>
+
+        <h2 style="font-size: 1.25rem; border-top: 1px solid var(--border-light); padding-top: var(--space-xl); margin-top: var(--space-xl);">Read Next / Related Artifacts</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md); margin-top: var(--space-md);">
+          <a href="../tools/text/word-counter" class="glass" style="padding: var(--space-md); text-decoration: none; border-radius: var(--radius-md);">
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Word & Character Counter</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Analyze your text instantly.</div>
+          </a>
+          <a href="../tools/text/lorem-ipsum" class="glass" style="padding: var(--space-md); text-decoration: none; border-radius: var(--radius-md);">
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Lorem Ipsum Generator</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Generate placeholder text.</div>
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer"></footer>
+</body>
+</html>

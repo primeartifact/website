@@ -150,20 +150,9 @@
 
     .calendar-header select {
       flex: 1;
-      padding: 6px 8px;
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      font-family: var(--font-family);
-      font-weight: 600;
-      font-size: 0.9rem;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .calendar-header select:focus {
-      border-color: var(--accent);
+      padding: 6px 28px 6px 10px;
+      font-size: 0.85rem;
+      background-position: right 8px center;
     }
 
     .calendar-weekdays {
@@ -306,8 +295,8 @@
 
           <div class="glass-calendar" id="glass-calendar">
             <div class="calendar-header">
-              <select id="cal-month-select"></select>
-              <select id="cal-year-select"></select>
+              <select id="cal-month-select" class="ctrl-input ctrl-select"></select>
+              <select id="cal-year-select" class="ctrl-input ctrl-select"></select>
             </div>
             <div class="calendar-weekdays">
               <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
@@ -354,15 +343,10 @@
               id="d-minutes">0</span></div>
           <div class="detail-row"><span class="detail-row__label">Born On</span><span class="detail-row__value"
               id="d-day">&mdash;</span></div>
-          <div class="detail-row"><span class="detail-row__label">Zodiac Sign</span><span class="detail-row__value"
-              id="d-zodiac">&mdash;</span></div>
-          <div class="detail-row"><span class="detail-row__label">Birth Year (Chinese)</span><span
-              class="detail-row__value" id="d-chinese">&mdash;</span></div>
         </div>
       </div>
-    </div>
-    
-  <!-- FAQ Modal & Overlay -->
+
+<!-- FAQ Modal & Overlay -->
   <div class="faq-modal-overlay" id="faq-modal">
     <div class="faq-modal">
       <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
@@ -381,26 +365,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('faq-modal');
-      const openBtn = document.getElementById('open-faq');
-      const closeBtn = document.getElementById('close-faq');
-      if(openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && modal.classList.contains('active')) {
-            modal.classList.remove('active');
-          }
-        });
-      }
-    });
-  </script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -433,15 +397,25 @@
   ]
 }
     </script>
-  </main>
+  
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px; max-width: 1300px; margin-left: auto; margin-right: auto; padding-left: var(--space-xl); padding-right: var(--space-xl);">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          Chronological Age Calculation
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
 
-  <footer id="main-footer" class="footer glass glass--static"
-    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
-      </p>
-    </div>
-  </footer>
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">Precision Algorithms</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              Our Age Calculator uses native JavaScript Date objects to calculate the exact chronological diff. It handles leap year boundary edge-cases by advancing the calendar month-by-month to accurately calculate the remaining days, providing you with a flawless breakdown of your age in years, months, and days.
+            </p>
+          </div>
+        </div>
+      </div>
+</main>
+
+  <footer class="footer"></footer>
 
   <!-- Custom Calendar UI Logic -->
   <script>
@@ -466,7 +440,7 @@
       });
 
       const currentYear = today.getFullYear();
-      for (let y = currentYear; y >= currentYear - 120; y--) {
+      for (let y = currentYear - 120; y <= currentYear; y++) {
         let option = document.createElement('option');
         option.value = y; option.textContent = y;
         yearSelect.appendChild(option);
@@ -540,11 +514,7 @@
     (function () {
       var dob = document.getElementById('dob');
       var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      var zodiac = [{ s: 'Capricorn', e: [1, 19] }, { s: 'Aquarius', e: [2, 18] }, { s: 'Pisces', e: [3, 20] }, { s: 'Aries', e: [4, 19] }, { s: 'Taurus', e: [5, 20] }, { s: 'Gemini', e: [6, 20] }, { s: 'Cancer', e: [7, 22] }, { s: 'Leo', e: [8, 22] }, { s: 'Virgo', e: [9, 22] }, { s: 'Libra', e: [10, 22] }, { s: 'Scorpio', e: [11, 21] }, { s: 'Sagittarius', e: [12, 21] }, { s: 'Capricorn', e: [12, 31] }];
-      var chinese = ['Monkey', 'Rooster', 'Dog', 'Pig', 'Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat'];
       var fmt = function (n) { return n.toLocaleString('en-IN'); };
-
-      function getZodiac(m, d) { for (var i = 0; i < zodiac.length; i++) { var z = zodiac[i]; if (m < z.e[0] || (m === z.e[0] && d <= z.e[1])) return z.s; } return 'Capricorn'; }
 
       dob.addEventListener('input', function () {
         var birth = new Date(this.value);
@@ -576,8 +546,6 @@
         document.getElementById('d-hours').textContent = fmt(totalHours);
         document.getElementById('d-minutes').textContent = fmt(totalMinutes);
         document.getElementById('d-day').textContent = days[birth.getDay()];
-        document.getElementById('d-zodiac').textContent = getZodiac(birth.getMonth() + 1, birth.getDate());
-        document.getElementById('d-chinese').textContent = 'Year of the ' + chinese[birth.getFullYear() % 12];
 
         document.getElementById('result').style.display = '';
         document.getElementById('details').style.display = '';

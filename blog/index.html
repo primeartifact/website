@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — PrimeArtifact | Tips, Guides, and Tutorials</title>
+  <meta name="description" content="Read our latest guides on productivity, security, and using online tools efficiently.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="../js/theme.js"></script>
+  <style>
+    .blog-list { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-xl); }
+    .blog-row { display: grid; grid-template-columns: 80px 1fr 50px; gap: var(--space-md); padding: var(--space-lg); text-decoration: none; border-radius: var(--radius-md); transition: all 0.3s ease; position: relative; overflow: hidden; }
+    .blog-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); transform: scaleY(0); transition: transform 0.3s ease; transform-origin: bottom; }
+    .blog-icon-col { display: flex; align-items: center; justify-content: center; position: relative; color: var(--text-tertiary); transition: color 0.3s ease; }
+    .blog-icon-col i { font-size: 1.5rem; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .blog-category-text { position: absolute; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0; transform: translateY(15px); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; width: 100%; }
+    
+    .blog-content { display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .blog-title { font-size: 1.4rem; color: var(--text-primary); margin-bottom: 6px; }
+    .blog-excerpt { font-size: 1rem; color: var(--text-secondary); line-height: 1.5; }
+    
+    .blog-arrow { font-size: 1.5rem; color: var(--accent); display: flex; align-items: center; justify-content: flex-end; opacity: 0; transform: translateX(-20px); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    
+    @media (hover: hover) and (min-width: 1025px) {
+      .blog-row:hover { background: rgba(255,255,255,0.03); }
+      .blog-row:hover::before { transform: scaleY(1); }
+      .blog-row:hover .blog-icon-col { color: var(--accent); }
+      .blog-row:hover .blog-icon-col i { transform: translateY(-15px); opacity: 0; }
+      .blog-row:hover .blog-category-text { transform: translateY(0); opacity: 1; }
+      .blog-row:hover .blog-content { transform: translateX(15px); }
+      .blog-row:hover .blog-arrow { opacity: 1; transform: translateX(0); }
+    }
+    
+    @media (max-width: 1024px) {
+      .blog-row { grid-template-columns: 60px 1fr; padding: var(--space-md); }
+      .blog-arrow { display: none; }
+      .blog-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar"></nav>
+  <script src="../js/navbar.js"></script>
+
+  <main class="page">
+    <div class="container">
+      <header class="page-header animate-in">
+        <h1 class="page-header__title">PrimeArtifact Blog</h1>
+        <p class="page-header__subtitle">Guides, tutorials, and tips for working smarter.</p>
+      </header>
+
+      <div class="blog-list animate-in" style="animation-delay: 0.1s;">
+        
+        <!-- Article 0 -->
+        <a href="why-you-need-a-secure-clipboard" class="blog-row">
+          <div class="blog-icon-col">
+            <i class="fas fa-shield-halved"></i>
+            <span class="blog-category-text">Security</span>
+          </div>
+          <div class="blog-content">
+            <h2 class="blog-title">Why You Should Never Share Passwords via Email or Chat</h2>
+            <p class="blog-excerpt">Learn why sending passwords in plain text is dangerous, and how a zero-knowledge secure clipboard protects your sensitive data.</p>
+          </div>
+          <div class="blog-arrow">→</div>
+        </a>
+
+        <!-- Article 1 -->
+        <a href="how-to-count-words-in-essay" class="blog-row">
+          <div class="blog-icon-col">
+            <i class="fas fa-pen-nib"></i>
+            <span class="blog-category-text">Writing</span>
+          </div>
+          <div class="blog-content">
+            <h2 class="blog-title">How to Count Words in an Essay (Step-by-Step)</h2>
+            <p class="blog-excerpt">Everything you need to know about hitting your word count targets without sacrificing quality.</p>
+          </div>
+          <div class="blog-arrow">→</div>
+        </a>
+
+        <!-- Article 2 -->
+        <a href="how-to-create-strong-password" class="blog-row">
+          <div class="blog-icon-col">
+            <i class="fas fa-key"></i>
+            <span class="blog-category-text">Security</span>
+          </div>
+          <div class="blog-content">
+            <h2 class="blog-title">How to Create a Strong Password You Can Actually Remember</h2>
+            <p class="blog-excerpt">Stop using 'password123'. Here is a foolproof method to create cryptographically secure passwords that stick in your brain.</p>
+          </div>
+          <div class="blog-arrow">→</div>
+        </a>
+
+        <!-- Article 3 -->
+        <a href="url-encoding-explained" class="blog-row">
+          <div class="blog-icon-col">
+            <i class="fas fa-code"></i>
+            <span class="blog-category-text">Web Dev</span>
+          </div>
+          <div class="blog-content">
+            <h2 class="blog-title">What is URL Encoding and Why Does It Matter?</h2>
+            <p class="blog-excerpt">A visual guide to how browsers handle spaces, special characters, and emojis in web addresses.</p>
+          </div>
+          <div class="blog-arrow">→</div>
+        </a>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"></footer>
+</body>
+</html>

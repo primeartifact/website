@@ -134,9 +134,8 @@
           <span id="word-count">0 words Â· 0 characters</span>
         </div>
       </div>
-    </div>
-    
-  <!-- FAQ Modal & Overlay -->
+
+<!-- FAQ Modal & Overlay -->
   <div class="faq-modal-overlay" id="faq-modal">
     <div class="faq-modal">
       <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
@@ -155,26 +154,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('faq-modal');
-      const openBtn = document.getElementById('open-faq');
-      const closeBtn = document.getElementById('close-faq');
-      if(openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && modal.classList.contains('active')) {
-            modal.classList.remove('active');
-          }
-        });
-      }
-    });
-  </script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -207,15 +186,25 @@
   ]
 }
     </script>
-  </main>
+  
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px; max-width: 1300px; margin-left: auto; margin-right: auto; padding-left: var(--space-xl); padding-right: var(--space-xl);">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          Local Storage & Privacy
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
 
-  <footer class="footer glass glass--static"
-    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
-      </p>
-    </div>
-  </footer>
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">How Browser Storage Works</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              This Online Notepad leverages the HTML5 <code>localStorage</code> API to save your text instantly as you type. Unlike cloud-based document editors (like Google Docs) that constantly upload your keystrokes to a central database, this notepad saves your data strictly on your own computer's hard drive.
+            </p>
+          </div>
+        </div>
+      </div>
+</main>
+
+  <footer class="footer"></footer>
 
   <!-- Notepad Logic -->
   <script>

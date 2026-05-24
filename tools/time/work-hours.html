@@ -405,9 +405,8 @@
 
       </div>
 
-    </div>
-    
-  <!-- FAQ Modal & Overlay -->
+
+<!-- FAQ Modal & Overlay -->
   <div class="faq-modal-overlay" id="faq-modal">
     <div class="faq-modal">
       <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
@@ -426,26 +425,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('faq-modal');
-      const openBtn = document.getElementById('open-faq');
-      const closeBtn = document.getElementById('close-faq');
-      if(openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && modal.classList.contains('active')) {
-            modal.classList.remove('active');
-          }
-        });
-      }
-    });
-  </script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -478,9 +457,25 @@
   ]
 }
     </script>
-  </main>
+  
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px; max-width: 1300px; margin-left: auto; margin-right: auto; padding-left: var(--space-xl); padding-right: var(--space-xl);">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          Timesheet Logic Explained
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
 
-  <footer id="main-footer"></footer>
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">Converting Time to Decimal</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              When calculating payroll, standard clock time (e.g., 8 hours and 30 minutes) cannot be multiplied by an hourly wage directly. It must first be converted into a decimal format (8.5 hours). This calculator automatically handles the conversion from base-60 minutes to base-10 decimals, ensuring your timesheets are mathematically perfect for HR departments.
+            </p>
+          </div>
+        </div>
+      </div>
+</main>
+
+  <footer class="footer"></footer>
 
   <script>
     // --- GENERATE HUD SEGMENTS ---

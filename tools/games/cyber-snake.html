@@ -423,16 +423,26 @@
           </div>
         </div>
       </section>
-    </div>
-  </main>
 
-  <footer class="footer glass glass--static"
-    style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
-      </p>
-    </div>
-  </footer>
+
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px; max-width: 1300px; margin-left: auto; margin-right: auto; padding-left: var(--space-xl); padding-right: var(--space-xl);">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          Game Mechanics & Canvas API
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
+
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">Grid-Based Rendering</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              Cyber Snake uses a strictly grid-based rendering system mapped to an HTML5 Canvas. The game area is divided into a 20x20 invisible grid. The snake itself is an array of coordinates. As the game ticks forward, the array shifts: a new "head" coordinate is added in the direction of travel, and the "tail" coordinate is popped off.
+            </p>
+          </div>
+        </div>
+      </div>
+</main>
+
+  <footer class="footer"></footer>
 
   <!-- High-Performance Theme-Aware Cyber Snake Core Engine -->
   <script>

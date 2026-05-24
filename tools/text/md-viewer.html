@@ -670,8 +670,24 @@ Or upload a .md file using the button above.
         </div>
       </div>
 
-    </div>
-  </main>
+
+
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px; max-width: 1300px; margin-left: auto; margin-right: auto; padding-left: var(--space-xl); padding-right: var(--space-xl);">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          Markdown Parsing Explained
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
+
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">How the Viewer Parses Text</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              This tool acts as a real-time compiler. As you type, the local JavaScript engine instantly interprets the Markdown syntax and translates it into semantic HTML elements (like <code>&lt;strong&gt;</code> or <code>&lt;h1&gt;</code>), rendering the formatted preview simultaneously without requiring a page refresh or server communication.
+            </p>
+          </div>
+        </div>
+      </div>
+</main>
 
   <div class="faq-modal-overlay" id="faq-modal">
     <div class="faq-modal">
@@ -714,13 +730,7 @@ Or upload a .md file using the button above.
     </div>
   </div>
 
-  <footer class="footer glass glass--static"
-    style="position:relative;z-index:10;border-radius:0;border-left:none;border-right:none;border-bottom:none;margin-top:var(--space-xl);">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No
-        nonsense.</p>
-    </div>
-  </footer>
+  <footer class="footer"></footer>
 
   <script>
     // ── Configure marked.js ───────────────────────────────────────────

@@ -163,7 +163,7 @@
   <script src="../../js/navbar.js"></script>
 
   <main class="page">
-    
+
     <div class="container">
       <header class="page-header animate-in">
         <div class="page-header__breadcrumb">
@@ -173,7 +173,8 @@
           <span class="page-header__breadcrumb-sep">/</span>
           <span>Word Counter</span>
         </div>
-        <h1 class="page-header__title">Word & Character Counter <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
+        <h1 class="page-header__title">Word & Character Counter <button class="faq-inline-btn" id="open-faq"
+            title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
         <p class="page-header__subtitle">Count words, characters, sentences, and get reading time &mdash; instantly.</p>
       </header>
 
@@ -197,7 +198,7 @@
       </div>
 
       <div class="glass glass--static input-panel animate-in">
-        
+
         <div class="static-header">
           <span class="input-panel__title">Your Text</span>
           <div class="input-panel__actions">
@@ -210,7 +211,8 @@
           spellcheck="false"></textarea>
 
         <div style="margin-top: var(--space-md); text-align: right;">
-          <button class="btn btn--accent" id="btn-calculate" style="padding: 10px 24px; font-size: 0.9rem;"><i class="fas fa-sync-alt"></i> Calculate
+          <button class="btn btn--accent" id="btn-calculate" style="padding: 10px 24px; font-size: 0.9rem;"><i
+              class="fas fa-sync-alt"></i> Calculate
             Stats</button>
         </div>
       </div>
@@ -237,50 +239,51 @@
         </div>
       </div>
 
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px;">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          How the Word Counter Works
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">Counting Mechanics</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              Our tool counts words by analyzing spaces and punctuation boundaries in real-time. Character counts are calculated strictly by string length, offering metrics both with and without white spaces. All parsing happens entirely locally in your browser.
+            </p>
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">Reading Time Estimation</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              Reading time is dynamically calculated based on a standard adult reading speed of 250 words per minute (WPM). This provides a highly accurate estimate of how long it will take an average user to read your content.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div class="pyramid-stage">
         <!-- &darr; The Ruins &darr; -->
       </div>
     </div>
-    
-  <!-- FAQ Modal & Overlay -->
-  <div class="faq-modal-overlay" id="faq-modal">
-    <div class="faq-modal">
-      <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
-      <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
-      <div class="faq-item">
-        <h3>Does this tool save my text?</h3>
-        <p>No, all counting and analysis happens instantly in your web browser. Your text is never sent to our servers, ensuring complete privacy.</p>
-      </div>
-      <div class="faq-item">
-        <h3>What metrics does the word counter provide?</h3>
-        <p>It calculates total words, characters (with and without spaces), sentences, paragraphs, and estimated reading time.</p>
-      </div>
-      <div class="faq-item">
-        <h3>How is the reading time estimated?</h3>
-        <p>The reading time is estimated based on an average adult reading speed of about 250 words per minute.</p>
+
+    <!-- FAQ Modal & Overlay -->
+    <div class="faq-modal-overlay" id="faq-modal">
+      <div class="faq-modal">
+        <button class="faq-modal-close" id="close-faq" title="Close">&times;</button>
+        <h2><i class="fas fa-circle-question" style="color: var(--accent);"></i> Frequently Asked Questions</h2>
+        <div class="faq-item">
+          <h3>Does this tool save my text?</h3>
+          <p>No, all counting and analysis happens instantly in your web browser. Your text is never sent to our
+            servers, ensuring complete privacy.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What metrics does the word counter provide?</h3>
+          <p>It calculates total words, characters (with and without spaces), sentences, paragraphs, and estimated
+            reading time.</p>
+        </div>
+        <div class="faq-item">
+          <h3>How is the reading time estimated?</h3>
+          <p>The reading time is estimated based on an average adult reading speed of about 250 words per minute.</p>
+        </div>
       </div>
     </div>
-  </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('faq-modal');
-      const openBtn = document.getElementById('open-faq');
-      const closeBtn = document.getElementById('close-faq');
-      if(openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && modal.classList.contains('active')) {
-            modal.classList.remove('active');
-          }
-        });
-      }
-    });
-  </script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -315,18 +318,12 @@
     </script>
   </main>
 
-  <footer id="main-footer" class="footer glass glass--static"
-    style="border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.
-      </p>
-    </div>
-  </footer>
+  <footer class="footer"></footer>
 
   <!-- 3D Card Engine Script -->
   <script>
     const container = document.getElementById('bg-container');
-    const footerEl = document.getElementById('main-footer');
+    const footerEl = document.querySelector('.footer');
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     const cardSize = 30;
     let cols; let pilePxHeights = []; let fallingLeaves = []; let staticCardsData = []; let floorY = 0;

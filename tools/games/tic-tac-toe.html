@@ -376,14 +376,26 @@
           </div>
         </div>
       </section>
-    </div>
-  </main>
 
-  <footer class="footer glass glass--static" style="position: relative; z-index: 10; border-radius: 0; border-left: none; border-right: none; border-bottom: none;">
-    <div class="container">
-      <p>&copy; 2026 <a href="../../">PrimeArtifact</a> &mdash; Free online artifacts. No login. No tracking. No nonsense.</p>
-    </div>
-  </footer>
+
+      <!-- SEO Educational Content (Accordion) -->
+      <div class="seo-accordion animate-in" id="seo-accordion" style="margin-top: 40px; margin-bottom: 20px; max-width: 1300px; margin-left: auto; margin-right: auto; padding-left: var(--space-xl); padding-right: var(--space-xl);">
+        <div class="seo-accordion__header" onclick="document.getElementById('seo-accordion').classList.toggle('expanded')">
+          Game Mechanics & AI Logic
+        </div>
+        <div class="seo-accordion__body">
+          <div class="seo-accordion__content">
+
+            <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs); color: var(--text-primary);">The Minimax Algorithm</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); line-height: 1.7;">
+              When playing against the computer on the hardest difficulty, the game uses a classic decision rule called the Minimax algorithm. This AI strategy recursively simulates every possible future move on the board until the game ends. It assigns a score to each outcome (+10 for a win, -10 for a loss), and chooses the path that guarantees the optimal result.
+            </p>
+          </div>
+        </div>
+      </div>
+</main>
+
+  <footer class="footer"></footer>
 
   <!-- Web Audio & Tic-Tac-Toe Matrix Logic -->
   <script>

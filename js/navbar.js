@@ -36,6 +36,44 @@
   var isLocal = window.location.protocol === 'file:';
   var ext = isLocal ? '.html' : '';
 
+  // ── Crystal Cube Page Loader ─────────────────────────────────────
+  // Inject immediately so it covers the page while content loads.
+  (function injectPageLoader() {
+    var logo = base + 'assets/logo.png';
+    var faces = ['front','back','right','left','top','bottom'];
+    var facesHTML = '';
+    for (var f = 0; f < faces.length; f++) {
+      facesHTML += '<div class="crystal-cube__face crystal-cube__face--' + faces[f] + '"><img src="' + logo + '" alt=""></div>';
+    }
+    
+    // Add randomness to rotation direction
+    var directions = ['normal', 'reverse'];
+    var randomDir = directions[Math.floor(Math.random() * directions.length)];
+
+    var loaderDiv = document.createElement('div');
+    loaderDiv.className = 'page-loader';
+    loaderDiv.id = 'page-loader';
+    loaderDiv.innerHTML = '<div class="crystal-cube"><div class="crystal-cube__inner" style="animation-direction: ' + randomDir + ';">' + facesHTML + '</div></div>';
+    document.body.insertBefore(loaderDiv, document.body.firstChild);
+
+    // Fade out after page is ready (minimum 400ms to avoid flicker)
+    var startTime = Date.now();
+    function dismissLoader() {
+      var elapsed = Date.now() - startTime;
+      var delay = Math.max(0, 400 - elapsed);
+      setTimeout(function () {
+        loaderDiv.classList.add('fade-out');
+        setTimeout(function () { loaderDiv.remove(); }, 600);
+      }, delay);
+    }
+
+    if (document.readyState === 'complete') {
+      dismissLoader();
+    } else {
+      window.addEventListener('load', dismissLoader);
+    }
+  })();
+
 
   // Tool definitions — single source of truth
   var categories = [

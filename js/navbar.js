@@ -55,6 +55,7 @@
     loaderDiv.id = 'page-loader';
     loaderDiv.innerHTML = '<div class="crystal-cube"><div class="crystal-cube__inner" style="animation-direction: ' + randomDir + ';">' + facesHTML + '</div></div>';
     document.body.insertBefore(loaderDiv, document.body.firstChild);
+    document.body.classList.add('show-loader');
 
     // Fade out after page is ready (minimum 400ms to avoid flicker)
     var startTime = Date.now();
@@ -62,6 +63,11 @@
       var elapsed = Date.now() - startTime;
       var delay = Math.max(0, 400 - elapsed);
       setTimeout(function () {
+        // Remove the FOUC guard CSS entirely so it doesn't interfere
+        // with background canvases, theme colors, or any other styling
+        var foucGuard = document.getElementById('fouc-guard');
+        if (foucGuard) foucGuard.remove();
+        document.body.classList.remove('show-loader');
         loaderDiv.classList.add('fade-out');
         setTimeout(function () { loaderDiv.remove(); }, 600);
       }, delay);

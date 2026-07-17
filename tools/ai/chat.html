@@ -46,16 +46,17 @@
   <style>
     body {
       position: relative;
-      /* Prevent scrolling on the body so the chat app feels native */
-      overflow-y: hidden;
+      /* Use 100dvh for proper mobile viewport sizing (accounts for address bar) */
+      height: 100dvh;
+      overflow: hidden;
     }
 
     /* Override main page padding for chat app feel */
     .page.chat-page {
-      padding-top: 80px;
+      padding-top: 70px;
       /* Account for navbar */
       padding-bottom: 0;
-      height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
     }
@@ -64,8 +65,8 @@
       display: flex;
       gap: var(--space-md);
       flex: 1;
-      height: calc(100vh - 160px);
-      /* Adjust for navbar and padding */
+      min-height: 0;
+      /* Let flexbox manage height */
       margin: 0 auto;
       width: 100%;
       max-width: 1400px;
@@ -205,11 +206,15 @@
     /* Chat Header */
     .chat-header {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       padding: var(--space-sm) var(--space-lg);
       border-bottom: 1px solid var(--divider);
       background: rgba(255, 255, 255, 0.03);
+    }
+
+    .mobile-sidebar-toggle, .mobile-new-chat-btn {
+      display: none;
     }
 
     .chat-actions {
@@ -365,7 +370,7 @@
       padding: var(--space-lg) 0;
       animation: fadeIn 0.3s ease;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
     }
 
     @keyframes fadeIn {
@@ -396,7 +401,8 @@
 
     .message-content-wrapper {
       width: 100%;
-      max-width: 800px;
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
       gap: var(--space-lg);
       padding: 0 var(--space-md);
@@ -475,6 +481,14 @@
       padding: var(--space-sm) var(--space-xl) var(--space-lg);
       border-top: 1px solid var(--divider);
       background: rgba(255, 255, 255, 0.01);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chat-input-wrapper > * {
+      width: 100%;
+      max-width: 1200px;
     }
 
     .chat-input-container {
@@ -639,18 +653,65 @@
     @media (max-width: 900px) {
       .chat-layout {
         flex-direction: column;
-        height: auto;
-        min-height: calc(100vh - 80px);
+        padding: 0;
+        gap: 0;
       }
 
       .chat-sidebar {
-        width: 100%;
-        max-height: 200px;
+        position: fixed;
+        top: 0;
+        left: -320px;
+        width: 280px;
+        height: 100dvh;
+        z-index: 10001;
+        border-right: 1px solid var(--divider);
+        border-bottom: none;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--bg-primary);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+      }
+      
+      .chat-sidebar.open {
+        left: 0;
+        transform: none;
+      }
+
+      .mobile-sidebar-toggle, .mobile-new-chat-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        width: 40px;
+        height: 40px;
+      }
+
+      .mobile-header-left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+      }
+
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(2px);
+        z-index: 9999;
+      }
+      
+      .sidebar-overlay.open {
+        display: block;
       }
 
       .chat-main {
         flex: 1;
-        min-height: 60vh;
+        min-height: 0;
+        border-radius: 0;
+      }
+      
+      .chat-input-wrapper {
+        padding: var(--space-xs) var(--space-sm) var(--space-sm);
       }
     }
 
@@ -840,9 +901,9 @@
         <h1 class="page-header__title" style="font-size: 1.5rem; margin-bottom: 0;">Prime AI Assistant <button class="faq-inline-btn" id="open-faq" title="Help & FAQs"><i class="fas fa-question-circle"></i></button></h1>
       </header>
       <div class="chat-layout" style="position:relative;">
-        
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
       <!-- Sidebar -->
-      <aside class="chat-sidebar glass glass--static animate-in">
+      <aside class="chat-sidebar glass glass--static">
         <button id="btn-new-chat" class="btn btn--primary" style="width:100%; margin-bottom: var(--space-md);">
           <i class="fas fa-plus"></i> New Chat
         </button>
@@ -856,6 +917,14 @@
         
         <!-- Header -->
         <header class="chat-header">
+          <div class="mobile-header-left">
+            <button class="btn btn--small btn--ghost mobile-sidebar-toggle" id="btn-sidebar-toggle" title="Menu">
+              <i class="fas fa-bars"></i>
+            </button>
+            <button class="btn btn--small btn--ghost mobile-new-chat-btn" id="btn-new-chat-mobile" title="New Chat">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
           <div class="chat-actions">
             <button class="btn btn--small btn--ghost" id="btn-export" title="Export Chat log to .txt file"><i
                 class="fas fa-download"></i></button>
@@ -1023,7 +1092,25 @@
 
   <!-- Chat & Local Storage Logic -->
   <script>
-    (function () {
+    document.addEventListener('DOMContentLoaded', () => {
+      // Setup Mobile Sidebar Overlay
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      
+      const sidebar = document.querySelector('.chat-sidebar');
+      const sidebarToggle = document.getElementById('btn-sidebar-toggle');
+      
+      sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('open');
+      });
+      
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('open');
+      }
+
+      sidebarOverlay.addEventListener('click', closeSidebar);
+
       const STORAGE_KEY = 'prime_ai_chats';
 
       const elements = {
@@ -1032,6 +1119,7 @@
         input: document.getElementById('chat-input'),
         sendBtn: document.getElementById('btn-send'),
         newChatBtn: document.getElementById('btn-new-chat'),
+        newChatBtnMobile: document.getElementById('btn-new-chat-mobile'),
         exportBtn: document.getElementById('btn-export'),
         deleteBtn: document.getElementById('btn-delete')
       };
@@ -1155,6 +1243,7 @@
             activeChatId = chat.id;
             renderHistorySidebar();
             renderActiveChat();
+            if (window.innerWidth <= 900) closeSidebar();
           };
 
           div.querySelector('.edit-btn').onclick = (e) => {
@@ -1443,8 +1532,15 @@
 
         elements.sendBtn.addEventListener('click', sendMessage);
 
-        elements.newChatBtn.addEventListener('click', createNewChat);
+        function onNewChatClick() {
+          createNewChat();
+          if (window.innerWidth <= 900) closeSidebar();
+        }
 
+        elements.newChatBtn.addEventListener('click', onNewChatClick);
+        if (elements.newChatBtnMobile) {
+          elements.newChatBtnMobile.addEventListener('click', onNewChatClick);
+        }
 
         let mainDeleteTimeout;
         elements.deleteBtn.addEventListener('click', () => {
@@ -1693,7 +1789,7 @@
 
       // Start
       init();
-    })();
+    });
   </script>
 </body>
 

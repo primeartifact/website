@@ -39,6 +39,29 @@
       '@keyframes cube-spin { 0% { transform: rotateX(0deg) rotateY(0deg); } 100% { transform: rotateX(360deg) rotateY(360deg); } }' +
       '#page-loader.fade-out { opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }';
     document.head.appendChild(style);
+
+    // Preload the logo so it's ready by the time the cube is injected by navbar.js
+    // Determine base path for the logo
+    var isFileProt = window.location.protocol === 'file:';
+    var logoBase = '/';
+    if (isFileProt) {
+      var p = window.location.pathname;
+      if (p.indexOf('/tools/') !== -1) {
+        var segs = p.split('/').filter(Boolean);
+        var ti = segs.indexOf('tools');
+        var depth = segs.length - ti - 1;
+        logoBase = depth >= 2 ? '../../' : depth >= 1 ? '../' : './';
+      } else if (p.indexOf('/pages/') !== -1) {
+        logoBase = '../';
+      } else {
+        logoBase = '';
+      }
+    }
+    var preload = document.createElement('link');
+    preload.rel = 'preload';
+    preload.as = 'image';
+    preload.href = logoBase + 'assets/logo.png';
+    document.head.appendChild(preload);
   })();
   /* ── Site Version (Cache Buster) ──────────────────────────────
      Bump this number after every deploy to force all browsers

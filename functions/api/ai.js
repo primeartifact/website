@@ -89,8 +89,8 @@ export async function onRequestPost(context) {
     // Prepend system prompt to the chat history
     const fullMessages = [systemPrompt, ...messages];
 
-    // Always use Llama 4 as the default PrimeArtifact AI model
-    const defaultModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
+    // Always use GPT-OSS 120B as the default PrimeArtifact AI model
+    const defaultModel = 'openai/gpt-oss-120b';
 
     return await callGroq(fullMessages, defaultModel, env.GROQ_API_KEY, corsHeaders);
 

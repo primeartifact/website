@@ -1490,6 +1490,12 @@
           if (!response.ok) throw new Error('API request failed');
 
           const data = await response.json();
+          
+          // Log any fallback warnings to the browser console
+          if (data.warnings && Array.isArray(data.warnings)) {
+            data.warnings.forEach(warn => console.warn(warn));
+          }
+
           const aiResponse = data.content;
 
           document.getElementById(typingId)?.remove();

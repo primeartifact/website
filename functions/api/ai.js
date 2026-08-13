@@ -89,10 +89,38 @@ export async function onRequestPost(context) {
     // Prepend system prompt to the chat history
     const fullMessages = [systemPrompt, ...messages];
 
-    // Always use GPT-OSS 120B as the default PrimeArtifact AI model
-    const defaultModel = 'openai/gpt-oss-120b';
+    // Model fallback chain — if the primary is unavailable/deprecated, try the next
+    const models = [
+      'openai/gpt-oss-120b',           // Primary: highest quality, Groq-recommended
+      'llama-3.3-70b-versatile',        // Fallback 1: proven general-purpose
+      'llama-3.1-8b-instant'            // Fallback 2: lightweight, always available
+    ];
 
-    return await callGroq(fullMessages, defaultModel, env.GROQ_API_KEY, corsHeaders);
+    const fallbackWarnings = [];
+
+    for (let i = 0; i < models.length; i++) {
+      const model = models[i];
+      const result = await callGroq(fullMessages, model, env.GROQ_API_KEY, corsHeaders);
+
+      // If the model worked, return the response
+      if (result.ok) {
+        return new Response(JSON.stringify({ 
+          content: result.text,
+          warnings: fallbackWarnings.length > 0 ? fallbackWarnings : undefined
+        }), { status: 200, headers: corsHeaders });
+      }
+
+      // Model failed — log the issue and try the next one
+      const warningMsg = `Model "${model}" failed: ${result.error}. ${i < models.length - 1 ? `Falling back to "${models[i + 1]}"...` : 'No more fallbacks.'}`;
+      console.warn(`[PrimeArtifact AI] ${warningMsg}`);
+      fallbackWarnings.push(warningMsg);
+    }
+
+    // All models failed
+    return new Response(JSON.stringify({
+      content: '⚠️ All AI models are currently unavailable. Please try again in a few minutes.',
+      warnings: fallbackWarnings
+    }), { status: 200, headers: corsHeaders });
 
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
@@ -103,12 +131,15 @@ export async function onRequestPost(context) {
 
 /**
  * ─── GROQ INFERENCE ────────────────────────────────────────────────
+ * Returns { ok: true, text } on success,
+ * or { ok: false, error } on failure so the caller can retry.
  */
 async function callGroq(messages, modelId, apiKey, headers) {
   if (!apiKey) {
-    return new Response(JSON.stringify({
-      content: '⚠️ GROQ_API_KEY is not configured. Add it in Cloudflare Dashboard → Settings → Environment Variables.'
-    }), { status: 200, headers });
+    return {
+      ok: true,
+      text: '⚠️ GROQ_API_KEY is not configured. Add it in Cloudflare Dashboard → Settings → Environment Variables.'
+    };
   }
 
   const url = 'https://api.groq.com/openai/v1/chat/completions';
@@ -126,7 +157,19 @@ async function callGroq(messages, modelId, apiKey, headers) {
   });
 
   const data = await response.json();
-  const text = data.choices?.[0]?.message?.content || `⚠️ Error from Groq: ${data.error?.message || JSON.stringify(data)}`;
 
-  return new Response(JSON.stringify({ content: text }), { headers });
+  // Check if Groq returned an error (model not found, rate limit, etc.)
+  if (data.error) {
+    return { ok: false, error: data.error.message || JSON.stringify(data.error) };
+  }
+
+  const text = data.choices?.[0]?.message?.content;
+  if (!text) {
+    return { ok: false, error: 'Empty response from model' };
+  }
+
+  return {
+    ok: true,
+    text: text
+  };
 }

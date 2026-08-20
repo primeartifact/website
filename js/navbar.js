@@ -107,7 +107,8 @@
       title: 'Time Artifacts',
       tools: [
         { name: 'Time Calculator', desc: 'Add or subtract time intervals, calculate duration between dates, and more.', href: base + 'tools/time/time-calculator' },
-        { name: 'Age Calculator', desc: 'Calculate your exact age in years, months, and days with a birthday countdown.', href: base + 'tools/time/age-calculator' }
+        { name: 'Age Calculator', desc: 'Calculate your exact age in years, months, and days with a birthday countdown.', href: base + 'tools/time/age-calculator' },
+        { name: 'Work Hours Tracker', desc: 'Track shift completion, remaining time, and expected leave time. Default 8:30 target.', href: base + 'tools/time/work-hours' }
       ]
     },
     {

@@ -57,6 +57,7 @@ export async function onRequestPost(context) {
 **Time Tools**
 - Time Calculator: https://primeartifact.com/tools/time/time-calculator — Add/subtract time intervals, calculate durations between dates.
 - Age Calculator: https://primeartifact.com/tools/time/age-calculator — Exact age in years/months/days with birthday countdown.
+- Work Hours Tracker: https://primeartifact.com/tools/time/work-hours — Track shift completion, remaining time, and expected leave time with 8:30 default target.
 
 **Generators**
 - Password Generator: https://primeartifact.com/tools/generators/password — Strong, secure, customizable passwords using Web Crypto API.
